@@ -19,6 +19,32 @@ interface GalleryImage {
   comments?: number;
 }
 
+// Separate component for parallax effects to avoid hydration issues
+const ParallaxBackground = ({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) => {
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, -200]);
+  const y3 = useTransform(scrollYProgress, [0, 1], [0, -150]);
+  const y4 = useTransform(scrollYProgress, [0, 1], [0, -250]);
+  const y5 = useTransform(scrollYProgress, [0, 1], [0, -180]);
+  const y6 = useTransform(scrollYProgress, [0, 1], [0, -120]);
+
+  return (
+    <>
+      <motion.div style={{ y: y1 }} className="absolute top-20 left-10 w-32 h-32 bg-pink-200/30 rounded-full mix-blend-multiply filter blur-2xl" />
+      <motion.div style={{ y: y2 }} className="absolute top-40 right-20 w-40 h-40 bg-purple-200/30 rounded-full mix-blend-multiply filter blur-2xl" />
+      <motion.div style={{ y: y3 }} className="absolute bottom-20 left-1/2 w-36 h-36 bg-rose-200/30 rounded-full mix-blend-multiply filter blur-2xl" />
+      <motion.div style={{ y: y4 }} className="absolute top-1/2 left-20 w-24 h-24 bg-yellow-200/30 rounded-full mix-blend-multiply filter blur-2xl" />
+      <motion.div style={{ y: y5 }} className="absolute bottom-40 right-1/3 w-28 h-28 bg-blue-200/30 rounded-full mix-blend-multiply filter blur-2xl" />
+      <motion.div style={{ y: y6 }} className="absolute top-1/3 right-1/4 w-20 h-20 bg-green-200/30 rounded-full mix-blend-multiply filter blur-2xl" />
+    </>
+  );
+};
+
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -28,12 +54,6 @@ const Gallery = () => {
 
   const containerRef = useRef<HTMLDivElement>(null);
   
-  // Always call useScroll and useTransform hooks
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "end start"]
-  });
-
   const categories = [
     { id: 'all', name: 'ყველა', nameGeorgian: 'ყველა' },
     { id: 'birthday', name: 'Birthday', nameGeorgian: 'დაბადების დღე' },
@@ -152,14 +172,6 @@ const Gallery = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Create parallax transforms with proper fallbacks
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -200]);
-  const y3 = useTransform(scrollYProgress, [0, 1], [0, -150]);
-  const y4 = useTransform(scrollYProgress, [0, 1], [0, -250]);
-  const y5 = useTransform(scrollYProgress, [0, 1], [0, -180]);
-  const y6 = useTransform(scrollYProgress, [0, 1], [0, -120]);
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
@@ -174,16 +186,7 @@ const Gallery = () => {
   return (
     <section ref={containerRef} className="relative min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 overflow-hidden">
       {/* Parallax Background Elements */}
-      {isMounted && (
-        <>
-          <motion.div style={{ y: y1 }} className="absolute top-20 left-10 w-32 h-32 bg-pink-200/30 rounded-full mix-blend-multiply filter blur-2xl" />
-          <motion.div style={{ y: y2 }} className="absolute top-40 right-20 w-40 h-40 bg-purple-200/30 rounded-full mix-blend-multiply filter blur-2xl" />
-          <motion.div style={{ y: y3 }} className="absolute bottom-20 left-1/2 w-36 h-36 bg-rose-200/30 rounded-full mix-blend-multiply filter blur-2xl" />
-          <motion.div style={{ y: y4 }} className="absolute top-1/2 left-20 w-24 h-24 bg-yellow-200/30 rounded-full mix-blend-multiply filter blur-2xl" />
-          <motion.div style={{ y: y5 }} className="absolute bottom-40 right-1/3 w-28 h-28 bg-blue-200/30 rounded-full mix-blend-multiply filter blur-2xl" />
-          <motion.div style={{ y: y6 }} className="absolute top-1/3 right-1/4 w-20 h-20 bg-green-200/30 rounded-full mix-blend-multiply filter blur-2xl" />
-        </>
-      )}
+      {isMounted && <ParallaxBackground containerRef={containerRef} />}
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-20">
@@ -217,31 +220,28 @@ const Gallery = () => {
         {/* Gallery Grid */}
         <div className="columns-1 sm:columns-2 md:columns-3 gap-6 space-y-6">
           <AnimatePresence mode="wait">
-            {filteredImages.map((image, index) => {
-              const parallaxY = [y1, y2, y3, y4, y5, y6][index % 6];
-              return (
-                <motion.div key={image.id} className="break-inside-avoid group cursor-pointer mb-6" onClick={() => openLightbox(image)}>
-                  <motion.div style={isMounted ? { y: parallaxY } : {}} className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
-                    <div className="relative aspect-square overflow-hidden">
-                      <Image src={image.src} alt={image.alt} fill className="object-cover group-hover:scale-110 transition-transform duration-700" priority={index < 4} />
-                      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-sm font-medium">{image.categoryGeorgian}</div>
-                      <motion.div initial={{ opacity: 0 }} whileHover={{ opacity: 1 }} className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                        <div className="text-white text-center">
-                          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
-                            <Filter className="w-6 h-6" />
-                          </div>
-                          <p className="text-sm font-medium">დაათვალიერეთ</p>
+            {filteredImages.map((image, index) => (
+              <motion.div key={image.id} className="break-inside-avoid group cursor-pointer mb-6" onClick={() => openLightbox(image)}>
+                <motion.div className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
+                  <div className="relative aspect-square overflow-hidden">
+                    <Image src={image.src} alt={image.alt} fill className="object-cover group-hover:scale-110 transition-transform duration-700" priority={index < 4} />
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-sm font-medium">{image.categoryGeorgian}</div>
+                    <motion.div initial={{ opacity: 0 }} whileHover={{ opacity: 1 }} className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <div className="text-white text-center">
+                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <Filter className="w-6 h-6" />
                         </div>
-                      </motion.div>
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">{image.titleGeorgian}</h3>
-                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">{image.descriptionGeorgian}</p>
-                    </div>
-                  </motion.div>
+                        <p className="text-sm font-medium">დაათვალიერეთ</p>
+                      </div>
+                    </motion.div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">{image.titleGeorgian}</h3>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{image.descriptionGeorgian}</p>
+                  </div>
                 </motion.div>
-              );
-            })}
+              </motion.div>
+            ))}
           </AnimatePresence>
         </div>
       </div>
