@@ -28,3 +28,82 @@ body {
   color: var(--foreground);
   font-family: "Poppins", sans-serif;
 }
+
+/* Custom Swiper Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animate-fade-in-delay {
+  animation: fadeIn 0.8s ease-out 0.2s forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-delay-2 {
+  animation: fadeIn 0.8s ease-out 0.4s forwards;
+  opacity: 0;
+}
+
+/* Custom Swiper Pagination Styles */
+
+
+
+
+/* Swiper Navigation Button Hover Effects */
+
+
+/* Enhanced Swiper Slide Effects */
+.swiper-slide {
+  transition: all 0.3s ease !important;
+}
+
+.swiper-slide-active {
+  transform: scale(1.05) !important;
+}
+
+/* Custom Coverflow Effect Enhancements */
+.swiper-slide-shadow-left,
+.swiper-slide-shadow-right {
+  background: linear-gradient(to right, rgba(0,0,0,0.1), transparent) !important;
+}
+
+/* Card Hover Effects */
+.group:hover .swiper-slide {
+  transform: translateY(-5px) !important;
+}
+
+/* Smooth Image Transitions */
+img {
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+
+/* Custom Scrollbar for Webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

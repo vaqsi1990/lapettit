@@ -50,6 +50,9 @@ const Custom = () => {
   const [selectedShape, setSelectedShape] = useState<string>('');
   const [selectedDecorations, setSelectedDecorations] = useState<string[]>([]);
   const [customMessage, setCustomMessage] = useState('');
+  const [messagePosition, setMessagePosition] = useState({ x: 50, y: 80 }); // Default position (percentage)
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [specialInstructions, setSpecialInstructions] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [selectedDate, setSelectedDate] = useState<string>('');
@@ -203,6 +206,35 @@ const Custom = () => {
     }
   };
 
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!customMessage) return;
+    
+    const rect = event.currentTarget.getBoundingClientRect();
+    const offsetX = event.clientX - rect.left;
+    const offsetY = event.clientY - rect.top;
+    
+    setDragOffset({ x: offsetX, y: offsetY });
+    setIsDragging(true);
+  };
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDragging || !customMessage) return;
+    
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width) * 100;
+    const y = ((event.clientY - rect.top) / rect.height) * 100;
+    
+    // Keep text within cake boundaries
+    const clampedX = Math.max(10, Math.min(90, x));
+    const clampedY = Math.max(10, Math.min(90, y));
+    
+    setMessagePosition({ x: clampedX, y: clampedY });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
   const handleSubmit = () => {
     // Validate required fields
     if (!selectedDesign) {
@@ -231,23 +263,7 @@ const Custom = () => {
       return;
     }
 
-    // Here you would typically send the order to your backend
-    console.log('Custom cake order:', {
-      design: selectedDesign,
-      flavor: selectedFlavor,
-      filling: selectedFilling,
-      frosting: selectedFrosting,
-      size: selectedSize,
-      shape: selectedShape,
-      decorations: selectedDecorations,
-      message: customMessage,
-      instructions: specialInstructions,
-      deliveryDate: selectedDate,
-      deliveryTime: selectedTime,
-      quantity,
-      totalPrice,
-      referenceImage: uploadedImage
-    });
+ 
     
     // Show success message or redirect
     alert('თქვენი ტორტის შეკვეთა წარმატებით გაიგზავნა!');
@@ -300,7 +316,7 @@ const Custom = () => {
                     }`}
                     onClick={() => setSelectedDesign(design.id)}
                   >
-                    <img src={design.image} alt={design.name} className="w-full h-32 object-cover" />
+                    <img src={design.image} alt={design.name} className="w-full h-42 object-cover" />
                     <div className="p-3 bg-white/90">
                       <h3 className="font-semibold text-gray-800 text-[16px] md:text-[18px]">{design.nameGeorgian}</h3>
                       <p className="text-xs text-gray-600">{design.name}</p>
@@ -476,6 +492,13 @@ const Custom = () => {
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
                   rows={3}
                 />
+                                 {customMessage && (
+                   <div className="mt-2">
+                     <p className="text-sm text-gray-600">
+                       💡 ტექსტის გადასატანად უბრალოდ დააწკაპეთ და გადაიტანეთ ტორტზე
+                     </p>
+                   </div>
+                 )}
               </div>
 
               <div className="mb-4">
@@ -572,7 +595,7 @@ const Custom = () => {
           </div>
 
           {/* Right Column - Preview & Order */}
-          <div className="space-y-6">
+          <div className="  space-y-6">
             {/* Cake Preview */}
             <motion.div 
               initial={{ opacity: 0, x: 50 }}
@@ -584,25 +607,46 @@ const Custom = () => {
                 ტორტის ნახვა
               </h2>
               
-              {selectedDesign ? (
-                <div className="text-center">
-                  <div className="relative mb-4">
-                    <img 
-                      src={cakeDesigns.find(d => d.id === selectedDesign)?.image} 
-                      alt="Cake Preview" 
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
-                    <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center">
-                      <div className="text-white text-center">
-                            <h3 className=" md:text-[18px] text-[16px] font-semibold">
-                          {cakeDesigns.find(d => d.id === selectedDesign)?.nameGeorgian}
-                        </h3>
-                        <p className=" md:text-[16px] text-[14px] opacity-90">
-                          {cakeDesigns.find(d => d.id === selectedDesign)?.descriptionGeorgian}
-                        </p>
-                      </div>
-                    </div>
-                  </div>    
+                             {selectedDesign ? (
+                 <div className="text-center">
+                                       <div 
+                      className={`relative mb-4 ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+                      onMouseDown={handleMouseDown}
+                      onMouseMove={handleMouseMove}
+                      onMouseUp={handleMouseUp}
+                      onMouseLeave={handleMouseUp}
+                    >
+                     <img 
+                       src={cakeDesigns.find(d => d.id === selectedDesign)?.image} 
+                       alt="Cake Preview" 
+                       className="w-full h-FULL object-cover rounded-lg"
+                     />
+                     <div className="absolute inset-0 bg-black/20 rounded-lg flex items-center justify-center">
+                       <div className="text-white text-center">
+                         <h3 className=" md:text-[18px] text-[16px] font-semibold">
+                           {cakeDesigns.find(d => d.id === selectedDesign)?.nameGeorgian}
+                         </h3>
+                         <p className=" md:text-[16px] text-[14px] opacity-90">
+                           {cakeDesigns.find(d => d.id === selectedDesign)?.descriptionGeorgian}
+                         </p>
+                       </div>
+                     </div>
+                                           {/* Custom Message Overlay */}
+                      {customMessage && (
+                        <div 
+                          className="absolute bg-white/90 backdrop-blur-sm rounded-lg px-4 py-2 shadow-lg cursor-grab active:cursor-grabbing select-none"
+                          style={{
+                            left: `${messagePosition.x}%`,
+                            top: `${messagePosition.y}%`,
+                            transform: 'translate(-50%, -50%)'
+                          }}
+                        >
+                          <p className="text-gray-800 font-semibold text-sm md:text-base break-words max-w-[200px] text-center">
+                            {customMessage}
+                          </p>
+                        </div>
+                      )}
+                   </div>    
                   
                   {/* Selected Options Summary */}
                   <div className="text-left space-y-2 text-[16px] md:text-[18px]">
