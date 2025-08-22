@@ -173,7 +173,7 @@ const Services = () => {
     ];
 
     return (
-        <section className="relative py-20  overflow-hidden">
+        <section className="relative py-10  overflow-hidden">
             {/* Background decorative elements */}
             <div className="absolute inset-0">
                 <div className="absolute top-20 right-10 w-40 h-40 bg-pink-100/50 rounded-full mix-blend-multiply filter blur-3xl" />
