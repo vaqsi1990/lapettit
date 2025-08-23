@@ -1,257 +1,212 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { TextPlugin } from 'gsap/TextPlugin';
-import Link from 'next/link';
-import Image from 'next/image';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import "./slider.css";
 
-// Register GSAP plugins
-if (typeof window !== 'undefined') {
-    gsap.registerPlugin(ScrollTrigger, TextPlugin);
+import { useParams } from "next/navigation";
+import Link from "next/link";
+
+interface Slide {
+  id: number;
+  leftImage: string;
 }
 
-const Hero = () => {
-    const heroRef = useRef(null);
-    const titleRef = useRef(null);
-    const subtitleRef = useRef(null);
-    const descriptionRef = useRef(null);
-    const ctaRef = useRef(null);
-    const backgroundRef = useRef(null);
-    const imageSliderRef = useRef(null);
-    const [isClient, setIsClient] = useState(false);
-    const [currentImageIndex, setCurrentImageIndex] = useState(0);
+const ElegantHeroSlider = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const params = useParams();
+  const locale = params.locale as string;
 
-    // Cake images array
-    const cakeImages = [
-        {
-            src: '/hero/534472152_1350659393733941_4241408366837870335_n.jpg',
-            alt: 'Beautiful Birthday Cake',
-            title: 'დაბადებისდღის ტორტები '
-        },
-        {
-            src: '/hero/528840499_1341682604631620_4000600754266452299_n.jpg',
-            alt: 'Wedding Cake',
-            title: 'Wedding Elegance'
-        },
-        {
-            src: '/hero/530248860_1343671131099434_2511349373577876023_n.jpg',
-            alt: 'Custom Design Cake',
-            title: 'Custom Creations'
-        }
-    ];
+  const slides: Slide[] = [
+    {
+      id: 1,
+      leftImage: "/hero/1.png"
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+    },
+    {
+      id: 2,
+      leftImage: "/hero/2.png"
 
-    useEffect(() => {
-        if (!isClient) return;
 
-        const ctx = gsap.context(() => {
-            // Initial animation timeline
-            const tl = gsap.timeline();
+    },
+    {
+      id: 3,
+      leftImage: "/hero/3.png"
 
-            tl.fromTo(titleRef.current,
-                { y: 100, opacity: 0 },
-                { y: 0, opacity: 1, duration: 1.2, ease: "power3.out" }
-            )
-                .fromTo(subtitleRef.current,
-                    { y: 50, opacity: 0 },
-                    { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, "-=0.8"
-                )
-                .fromTo(descriptionRef.current,
-                    { y: 50, opacity: 0 },
-                    { y: 0, opacity: 1, duration: 1, ease: "power2.out" }, "-=0.6"
-                )
-                .fromTo(ctaRef.current,
-                    { y: 30, opacity: 0, scale: 0.8 },
-                    { y: 0, opacity: 1, scale: 1, duration: 0.8, ease: "back.out(1.7)" }, "-=0.4"
-                );
+    },
 
-            // Parallax background effect
-            gsap.to(backgroundRef.current, {
-                yPercent: -50,
-                ease: "none",
-                scrollTrigger: {
-                    trigger: heroRef.current,
-                    start: "top bottom",
-                    end: "bottom top",
-                    scrub: true
-                }
-            });
 
-            // Image slider entrance animation
-            gsap.fromTo(imageSliderRef.current,
-                { x: 100, opacity: 0, rotation: 15 },
-                { x: 0, opacity: 1, rotation: 0, duration: 1.5, ease: "power3.out", delay: 0.8 }
-            );
+  ];
 
-            // Text reveal on scroll
-            gsap.fromTo(".reveal-text",
-                { y: 100, opacity: 0 },
-                {
-                    y: 0,
-                    opacity: 1,
-                    duration: 1,
-                    ease: "power2.out",
-                    stagger: 0.2,
-                    scrollTrigger: {
-                        trigger: ".reveal-text",
-                        start: "top 80%",
-                        end: "bottom 20%",
-                        toggleActions: "play none none reverse"
-                    }
-                }
-            );
+  // Auto-advance slides every 8 seconds
+  useEffect(() => {
+    if (!isAutoPlaying) return;
 
-        }, heroRef);
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    }, 10000);
 
-        return () => ctx.revert();
-    }, [isClient]);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, slides.length]);
 
-    // Auto-rotate images
-    useEffect(() => {
-        if (!isClient) return;
+  // Pause auto-play on user interaction
+  const pauseAutoPlay = () => {
+    setIsAutoPlaying(false);
+    // Resume auto-play after 15 seconds of inactivity
+    setTimeout(() => setIsAutoPlaying(true), 15000);
+  };
 
-        const interval = setInterval(() => {
-            setCurrentImageIndex((prev) => (prev + 1) % cakeImages.length);
-        }, 4000);
+  const getLocalizedContent = () => {
+    if (locale === "en") {
+      return {
+        title: "Good Night, Pleasant Morning",
+        description: "Our products are designed to give you maximum comfort and highest quality — so every morning is pleasant",
+        buttonText: "Choose Your Comfort"
+      };
+    }
+    return {
+      title: "მშვიდი ღამე, სასიამოვნო დილა",
+      description: "ჩვენი პროდუქცია შექმნილია იმისთვის, რომ გაჩუქოთ მაქსიმალური კომფორტი და უმაღლესი ხარისხი — რათა ყოველი დილა იყოს სასიამოვნო",
+      buttonText: "შეარჩიე შენი კომფორტი"
+    };
+  };
 
-        return () => clearInterval(interval);
-    }, [isClient, cakeImages.length]);
+  const nextSlide = () => {
+    pauseAutoPlay();
+    if (currentSlide === slides.length - 1) {
+      setCurrentSlide(0);
+    } else {
+      setCurrentSlide(currentSlide + 1);
+    }
+  };
 
-    // Image change animation
-    useEffect(() => {
-        if (!isClient) return;
+  const prevSlide = () => {
+    pauseAutoPlay();
+    if (currentSlide === 0) {
+      setCurrentSlide(slides.length - 1);
+    } else {
+      setCurrentSlide(currentSlide - 1);
+    }
+  };
 
-        gsap.to(".cake-image", {
-            opacity: 0,
-            scale: 0.8,
-            duration: 0.5,
-            ease: "power2.out",
-            onComplete: () => {
-                gsap.to(".cake-image", {
-                    opacity: 1,
-                    scale: 1,
-                    duration: 0.8,
-                    ease: "back.out(1.7)"
-                });
-            }
-        });
-    }, [currentImageIndex, isClient]);
+  const goToSlide = (index: number) => {
+    pauseAutoPlay();
+    setCurrentSlide(index);
+  };
 
-    return (
-        <section ref={heroRef} className="relative   overflow-hidden">
-            {/* Animated Background */}
-            <div ref={backgroundRef} className="absolute inset-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-100/30 via-rose-100/30 to-purple-100/30" />
-                <div className="absolute top-0 left-0 w-full h-full">
-                    <div className="absolute top-20 left-20 w-72 h-72 bg-pink-200/40 rounded-full mix-blend-multiply filter blur-3xl animate-pulse" />
-                    <div className="absolute top-40 right-20 w-96 h-96 bg-purple-200/40 rounded-full mix-blend-multiply filter blur-3xl animate-pulse animation-delay-2000" />
-                    <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-rose-200/40 rounded-full mix-blend-multiply filter blur-3xl animate-pulse animation-delay-4000" />
-                </div>
-            </div>
+  const content = getLocalizedContent();
 
-            {/* Main Content */}
-            <div className="relative z-10 container mx-auto px-4 ">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center min-h-[80vh]">
-                    {/* Text Content */}
-                    <div className="space-y-8  md:mt-0 mt-10">
-                        {/* Main Title */}
-                        <div ref={titleRef} className="space-y-4">
-                            <h1 className="  md:text-[48px] text-[28px] font-bold text-gray-800 leading-tight">
-                                სადაც ყველა {' '}
-                                ნაჭერი
+  return (
+    <section className="relative 
+     min-h-[500px]  md:min-h-[600px]  overflow-hidden ">
 
-                                <br />
-                                ისტორიას ყვება
-                            </h1>
-                        </div>
+      {/* Main Slider Container */}
+      <div className="relative max-w-7xl mx-auto h-full min-h-[500px]  md:h-[500px] ">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentSlide}
+           
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            {/* Shutters Overlay */}
+            <div className="shutters-animate" />
 
-                        {/* Subtitle */}
-                        <div ref={subtitleRef}>
-                            <h2 className="text-2xl md:text-3xl font-semibold text-gray-700">
-                                ხელით დამზადებულია სიყვარულით
-                            </h2>
-                        </div>
+            {/* Single Large Image */}
+            <motion.div
+            
+              transition={{ duration: 1.2, ease: "easeOut" }}
+              className="w-full h-full sm relative overflow-hidden"
+            >
+              <div
+                className="w-full h-full bg-cover bg-center bg-no-repeat "
+                style={{
+                  backgroundImage: `url('${slides[currentSlide].leftImage}')`,
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+            </motion.div>
+          </motion.div>
+        </AnimatePresence>
 
 
 
-                        {/* CTA Buttons */}
-                        <div ref={ctaRef} className="flex flex-col sm:flex-row gap-4 pt-4">
-                            <Link
-                                href="/order"
-                                className="group bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl inline-block text-center relative overflow-hidden"
-                            >
-                                <span className="relative z-10">შეუკვეთე</span>
-                                <div className="absolute inset-0 bg-gradient-to-r from-rose-500 to-pink-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left" />
-                            </Link>
 
-                            <Link
-                                href="/cakes"
-                                className="border-2 border-pink-500 text-pink-600 hover:bg-pink-500 hover:text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105 inline-block text-center backdrop-blur-sm"
-                            >
-                                დაათვალიერე
-                            </Link>
-                        </div>
-                    </div>
-
-                    {/* Image Slider Section */}
-                    <div ref={imageSliderRef} className="relative group">
-                        {/* Main Image Container */}
-                        <div className="relative w-full h-[500px]">
-                            <Image
-                                fill
-                                src={cakeImages[currentImageIndex].src}
-                                alt={cakeImages[currentImageIndex].alt}
-                                className="object-contain duration-700"
-                                priority
-                            />
-                        </div>
-
-                        {/* Slider Navigation Dots */}
-                        <div className="flex justify-center space-x-2 mt-6">
-                            {cakeImages.map((_, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setCurrentImageIndex(index)}
-                                    className={`w-3 h-3 cursor-pointer rounded-full transition-all duration-300 ${index === currentImageIndex
-                                        ? 'bg-pink-500 scale-125'
-                                        : 'bg-pink-300 hover:bg-pink-400'
-                                        }`}
-                                />
-                            ))}
-                        </div>
-
-
-                    </div>
-                </div>
-
+        {/* Enhanced Central Promotional Overlay */}
+        <motion.div
+        
+          transition={{ duration: 1, delay: 0.4 }}
+          className="absolute inset-0 flex items-start justify-start z-20 px-4 sm:px-6 md:px-8 lg:px-12 pt-16 sm:pt-20 md:pt-24"
+        >
+          <div className="max-w-lg sm:max-w-xl md:max-w-2xl text-left">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${currentSlide}-${locale}`}
              
-            </div>
+                transition={{ duration: 0.6 }}
+                className="flex flex-col items-start"
+              >
+                <h1 className="drop-shadow-2xl md:text-[38px] text-[24px]  font-serif font-bold text-white mb-4 sm:mb-6 leading-tight drop-shadow-2xl">
+                  {content.title}
+                </h1>
 
-         
+                <p className=" md:text-[20px] text-[18px] font-serif italic text-white mb-8 sm:mb-10 max-w-lg leading-relaxed drop-shadow-lg">
+                  {content.description}
+                </p>
 
-            {/* Custom CSS for animations */}
-            <style jsx>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 0.7; }
-          50% { opacity: 0.3; }
-        }
-        .animate-pulse {
-          animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
-        </section>
-    );
+                <Link
+                  href="/list"
+                  className=" text-center  bg-[#f3983e] md:text-[20px] text-[18px] w-full md:w-[70%] border-radius:20px  px-4 sm:px-6 md:px-8 py-2 text-black  rounded-xl font-bold  transition-all duration-300 transform shadow-lg "
+                >
+                  {content.buttonText}
+
+                </Link>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        </motion.div>
+
+        {/* Slide Indicators */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+          {slides.map((_, index) => (
+            <motion.button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-3 cursor-pointer h-3 rounded-full transition-all duration-300 ${index === currentSlide
+                ? 'bg-pink-600 scale-110'
+                : 'bg-white/50 hover:bg-white/80'
+                }`}
+              whileHover={{ scale: 1.2 }}
+              whileTap={{ scale: 0.9 }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Enhanced Floating Accent Elements */}
+      <motion.div
+        className="absolute top-16 sm:top-20 md:top-24 right-8 sm:right-16 md:right-24 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-[#f3983e]/20 rounded-full blur-3xl"
+      
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+
+      <motion.div
+        className="absolute bottom-16 sm:bottom-20 md:bottom-24 left-8 sm:left-16 md:left-24 w-16  sm:h-20 md:w-28 md:h-28 bg-[#f3983e]/15 rounded-full blur-3xl"
+     
+        transition={{
+          duration: 10,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 3,
+        }}
+      />
+    </section>
+  );
 };
 
-export default Hero;
+export default ElegantHeroSlider;

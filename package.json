@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.3",
+    "@react-three/fiber": "^9.3.0",
     "framer-motion": "^12.23.12",
     "gasp": "^0.0.2",
     "gsap": "^3.13.0",
@@ -17,7 +19,8 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
-    "swiper": "^11.2.10"
+    "swiper": "^11.2.10",
+    "three": "^0.179.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
