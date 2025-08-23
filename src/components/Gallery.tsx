@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, useTransform, AnimatePresence, useScroll } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight,  } from 'lucide-react';
 import Link from 'next/link';
 
 interface GalleryImage {
@@ -185,15 +185,15 @@ const Gallery = () => {
   }
 
   return (
-    <section ref={containerRef} className="relative min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 overflow-hidden">
+    <section ref={containerRef} className="relative min-h-screen mt-20 bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 overflow-hidden">
       {/* Parallax Background Elements */}
       {isMounted && <ParallaxBackground containerRef={containerRef} />}
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 ">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 100 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }} className="text-center mb-20">
-          <motion.h2 className="text-[20px] md:text-[30px] font-bold text-black mb-8">ჩვენი ნამუშევრები</motion.h2>
+        <motion.div initial={{ opacity: 0, y: 100 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }} className="text-center mb-10">
+          <motion.h2 className="text-[20px] md:text-[30px] font-bold text-black mb-4">ჩვენი ნამუშევრები</motion.h2>
           <motion.p className="text-[18px] md:text-[20px] md:text-2xl text-black max-w-4xl mx-auto leading-relaxed">
             გაიხილეთ ჩვენი ტორტების კოლექცია და აირჩიეთ თქვენი იდეალური დიზაინი
           </motion.p>
@@ -225,22 +225,14 @@ const Gallery = () => {
           <AnimatePresence mode="wait">
             {filteredImages.map((image, index) => (
               <motion.div key={image.id} className="break-inside-avoid group cursor-pointer mb-6" onClick={() => openLightbox(image)}>
-                <motion.div className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
-                  <div className="relative aspect-square overflow-hidden">
-                    <Image src={image.src} alt={image.alt} fill className="object-cover group-hover:scale-110 transition-transform duration-700" priority={index < 4} />
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-black px-3 py-1 rounded-full text-sm font-medium">{image.categoryGeorgian}</div>
-                    <motion.div initial={{ opacity: 0 }} whileHover={{ opacity: 1 }} className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <div className="text-white text-center">
-                        <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
-                          <Filter className="w-6 h-6" />
-                        </div>
-                        <p className="text-sm font-medium">დაათვალიერეთ</p>
-                      </div>
-                    </motion.div>
+                <motion.div className="relative bg-white h-[600px] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
+                  <div className="relative aspect-square  overflow-hidden">
+                    <Image src={image.src} alt={image.alt} fill className=" h-[300px] object-cover group-hover:scale-110 transition-transform duration-700" priority={index < 4} />
+                  
                   </div>
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold text-black mb-2 line-clamp-1">{image.titleGeorgian}</h3>
-                    <p className="text-black text-sm mb-3 line-clamp-2">{image.descriptionGeorgian}</p>
+                    <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-2 line-clamp-1">{image.titleGeorgian}</h3>
+                    <p className="text-black text-[14px] md:text-[16px] mb-4 line-clamp-3">{image.descriptionGeorgian}</p>
                   </div>
                 </motion.div>
               </motion.div>
@@ -264,15 +256,15 @@ const Gallery = () => {
                 <div className="w-full lg:w-96 bg-white p-8 border-l border-gray-200">
                   <div className="flex items-center space-x-3 mb-6">
                     <div>
-                      <h3 className="font-semibold text-black text-lg">{selectedImage.titleGeorgian}</h3>
-                      <p className="text-sm text-black">{selectedImage.categoryGeorgian}</p>
+                      <h3 className="font-semibold text-black text-[18px] md:text-[20px]">{selectedImage.titleGeorgian}</h3>
+                      <p className="text-[16px] md:text-[18px] font-bold text-pink-600 mb-4">{selectedImage.categoryGeorgian}</p>
                     </div>
                   </div>
                   <p className="text-black mb-6 leading-relaxed">{selectedImage.descriptionGeorgian}</p>
                   
                   <div className="space-y-3">
-                    <button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 px-4 rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all duration-300">შეუკვეთე ახლა</button>
-                    <Link href={`/product/${selectedImage.id}`} className="w-full border border-gray-300 text-black py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition-all duration-300">დეტალების ნახვა</Link>
+                    <button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 px-4 rounded-lg md:text-[20px] text-[18px] font-semibold hover:from-pink-600 hover:to-rose-600 transition-all duration-300">შეუკვეთე ახლა</button>
+                    <Link href={`/product/${selectedImage.id}`} className="w-full border border-gray-300 text-black py-3 md:text-[20px] text-[18px] px-4 rounded-lg font-medium hover:bg-gray-50 transition-all duration-300">დეტალების ნახვა</Link>
                   </div>
                 </div>
               </div>

@@ -132,13 +132,8 @@ const SpecialOffers = () => {
     };
 
     return (
-        <section className="relative py-20 bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 overflow-hidden">
-            {/* Background decorative elements */}
-            <div className="absolute inset-0">
-                <div className="absolute top-10 left-10 w-32 h-32 bg-pink-200/30 rounded-full mix-blend-multiply filter blur-2xl animate-pulse" />
-                <div className="absolute top-20 right-20 w-40 h-40 bg-purple-200/30 rounded-full mix-blend-multiply filter blur-2xl animate-pulse animation-delay-2000" />
-                <div className="absolute bottom-20 left-1/2 w-36 h-36 bg-rose-200/30 rounded-full mix-blend-multiply filter blur-2xl animate-pulse animation-delay-4000" />
-            </div>
+        <section className="relative mt-15 bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 overflow-hidden">
+          
 
             <div className="relative z-10 container mx-auto px-4">
                 {/* Header Section */}
@@ -196,16 +191,8 @@ const SpecialOffers = () => {
                                         className="object-cover group-hover:scale-110 transition-transform duration-500"
                                     />
                                     
-                                    {/* Discount Badge */}
-                                    <div className={`absolute top-4 right-4 ${getDiscountColor(offer)} text-white px-3 py-1 rounded-full font-bold text-sm shadow-lg`}>
-                                        {getDiscountLabel(offer)}
-                                    </div>
-                                    
-                                    {/* Category Badge */}
-                                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-black px-3 py-1 rounded-full text-sm font-medium">
-                                        {offer.category === 'birthday' ? 'დაბადების დღე' : 
-                                         offer.category === 'wedding' ? 'ქორწილი' : 'დღესასწაული'}
-                                    </div>
+                                  
+                                 
                                 </div>
 
                                 {/* Product Info */}

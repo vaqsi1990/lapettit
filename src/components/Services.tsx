@@ -173,7 +173,7 @@ const Services = () => {
     ];
 
     return (
-        <section className="relative py-10  overflow-hidden">
+        <section className="relative  mt-20  overflow-hidden">
             {/* Background decorative elements */}
             <div className="absolute inset-0">
                 <div className="absolute top-20 right-10 w-40 h-40 bg-pink-100/50 rounded-full mix-blend-multiply filter blur-3xl" />
@@ -197,21 +197,19 @@ const Services = () => {
                 </motion.div>
 
                 {/* Main Services Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
                     {services.map((service, index) => (
                         <motion.div
                             key={service.id}
                             initial={{ opacity: 0, y: 50 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.6, delay: index * 0.1 }}
-                            className="group"
+                            className="group h-full"
                         >
-                            <div className={`relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 `}>
-
-                            
+                            <div className={`relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 h-full flex flex-col`}>
 
                                 {/* Service Header */}
-                                <div className="p-6 text-center">
+                                <div className="p-6 text-center flex-shrink-0">
                                     <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${service.popular
                                             ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white'
                                             : 'bg-pink-100 text-pink-600'
@@ -222,31 +220,31 @@ const Services = () => {
                                     <h3 className="text-[18px] md:text-[20px] font-bold text-black mb-2">
                                         {service.titleGeorgian}
                                     </h3>
-                                    <p className="text-black text-sm mb-4">
+                                    <p className="text-black text-[14px] md:text-[16px] mb-4 line-clamp-3">
                                         {service.descriptionGeorgian}
                                     </p>
 
                                     {/* Price */}
-                                    <div className="text-2xl font-bold text-pink-600 mb-4">
+                                    <div className="text-[18px] md:text-[20px] font-bold text-pink-600 mb-4">
                                         {service.price}
                                     </div>
                                 </div>
 
                                 {/* Features List */}
-                                <div className="px-6 pb-6">
+                                <div className="px-6 pb-6 flex-grow">
                                     <ul className="space-y-2">
                                         {service.featuresGeorgian.map((feature, idx) => (
-                                            <li key={idx} className="flex items-center text-sm text-black">
+                                            <li key={idx} className="flex items-center text-[14px] md:text-[16px] text-black">
                                                 <div className="w-2 h-2 bg-pink-400 rounded-full mr-3 flex-shrink-0" />
-                                                {feature}
+                                                <span className="line-clamp-2">{feature}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
 
                                 {/* CTA Button */}
-                                <div className="px-6 pb-6">
-                                    <button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                                <div className="px-6 pb-6 flex-shrink-0">
+                                    <button className="w-full cursor-pointer md:text-[20px] text-[18px] bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                                         შეუკვეთე ახლა
                                     </button>
                                 </div>
@@ -260,9 +258,9 @@ const Services = () => {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
-                    className=" rounded-3xl p-8 mb-16"
+                    className=" rounded-3xl  mt-20"
                 >
-                    <h3 className="text-xl font-bold text-center mb-4 md:text-2xl text-black max-w-4xl mx-auto leading-relaxed">
+                    <h3 className="text-[20px] md:text-[30px] font-bold text-black mb-8 font-bold text-center mb-4 md:text-2xl text-black max-w-4xl mx-auto leading-relaxed">
                         დამატებითი სერვისები
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
@@ -272,8 +270,8 @@ const Services = () => {
                                     {service.icon}
                                 </div>
                                 <div>
-                                    <h4 className="font-semibold text-black">{service.titleGeorgian}</h4>
-                                    <p className="text-sm text-black">{service.description}</p>
+                                    <h4 className="font-semibold md:text-[20px] text-[18px] text-black">{service.titleGeorgian}</h4>
+                                    <p className="text-[14px] md:text-[16px] text-black mb-8 max-w-3xl mx-auto text-black">{service.description}</p>
                                 </div>
                             </div>
                         ))}

@@ -7,42 +7,42 @@ import { Star, Heart, Clock, Award, Users, Shield } from 'lucide-react';
 const Why = () => {
   const reasons = [
     {
-      icon: <Star className="w-8 h-8 text-yellow-500" />,
+      icon: <Star className="w-8 h-8 text-pink-600" />,
       title: "Premium Quality",
       titleGeorgian: "პრემიუმ ხარისხი",
       description: "We use only the finest ingredients and follow strict quality standards",
       descriptionGeorgian: "ჩვენ ვიყენებთ მხოლოდ საუკეთესო ინგრედიენტებს და ვიცავთ მაღალი ხარისხის სტანდარტებს"
     },
     {
-      icon: <Heart className="w-8 h-8 text-red-500" />,
+      icon: <Heart className="w-8 h-8 text-pink-600" />,
       title: "Made with Love",
       titleGeorgian: "სიყვარულით დამზადებული",
       description: "Every cake is crafted with passion and attention to detail",
       descriptionGeorgian: "ყველა ტორტი მზადდება სიყვარულით და დეტალებზე ყურადღებით"
     },
     {
-      icon: <Clock className="w-8 h-8 text-blue-500" />,
+      icon: <Clock className="w-8 h-8 text-pink-600" />,
       title: "Fast Delivery",
       titleGeorgian: "სწრაფი მიწოდება",
       description: "Express delivery available for urgent orders and special occasions",
       descriptionGeorgian: "ექსპრეს მიწოდება ხელმისაწვდომია გადაუდებელი შეკვეთებისთვის"
     },
     {
-      icon: <Award className="w-8 h-8 text-purple-500" />,
+      icon: <Award className="w-8 h-8 text-pink-600" />,
       title: "Award Winning",
       titleGeorgian: "ხალხის სიყვარული",
       description: "Recognized for excellence in cake design and customer satisfaction",
       descriptionGeorgian: "ჩვენთვის პირველ ადგილზე მყიდველია"
     },
     {
-      icon: <Users className="w-8 h-8 text-green-500" />,
+      icon: <Users className="w-8 h-8 text-pink-600" />,
       title: "Expert Team",
       titleGeorgian: "ექსპერტ გუნდი",
       description: "Professional bakers and decorators with years of experience",
       descriptionGeorgian: "პროფესიონალი მცხობელები და დეკორატორები მრავალწლიანი გამოცდილებით"
     },
     {
-      icon: <Shield className="w-8 h-8 text-indigo-500" />,
+      icon: <Shield className="w-8 h-8 text-pink-600" />,
       title: "100% Guarantee",
       titleGeorgian: "100% გარანტია",
       description: "Complete satisfaction guaranteed or your money back",
@@ -58,14 +58,8 @@ const Why = () => {
   ];
 
   return (
-    <section className="relative py-20 bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-pink-200/20 rounded-full mix-blend-multiply filter blur-3xl"></div>
-        <div className="absolute top-40 right-20 w-40 h-40 bg-purple-200/20 rounded-full mix-blend-multiply filter blur-3xl"></div>
-        <div className="absolute bottom-20 left-1/2 w-36 h-36 bg-rose-200/20 rounded-full mix-blend-multiply filter blur-3xl"></div>
-      </div>
-
+    <section className="relative mt-10 bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 overflow-hidden">
+ 
       <div className="relative z-10 container mx-auto px-4">
         {/* Header Section */}
         <motion.div 
@@ -172,7 +166,7 @@ const Why = () => {
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.8 }}
-          className="bg-gradient-to-r from-slate-50 to-gray-50 rounded-3xl p-12 shadow-2xl border border-black mb-20"
+          className="bg-white rounded-3xl p-12 shadow-2xl border border-black mb-20"
         >
           <div className="text-center mb-12">
             <h3 className="text-[20px] md:text-[30px] font-bold text-black mb-4">
@@ -192,14 +186,14 @@ const Why = () => {
               className="bg-white rounded-2xl p-6 shadow-lg border border-black hover:shadow-xl transition-all duration-300"
             >
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-50 to-rose-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
                 <h4 className="text-xl font-bold text-black mb-3">მიწოდების ზონები</h4>
-                <p className="text-black text-sm leading-relaxed">
+                <p className="text-black text-[14px] md:text-[16px] leading-relaxed">
                   თბილისი, რუსთავი, ქუთაისი, ბათუმი, გორი, ზუგდიდი
                 </p>
               </div>
@@ -213,13 +207,13 @@ const Why = () => {
               className="bg-white rounded-2xl p-6 shadow-lg border border-black hover:shadow-xl transition-all duration-300"
             >
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-50 to-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-50 to-rose-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <h4 className="text-xl font-bold text-black mb-3">მიწოდების დრო</h4>
-                  <p className="text-black text-sm leading-relaxed">
+                  <p className="text-black text-[14px] md:text-[16px] leading-relaxed">
                   სტანდარტული: 2-3 საათი<br/>
                   ექსპრეს: 1-2 საათი<br/>
                   ურგენტი: 30-60 წუთი
@@ -235,13 +229,13 @@ const Why = () => {
               className="bg-white rounded-2xl p-6 shadow-lg border border-black hover:shadow-xl transition-all duration-300"
             >
               <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-50 to-pink-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-50 to-rose-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                   </svg>
                 </div>
                 <h4 className="text-xl font-bold text-black mb-3">მიწოდების ღირებულება</h4>
-                <p className="text-black text-sm leading-relaxed">
+                <p className="text-black text-[14px] md:text-[16px] leading-relaxed">
                   თბილისში: უფასო<br/>
                   რეგიონებში: 5-15₾<br/>
                   ექსპრესი: +3₾
@@ -258,35 +252,35 @@ const Why = () => {
             className="mt-8 text-center"
           >
             <div className="bg-white/80 rounded-2xl p-6 border border-black">
-              <h5 className="text-lg font-semibold text-black mb-4">მიწოდების პირობები</h5>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-black">
+              <h5 className="text-[18px] md:text-[20px] font-semibold text-black mb-4">მიწოდების პირობები</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[16px] md:text-[18px] text-black">
                 <div className="flex items-center space-x-3">
-                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <span>უსაფრთხო შეფუთვა</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <span>ტემპერატურის კონტროლი</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
                   <span>საკონტაქტო მიწოდება</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
-                    <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                    <svg className="w-5 h-5 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>

@@ -56,11 +56,11 @@ const Swiper = () => {
     ]
 
     return (
-        <div className="w-full py-16">
-            <div className="max-w-7xl mx-auto px-4">
+        <div className="w-full mt-15">
+            <div className="max-w-7xl mx-auto ">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h2 className="text-[20px] md:text-[30px] font-bold text-black mb-6">
+                    <h2 className="text-[20px] md:text-[30px] font-bold text-black ">
                        დაათვალიერეთ ჩვენი ტორტები
                     </h2>
                 </div>
@@ -111,7 +111,7 @@ const Swiper = () => {
                     >
                         {images.map((image) => (
                             <SwiperSlide key={image.id} className="h-full">
-                                <div className="relative pb-10 pt-10 h-full group cursor-pointer">
+                                <div className="relative pb-10  h-full group cursor-pointer">
                                     {/* Image Container */}
                                     <div className="relative h-full w-full overflow-hidden rounded-2xl shadow-2xl">
                                         <img
