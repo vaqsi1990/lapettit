@@ -20,7 +20,12 @@ import {
   Check,
   X,
   Calendar,
-  Clock
+  Clock,
+  Utensils,
+  Droplets,
+  Ruler,
+  Circle,
+  MessageSquare
 } from 'lucide-react';
 
 interface CakeDesign {
@@ -595,12 +600,12 @@ const Custom = () => {
           </div>
 
           {/* Right Column - Preview & Order */}
-          <div className="  space-y-6">
+          <div className="md:sticky md:top-14 self-start space-y-6 space-y-6">
             {/* Cake Preview */}
             <motion.div 
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20  top-32"
+              className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xl border border-white/20"
             >
                 <h2 className=" md:text-[20px] text-[18px] font-bold text-black mb-4 flex items-center gap-2">
               

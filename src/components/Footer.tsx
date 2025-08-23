@@ -21,7 +21,7 @@ const Footer = () => {
             className="lg:col-span-2"
           >
             <h3 className="text-2xl font-bold text-white mb-4"> Sweet Dreams</h3>
-            <p className="text-black leading-relaxed mb-6 max-w-md">
+            <p className="text-white leading-relaxed mb-6 max-w-md">
               ჩვენ ვქმნით არა მხოლოდ ტორტებს, არამედ უნიკალურ გამოცდილებას, 
               რომელიც თქვენს სპეციალურ დღეს გახდის უვივი და დავიწყებადი.
             </p>
@@ -62,27 +62,27 @@ const Footer = () => {
             <h4 className="text-lg font-semibold text-white mb-4">სწრაფი ბმულები</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-black hover:text-pink-400 transition-colors duration-300">
+                <a href="#" className="text-white hover:text-pink-400 transition-colors duration-300">
                   მთავარი
                 </a>
               </li>
               <li>
-                <a href="#" className="text-black hover:text-pink-400 transition-colors duration-300">
+                <a href="#" className="text-white hover:text-pink-400 transition-colors duration-300">
                   ჩვენი ნამუშევრები
                 </a>
               </li>
               <li>
-                <a href="#" className="text-black hover:text-pink-400 transition-colors duration-300">
+                <a href="#" className="text-white hover:text-pink-400 transition-colors duration-300">
                   სერვისები
                 </a>
               </li>
               <li>
-                <a href="#" className="text-black hover:text-pink-400 transition-colors duration-300">
+                <a href="#" className="text-white hover:text-pink-400 transition-colors duration-300">
                   სპეციალური შეთავაზებები
                 </a>
               </li>
               <li>
-                <a href="#" className="text-black hover:text-pink-400 transition-colors duration-300">
+                <a href="#" className="text-white hover:text-pink-400 transition-colors duration-300">
                   კონტაქტი
                 </a>
               </li>
@@ -99,73 +99,25 @@ const Footer = () => {
               <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-pink-400" />
-                <span className="text-black text-sm">+995 555 123 456</span>
+                <span className="text-white text-sm">+995 555 123 456</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-pink-400" />
-                <span className="text-black text-sm">info@sweetdreams.ge</span>
+                <span className="text-white text-sm">info@sweetdreams.ge</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="w-4 h-4 text-pink-400" />
-                <span className="text-black text-sm">თბილისი, საქართველო</span>
+                <span className="text-white text-sm">თბილისი, საქართველო</span>
               </div>
             
             </div>
           </motion.div>
         </div>
 
-        {/* Newsletter Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
-          className="mt-12 pt-8 border-t border-gray-700"
-        >
-          <div className="text-center">
-            <h4 className="text-xl font-semibold text-white mb-4">
-              გამოიწერეთ ჩვენი ნიუზლეტერი
-            </h4>
-            <p className="text-black mb-6">
-              მიიღეთ სპეციალური შეთავაზებები და ახალი ნამუშევრების შესახებ ინფორმაცია
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="თქვენი ელ-ფოსტა"
-                className="flex-1 px-4 py-3 rounded-lg bg-gray-800 border border-gray-600 text-white placeholder-gray-400 focus:outline-none focus:border-pink-500 transition-colors duration-300"
-              />
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold rounded-lg transition-all duration-300"
-              >
-                გამოწერა
-              </motion.button>
-            </div>
-          </div>
-        </motion.div>
+   
       </div>
 
-      {/* Bottom Bar */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
-        className="border-t border-gray-700"
-      >
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-2 text-black">
-              <span>© {currentYear} Sweet Dreams. ყველა უფლება დაცულია.</span>
-            </div>
-            <div className="flex items-center space-x-2 text-black">
-              <span>შექმნილია</span>
-              <Heart className="w-4 h-4 text-pink-400" />
-              <span>საქართველოში</span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+   
     </footer>
   );
 };
