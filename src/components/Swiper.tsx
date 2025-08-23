@@ -17,7 +17,7 @@ const Swiper = () => {
       
         {
             id: 2,
-            src: '/hero/528840499_1341682604631620_4000600754266452299_n.jpg',
+            src: '/hero/3.png',
             title: 'Beach Paradise',
             location: 'Maldives',
             rating: 4.9,
@@ -25,7 +25,7 @@ const Swiper = () => {
         },
         {
             id: 3,
-            src: '/hero/530248860_1343671131099434_2511349373577876023_n.jpg',
+            src: '/hero/2.png',
             title: 'City Exploration',
             location: 'Tokyo, Japan',
             rating: 4.7,
@@ -33,7 +33,7 @@ const Swiper = () => {
         },
         {
             id: 4,
-            src: '/hero/534472152_1350659393733941_4241408366837870335_n.jpg',
+            src: '/hero/1.png',
             title: 'Desert Safari',
             location: 'Dubai, UAE',
             rating: 4.6,
