@@ -78,7 +78,7 @@ const Why = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold text-gray-800 mb-8"
+            className="text-5xl md:text-7xl font-bold text-black mb-8"
           >
             რატომ აირჩიოთ ჩვენ?
           </motion.h2>
@@ -86,7 +86,7 @@ const Why = () => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.4 }}
-            className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed"
+            className="text-xl md:text-2xl text-black max-w-4xl mx-auto leading-relaxed"
           >
             ჩვენ ვქმნით არა მხოლოდ ტორტებს, არამედ უნიკალურ გამოცდილებას, 
             რომელიც თქვენს სპეციალურ დღეს გახდის უვივი
@@ -114,11 +114,11 @@ const Why = () => {
                   {reason.icon}
                 </motion.div>
                 
-                <h3 className="text-2xl font-bold text-gray-800 mb-4">
+                <h3 className="text-2xl font-bold text-black mb-4">
                   {reason.titleGeorgian}
                 </h3>
                 
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-black leading-relaxed">
                   {reason.descriptionGeorgian}
                 </p>
               </div>
@@ -134,10 +134,10 @@ const Why = () => {
           className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border border-white/20 mb-20"
         >
           <div className="text-center mb-12">
-            <h3 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            <h3 className="text-3xl md:text-4xl font-bold text-black mb-4">
               ჩვენი მიღწევები
             </h3>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-black">
               რიცხვები, რომლებიც საუბრობენ თავად
             </p>
           </div>
@@ -159,7 +159,7 @@ const Why = () => {
                 >
                   {stat.number}
                 </motion.div>
-                <p className="text-gray-600 font-medium">
+                <p className="text-black font-medium">
                   {stat.labelGeorgian}
                 </p>
               </motion.div>
@@ -172,13 +172,13 @@ const Why = () => {
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.8 }}
-          className="bg-gradient-to-r from-slate-50 to-gray-50 rounded-3xl p-12 shadow-2xl border border-gray-200 mb-20"
+          className="bg-gradient-to-r from-slate-50 to-gray-50 rounded-3xl p-12 shadow-2xl border border-black mb-20"
         >
           <div className="text-center mb-12">
-            <h3 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
+            <h3 className="text-3xl md:text-4xl font-bold text-black mb-4">
               მიწოდების სერვისი
             </h3>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-black">
               ჩვენ ვიზრუნებთ, რომ თქვენი ტორტი უსაფრთხოდ და დროულად მივიდეს
             </p>
           </div>
@@ -189,7 +189,7 @@ const Why = () => {
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 1 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+              className="bg-white rounded-2xl p-6 shadow-lg border border-black hover:shadow-xl transition-all duration-300"
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -198,8 +198,8 @@ const Why = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <h4 className="text-xl font-bold text-gray-800 mb-3">მიწოდების ზონები</h4>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <h4 className="text-xl font-bold text-black mb-3">მიწოდების ზონები</h4>
+                <p className="text-black text-sm leading-relaxed">
                   თბილისი, რუსთავი, ქუთაისი, ბათუმი, გორი, ზუგდიდი
                 </p>
               </div>
@@ -210,7 +210,7 @@ const Why = () => {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.1 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+              className="bg-white rounded-2xl p-6 shadow-lg border border-black hover:shadow-xl transition-all duration-300"
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-green-50 to-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -218,8 +218,8 @@ const Why = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <h4 className="text-xl font-bold text-gray-800 mb-3">მიწოდების დრო</h4>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <h4 className="text-xl font-bold text-black mb-3">მიწოდების დრო</h4>
+                  <p className="text-black text-sm leading-relaxed">
                   სტანდარტული: 2-3 საათი<br/>
                   ექსპრეს: 1-2 საათი<br/>
                   ურგენტი: 30-60 წუთი
@@ -232,7 +232,7 @@ const Why = () => {
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 1.2 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+              className="bg-white rounded-2xl p-6 shadow-lg border border-black hover:shadow-xl transition-all duration-300"
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-purple-50 to-pink-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -240,8 +240,8 @@ const Why = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
                   </svg>
                 </div>
-                <h4 className="text-xl font-bold text-gray-800 mb-3">მიწოდების ღირებულება</h4>
-                <p className="text-gray-600 text-sm leading-relaxed">
+                <h4 className="text-xl font-bold text-black mb-3">მიწოდების ღირებულება</h4>
+                <p className="text-black text-sm leading-relaxed">
                   თბილისში: უფასო<br/>
                   რეგიონებში: 5-15₾<br/>
                   ექსპრესი: +3₾
@@ -257,9 +257,9 @@ const Why = () => {
             transition={{ duration: 0.8, delay: 1.3 }}
             className="mt-8 text-center"
           >
-            <div className="bg-white/80 rounded-2xl p-6 border border-gray-200">
-              <h5 className="text-lg font-semibold text-gray-800 mb-4">მიწოდების პირობები</h5>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+            <div className="bg-white/80 rounded-2xl p-6 border border-black">
+              <h5 className="text-lg font-semibold text-black mb-4">მიწოდების პირობები</h5>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-black">
                 <div className="flex items-center space-x-3">
                   <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
                     <svg className="w-3 h-3 text-green-600" fill="currentColor" viewBox="0 0 20 20">

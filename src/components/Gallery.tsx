@@ -177,7 +177,7 @@ const Gallery = () => {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
           <div className="w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading gallery...</p>
+          <p className="text-black">იტვირთევა გალერეა...</p>
         </motion.div>
       </div>
     );
@@ -192,8 +192,8 @@ const Gallery = () => {
       <div className="relative z-10 container mx-auto px-4 ">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 100 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }} className="text-center mb-20">
-          <motion.h2 className="text-5xl md:text-7xl font-bold text-gray-800 mb-8">ჩვენი ნამუშევრები</motion.h2>
-          <motion.p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+          <motion.h2 className="text-5xl md:text-7xl font-bold text-black mb-8">ჩვენი ნამუშევრები</motion.h2>
+          <motion.p className="text-xl md:text-2xl text-black max-w-4xl mx-auto leading-relaxed">
             გაიხილეთ ჩვენი ტორტების კოლექცია და აირჩიეთ თქვენი იდეალური დიზაინი
           </motion.p>
         </motion.div>
@@ -208,7 +208,7 @@ const Gallery = () => {
                 className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 mx-1 ${
                   selectedCategory === category.id
                     ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg'
-                    : 'text-gray-700 hover:text-gray-900 hover:bg-white/50'
+                    : 'text-black  hover:bg-white/50'
                 }`}
               >
                 {category.nameGeorgian}
@@ -225,7 +225,7 @@ const Gallery = () => {
                 <motion.div className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
                   <div className="relative aspect-square overflow-hidden">
                     <Image src={image.src} alt={image.alt} fill className="object-cover group-hover:scale-110 transition-transform duration-700" priority={index < 4} />
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-sm font-medium">{image.categoryGeorgian}</div>
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-black px-3 py-1 rounded-full text-sm font-medium">{image.categoryGeorgian}</div>
                     <motion.div initial={{ opacity: 0 }} whileHover={{ opacity: 1 }} className="absolute inset-0 bg-black/40 flex items-center justify-center">
                       <div className="text-white text-center">
                         <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
@@ -236,8 +236,8 @@ const Gallery = () => {
                     </motion.div>
                   </div>
                   <div className="p-4">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">{image.titleGeorgian}</h3>
-                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{image.descriptionGeorgian}</p>
+                    <h3 className="text-lg font-semibold text-black mb-2 line-clamp-1">{image.titleGeorgian}</h3>
+                    <p className="text-black text-sm mb-3 line-clamp-2">{image.descriptionGeorgian}</p>
                   </div>
                 </motion.div>
               </motion.div>
@@ -261,15 +261,15 @@ const Gallery = () => {
                 <div className="w-full lg:w-96 bg-white p-8 border-l border-gray-200">
                   <div className="flex items-center space-x-3 mb-6">
                     <div>
-                      <h3 className="font-semibold text-gray-800 text-lg">{selectedImage.titleGeorgian}</h3>
-                      <p className="text-sm text-gray-500">{selectedImage.categoryGeorgian}</p>
+                      <h3 className="font-semibold text-black text-lg">{selectedImage.titleGeorgian}</h3>
+                      <p className="text-sm text-black">{selectedImage.categoryGeorgian}</p>
                     </div>
                   </div>
-                  <p className="text-gray-700 mb-6 leading-relaxed">{selectedImage.descriptionGeorgian}</p>
+                  <p className="text-black mb-6 leading-relaxed">{selectedImage.descriptionGeorgian}</p>
                   
                   <div className="space-y-3">
                     <button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 px-4 rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all duration-300">შეუკვეთე ახლა</button>
-                    <button className="w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition-all duration-300">დეტალების ნახვა</button>
+                    <button className="w-full border border-gray-300 text-black py-3 px-4 rounded-lg font-medium hover:bg-gray-50 transition-all duration-300">დეტალების ნახვა</button>
                   </div>
                 </div>
               </div>

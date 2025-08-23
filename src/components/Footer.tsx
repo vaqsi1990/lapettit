@@ -21,7 +21,7 @@ const Footer = () => {
             className="lg:col-span-2"
           >
             <h3 className="text-2xl font-bold text-white mb-4"> Sweet Dreams</h3>
-            <p className="text-gray-300 leading-relaxed mb-6 max-w-md">
+            <p className="text-black leading-relaxed mb-6 max-w-md">
               ჩვენ ვქმნით არა მხოლოდ ტორტებს, არამედ უნიკალურ გამოცდილებას, 
               რომელიც თქვენს სპეციალურ დღეს გახდის უვივი და დავიწყებადი.
             </p>
@@ -62,27 +62,27 @@ const Footer = () => {
             <h4 className="text-lg font-semibold text-white mb-4">სწრაფი ბმულები</h4>
             <ul className="space-y-2">
               <li>
-                <a href="#" className="text-gray-300 hover:text-pink-400 transition-colors duration-300">
+                <a href="#" className="text-black hover:text-pink-400 transition-colors duration-300">
                   მთავარი
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-pink-400 transition-colors duration-300">
+                <a href="#" className="text-black hover:text-pink-400 transition-colors duration-300">
                   ჩვენი ნამუშევრები
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-pink-400 transition-colors duration-300">
+                <a href="#" className="text-black hover:text-pink-400 transition-colors duration-300">
                   სერვისები
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-pink-400 transition-colors duration-300">
+                <a href="#" className="text-black hover:text-pink-400 transition-colors duration-300">
                   სპეციალური შეთავაზებები
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-300 hover:text-pink-400 transition-colors duration-300">
+                <a href="#" className="text-black hover:text-pink-400 transition-colors duration-300">
                   კონტაქტი
                 </a>
               </li>
@@ -96,18 +96,18 @@ const Footer = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
           >
             <h4 className="text-lg font-semibold text-white mb-4">კონტაქტი</h4>
-            <div className="space-y-3">
+              <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-pink-400" />
-                <span className="text-gray-300 text-sm">+995 555 123 456</span>
+                <span className="text-black text-sm">+995 555 123 456</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-pink-400" />
-                <span className="text-gray-300 text-sm">info@sweetdreams.ge</span>
+                <span className="text-black text-sm">info@sweetdreams.ge</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="w-4 h-4 text-pink-400" />
-                <span className="text-gray-300 text-sm">თბილისი, საქართველო</span>
+                <span className="text-black text-sm">თბილისი, საქართველო</span>
               </div>
             
             </div>
@@ -125,7 +125,7 @@ const Footer = () => {
             <h4 className="text-xl font-semibold text-white mb-4">
               გამოიწერეთ ჩვენი ნიუზლეტერი
             </h4>
-            <p className="text-gray-300 mb-6">
+            <p className="text-black mb-6">
               მიიღეთ სპეციალური შეთავაზებები და ახალი ნამუშევრების შესახებ ინფორმაცია
             </p>
             <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
@@ -155,10 +155,10 @@ const Footer = () => {
       >
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-2 text-gray-400">
+            <div className="flex items-center space-x-2 text-black">
               <span>© {currentYear} Sweet Dreams. ყველა უფლება დაცულია.</span>
             </div>
-            <div className="flex items-center space-x-2 text-gray-400">
+            <div className="flex items-center space-x-2 text-black">
               <span>შექმნილია</span>
               <Heart className="w-4 h-4 text-pink-400" />
               <span>საქართველოში</span>

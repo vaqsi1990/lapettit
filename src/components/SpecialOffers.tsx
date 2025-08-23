@@ -148,10 +148,10 @@ const SpecialOffers = () => {
                     transition={{ duration: 0.8 }}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                    <h2 className="text-4xl md:text-5xl font-bold text-black mb-6">
                         სპეციალური შეთავაზებები
                     </h2>
-                    <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                    <p className="text-xl text-black mb-8 max-w-2xl mx-auto">
                         მხოლოდ ამ კვირას • შეზღუდული რაოდენობა • სეზონური ფასდაკლება
                     </p>
                     
@@ -159,19 +159,19 @@ const SpecialOffers = () => {
                     <div className="flex justify-center space-x-4 mb-8">
                         <div className="bg-white rounded-lg px-4 py-2 shadow-lg">
                             <div className="text-2xl font-bold text-pink-600">{timeLeft.days}</div>
-                            <div className="text-sm text-gray-600">დღე</div>
+                            <div className="text-sm text-black">დღე</div>
                         </div>
                         <div className="bg-white rounded-lg px-4 py-2 shadow-lg">
                             <div className="text-2xl font-bold text-pink-600">{timeLeft.hours}</div>
-                            <div className="text-sm text-gray-600">საათი</div>
+                            <div className="text-sm text-black">საათი</div>
                         </div>
                         <div className="bg-white rounded-lg px-4 py-2 shadow-lg">
                             <div className="text-2xl font-bold text-pink-600">{timeLeft.minutes}</div>
-                            <div className="text-sm text-gray-600">წუთი</div>
+                            <div className="text-sm text-black">წუთი</div>
                         </div>
                         <div className="bg-white rounded-lg px-4 py-2 shadow-lg">
                             <div className="text-2xl font-bold text-pink-600">{timeLeft.seconds}</div>
-                            <div className="text-sm text-gray-600">წამი</div>
+                            <div className="text-sm text-black">წამი</div>
                         </div>
                     </div>
                 </motion.div>
@@ -202,7 +202,7 @@ const SpecialOffers = () => {
                                     </div>
                                     
                                     {/* Category Badge */}
-                                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-gray-800 px-3 py-1 rounded-full text-sm font-medium">
+                                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-black px-3 py-1 rounded-full text-sm font-medium">
                                         {offer.category === 'birthday' ? 'დაბადების დღე' : 
                                          offer.category === 'wedding' ? 'ქორწილი' : 'დღესასწაული'}
                                     </div>
@@ -210,10 +210,10 @@ const SpecialOffers = () => {
 
                                 {/* Product Info */}
                                 <div className="p-6">
-                                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                                    <h3 className="text-xl font-bold text-black mb-2">
                                         {offer.nameGeorgian}
                                     </h3>
-                                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                                    <p className="text-black text-sm mb-4 line-clamp-2">
                                         {offer.descriptionGeorgian}
                                     </p>
                                     
@@ -223,7 +223,7 @@ const SpecialOffers = () => {
                                             <span className="text-2xl font-bold text-pink-600">
                                                 ₾{offer.newPrice}
                                             </span>
-                                            <span className="text-lg text-gray-400 line-through">
+                                            <span className="text-lg text-black line-through">
                                                 ₾{offer.oldPrice}
                                             </span>
                                         </div>

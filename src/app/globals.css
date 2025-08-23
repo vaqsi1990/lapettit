@@ -306,3 +306,51 @@ img {
         right: 50px;
     }
 }
+
+/* Custom Swiper Navigation Styles */
+.swiper-button-next,
+.swiper-button-prev {
+  display: none !important;
+}
+
+.swiper-button-next.swiper-button-disabled,
+.swiper-button-prev.swiper-button-disabled {
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+/* Custom Navigation Button Hover Effects */
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  transform: translateY(-50%) scale(1.1) !important;
+}
+
+/* Swiper Pagination Customization */
+.swiper-pagination-bullet {
+  background: #db2777 !important;
+    opacity: 0.5 !important;
+    width: 10px !important;
+    height: 10px !important;
+  transition: all 0.3s ease !important;
+}
+
+.swiper-pagination-bullet-active {
+  opacity: 1 !important;
+  width: 12px !important;
+  height: 12px !important;
+  background: #db2777 !important;
+}
+
+/* Swiper Coverflow Effect Enhancement */
+.swiper-slide {
+  transition: all 0.3s ease !important;
+}
+
+.swiper-slide-active {
+  transform: scale(1.05) !important;
+}
+
+.swiper-slide-prev,
+.swiper-slide-next {
+  opacity: 0.7 !important;
+}

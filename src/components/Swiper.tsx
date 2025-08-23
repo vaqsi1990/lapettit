@@ -8,13 +8,11 @@ import { ChevronLeft, ChevronRight, } from 'lucide-react'
 // Import Swiper styles
 import 'swiper/css'
 import 'swiper/css/navigation'
-
-import 'swiper/css/effect-cards'
+import 'swiper/css/pagination'
 import 'swiper/css/effect-coverflow'
 
 const Swiper = () => {
     const images = [
-      
         {
             id: 2,
             src: '/hero/3.png',
@@ -58,14 +56,13 @@ const Swiper = () => {
     ]
 
     return (
-        <div className="w-full py-16 ">
+        <div className="w-full py-16">
             <div className="max-w-7xl mx-auto px-4">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                    <h2 className="text-4xl md:text-5xl font-bold text-black mb-6">
                        დაათვალიერეთ ჩვენი ტორტები
                     </h2>
-
                 </div>
 
                 {/* Main Swiper */}
@@ -128,10 +125,8 @@ const Swiper = () => {
 
                                         {/* Content */}
                                         <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                                          
-
-
-                                            
+                                            <h3 className="text-xl font-bold mb-2">{image.title}</h3>
+                                            <p className="text-sm opacity-90">{image.location}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -140,18 +135,14 @@ const Swiper = () => {
                     </SwiperComponent>
 
                     {/* Custom Navigation Buttons */}
-                    <button className="absolute left-4 top-[50%] transform -translate-y-1/2 z-10 bg-white backdrop-blur-sm text-white p-3 rounded-full cursor-pointer">
-                        <ChevronLeft className=" text-gray-800 group-hover:scale-110 transition-transform duration-300" />
+                    <button className="swiper-button-prev absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm hover:bg-white text-black p-3 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 shadow-lg">
+                        <ChevronLeft className="w-6 h-6 text-black" />
                     </button>
 
-                    <button className="absolute right-4 top-[50%] transform -translate-y-1/2 z-10 bg-white backdrop-blur-sm text-white p-3 rounded-full cursor-pointer">
-                        <ChevronRight className=" text-gray-800 group-hover:scale-110 transition-transform duration-300" />
+                    <button className="swiper-button-next absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm hover:bg-white text-black p-3 rounded-full cursor-pointer transition-all duration-300 hover:scale-110 shadow-lg">
+                        <ChevronRight className="w-6 h-6 text-black" />
                     </button>
-
-                    
                 </div>
-
-              
             </div>
         </div>
     )

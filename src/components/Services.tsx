@@ -119,7 +119,7 @@ const Services = () => {
             title: "Cupcake Towers",
             titleGeorgian: "ტარტები",
             description: "Beautiful cupcake arrangements",
-            descriptionGeorgian: "ლამაზი კაპკეიქების კომპოზიციები",
+            descriptionGeorgian: "ნაზი, ხრაშუნა ფუძე და ბალახუნივით ჰაეროვანი კრემი ჩვენი ტარტები ბედნიერების ტკბილი ნაჭერია",
             features: [
                 "24-48 cupcakes",
                 "Various flavors",
@@ -188,10 +188,10 @@ const Services = () => {
                     transition={{ duration: 0.8 }}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+                    <h2 className="text-4xl md:text-5xl font-bold text-black mb-6">
                         ჩვენი სერვისები
                     </h2>
-                    <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+                    <p className="text-xl text-black mb-8 max-w-3xl mx-auto">
                         ყველა სახის ტორტი და ნამცხვარი თქვენი განსაკუთრებული დღისთვის
                     </p>
                 </motion.div>
@@ -229,10 +229,10 @@ const Services = () => {
                                         {service.icon}
                                     </div>
                                     
-                                    <h3 className="text-xl font-bold text-gray-800 mb-2">
+                                    <h3 className="text-xl font-bold text-black mb-2">
                                         {service.titleGeorgian}
                                     </h3>
-                                    <p className="text-gray-600 text-sm mb-4">
+                                    <p className="text-black text-sm mb-4">
                                         {service.descriptionGeorgian}
                                     </p>
                                     
@@ -246,7 +246,7 @@ const Services = () => {
                                 <div className="px-6 pb-6">
                                     <ul className="space-y-2">
                                         {service.featuresGeorgian.map((feature, idx) => (
-                                            <li key={idx} className="flex items-center text-sm text-gray-600">
+                                            <li key={idx} className="flex items-center text-sm text-black">
                                                 <div className="w-2 h-2 bg-pink-400 rounded-full mr-3 flex-shrink-0" />
                                                 {feature}
                                             </li>
@@ -272,7 +272,7 @@ const Services = () => {
                     transition={{ duration: 0.8, delay: 0.4 }}
                     className=" rounded-3xl p-8 mb-16"
                 >
-                    <h3 className="text-2xl font-bold text-gray-800 text-center mb-8">
+                    <h3 className="text-xl font-bold text-center mb-4 md:text-2xl text-black max-w-4xl mx-auto leading-relaxed">
                         დამატებითი სერვისები
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
@@ -282,8 +282,8 @@ const Services = () => {
                                     {service.icon}
                                 </div>
                                 <div>
-                                    <h4 className="font-semibold text-gray-800">{service.titleGeorgian}</h4>
-                                    <p className="text-sm text-gray-600">{service.description}</p>
+                                    <h4 className="font-semibold text-black">{service.titleGeorgian}</h4>
+                                    <p className="text-sm text-black">{service.description}</p>
                                 </div>
                             </div>
                         ))}

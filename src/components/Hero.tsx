@@ -57,20 +57,7 @@ const ElegantHeroSlider = () => {
     setTimeout(() => setIsAutoPlaying(true), 15000);
   };
 
-  const getLocalizedContent = () => {
-    if (locale === "en") {
-      return {
-        title: "Good Night, Pleasant Morning",
-        description: "Our products are designed to give you maximum comfort and highest quality — so every morning is pleasant",
-        buttonText: "Choose Your Comfort"
-      };
-    }
-    return {
-      title: "მშვიდი ღამე, სასიამოვნო დილა",
-      description: "ჩვენი პროდუქცია შექმნილია იმისთვის, რომ გაჩუქოთ მაქსიმალური კომფორტი და უმაღლესი ხარისხი — რათა ყოველი დილა იყოს სასიამოვნო",
-      buttonText: "შეარჩიე შენი კომფორტი"
-    };
-  };
+
 
   const nextSlide = () => {
     pauseAutoPlay();
@@ -95,7 +82,7 @@ const ElegantHeroSlider = () => {
     setCurrentSlide(index);
   };
 
-  const content = getLocalizedContent();
+
 
   return (
     <section className="relative 
@@ -106,7 +93,7 @@ const ElegantHeroSlider = () => {
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
-           
+
             transition={{ duration: 0.6, ease: "easeInOut" }}
             className="absolute inset-0"
           >
@@ -115,7 +102,7 @@ const ElegantHeroSlider = () => {
 
             {/* Single Large Image */}
             <motion.div
-            
+
               transition={{ duration: 1.2, ease: "easeOut" }}
               className="w-full h-full sm relative overflow-hidden"
             >
@@ -135,7 +122,7 @@ const ElegantHeroSlider = () => {
 
         {/* Enhanced Central Promotional Overlay */}
         <motion.div
-        
+
           transition={{ duration: 1, delay: 0.4 }}
           className="absolute inset-0 flex items-start justify-start z-20 px-4 sm:px-6 md:px-8 lg:px-12 pt-16 sm:pt-20 md:pt-24"
         >
@@ -143,25 +130,27 @@ const ElegantHeroSlider = () => {
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${currentSlide}-${locale}`}
-             
+
                 transition={{ duration: 0.6 }}
                 className="flex flex-col items-start"
               >
                 <h1 className="drop-shadow-2xl md:text-[38px] text-[24px]  font-serif font-bold text-white mb-4 sm:mb-6 leading-tight drop-shadow-2xl">
-                  {content.title}
+                  გემო, რომელიც გახდის დღეს განსაკუთრებულს
                 </h1>
 
                 <p className=" md:text-[20px] text-[18px] font-serif italic text-white mb-8 sm:mb-10 max-w-lg leading-relaxed drop-shadow-lg">
-                  {content.description}
+                  გთავაზობთ ხელნაკეთ, გემრიელ ტორტებს ნებისმიერი შემთხვევისთვის – დაბადების დღე, ქორწილი, განსაკუთრებული დღესასწაული. შეუკვეთე ტორტი ონლაინ და მიიღე სწრაფად
                 </p>
+                <div className="bg-gradient-to-br rounded-xl from-pink-50 via-rose-50 to-purple-50">
 
-                <Link
-                  href="/list"
-                  className=" text-center  bg-[#f3983e] md:text-[20px] text-[18px] w-full md:w-[70%] border-radius:20px  px-4 sm:px-6 md:px-8 py-2 text-black  rounded-xl font-bold  transition-all duration-300 transform shadow-lg "
-                >
-                  {content.buttonText}
+                  <Link
+                    href="/list"
+                    className=" text-center    md:text-[20px] text-[18px] w-full md:w-[70%] border-radius:20px  px-4 sm:px-6 md:px-8 py-2 text-white rounded-xl font-bold  transition-all duration-300 transform shadow-lg bg-gradient-to-r from-pink-500 to-rose-500   "
+                  >
+                    საუკეთესო ტორტი შენთვის
 
-                </Link>
+                  </Link>
+                </div>
               </motion.div>
             </AnimatePresence>
           </div>
@@ -187,7 +176,7 @@ const ElegantHeroSlider = () => {
       {/* Enhanced Floating Accent Elements */}
       <motion.div
         className="absolute top-16 sm:top-20 md:top-24 right-8 sm:right-16 md:right-24 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-[#f3983e]/20 rounded-full blur-3xl"
-      
+
         transition={{
           duration: 8,
           repeat: Infinity,
@@ -197,7 +186,7 @@ const ElegantHeroSlider = () => {
 
       <motion.div
         className="absolute bottom-16 sm:bottom-20 md:bottom-24 left-8 sm:left-16 md:left-24 w-16  sm:h-20 md:w-28 md:h-28 bg-[#f3983e]/15 rounded-full blur-3xl"
-     
+
         transition={{
           duration: 10,
           repeat: Infinity,
