@@ -78,7 +78,7 @@ const Why = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-5xl md:text-7xl font-bold text-black mb-8"
+            className="text-[20px] md:text-[30px] font-bold text-black mb-8"
           >
             რატომ აირჩიოთ ჩვენ?
           </motion.h2>
@@ -86,7 +86,7 @@ const Why = () => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.4 }}
-            className="text-xl md:text-2xl text-black max-w-4xl mx-auto leading-relaxed"
+            className="text-[18px] md:text-[20px] text-black max-w-4xl mx-auto leading-relaxed"
           >
             ჩვენ ვქმნით არა მხოლოდ ტორტებს, არამედ უნიკალურ გამოცდილებას, 
             რომელიც თქვენს სპეციალურ დღეს გახდის უვივი
@@ -134,10 +134,10 @@ const Why = () => {
           className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border border-white/20 mb-20"
         >
           <div className="text-center mb-12">
-            <h3 className="text-3xl md:text-4xl font-bold text-black mb-4">
+            <h3 className="text-[20px] md:text-[30px] font-bold text-black mb-4">
               ჩვენი მიღწევები
             </h3>
-            <p className="text-xl text-black">
+            <p className="text-[18px] md:text-[20px] text-black">
               რიცხვები, რომლებიც საუბრობენ თავად
             </p>
           </div>
@@ -175,10 +175,10 @@ const Why = () => {
           className="bg-gradient-to-r from-slate-50 to-gray-50 rounded-3xl p-12 shadow-2xl border border-black mb-20"
         >
           <div className="text-center mb-12">
-            <h3 className="text-3xl md:text-4xl font-bold text-black mb-4">
+            <h3 className="text-[20px] md:text-[30px] font-bold text-black mb-4">
               მიწოდების სერვისი
             </h3>
-            <p className="text-xl text-black">
+            <p className="text-[18px] md:text-[20px] text-black">
               ჩვენ ვიზრუნებთ, რომ თქვენი ტორტი უსაფრთხოდ და დროულად მივიდეს
             </p>
           </div>

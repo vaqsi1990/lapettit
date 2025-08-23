@@ -148,10 +148,10 @@ const SpecialOffers = () => {
                     transition={{ duration: 0.8 }}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-4xl md:text-5xl font-bold text-black mb-6">
+                    <h2 className="text-[20px] md:text-[30px] font-bold text-black mb-6">
                         სპეციალური შეთავაზებები
                     </h2>
-                    <p className="text-xl text-black mb-8 max-w-2xl mx-auto">
+                    <p className="text-[18px] md:text-[20px] text-black mb-8 max-w-2xl mx-auto">
                         მხოლოდ ამ კვირას • შეზღუდული რაოდენობა • სეზონური ფასდაკლება
                     </p>
                     

@@ -67,7 +67,7 @@ const Footer = () => {
                 </a>
               </li>
               <li>
-                <a href="#" className="text-white hover:text-pink-400 transition-colors duration-300">
+                <a href="#" className="text-white  hover:text-pink-400 transition-colors duration-300">
                   ჩვენი ნამუშევრები
                 </a>
               </li>

@@ -60,7 +60,7 @@ const Swiper = () => {
             <div className="max-w-7xl mx-auto px-4">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h2 className="text-4xl md:text-5xl font-bold text-black mb-6">
+                    <h2 className="text-[20px] md:text-[30px] font-bold text-black mb-6">
                        დაათვალიერეთ ჩვენი ტორტები
                     </h2>
                 </div>

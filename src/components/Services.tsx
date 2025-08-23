@@ -2,12 +2,12 @@
 
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-    Cake, 
-    Heart, 
-    Gift, 
-    Star, 
-    Users, 
+import {
+    Cake,
+    Heart,
+    Gift,
+    Star,
+    Users,
     Clock,
     Palette,
     Truck
@@ -77,7 +77,7 @@ const Services = () => {
             title: "Celebration Cakes",
             titleGeorgian: "დღესასწაულის ტორტები",
             description: "Special cakes for all celebrations",
-            descriptionGeorgian: "სპეციალური ტორტები ყველა დღესასწაულისთვის",
+            descriptionGeorgian: "გემრიელი და მხიარული ტორტები, რომლებიც თქვენს დღესასწაულს განსაკუთრებულად აქცევს",
             features: [
                 "Holiday themes",
                 "Corporate events",
@@ -182,16 +182,16 @@ const Services = () => {
 
             <div className="relative z-10 container mx-auto px-4">
                 {/* Header Section */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8 }}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-4xl md:text-5xl font-bold text-black mb-6">
+                    <h2 className="text-[20px] md:text-[30px] font-bold text-black mb-6">
                         ჩვენი სერვისები
                     </h2>
-                    <p className="text-xl text-black mb-8 max-w-3xl mx-auto">
+                    <p className="text-[18px] md:text-[20px] text-black mb-8 max-w-3xl mx-auto">
                         ყველა სახის ტორტი და ნამცხვარი თქვენი განსაკუთრებული დღისთვის
                     </p>
                 </motion.div>
@@ -206,36 +206,26 @@ const Services = () => {
                             transition={{ duration: 0.6, delay: index * 0.1 }}
                             className="group"
                         >
-                            <div className={`relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 border-2 ${
-                                service.popular 
-                                    ? 'border-pink-500 shadow-pink-100' 
-                                    : 'border-transparent hover:border-pink-200'
-                            }`}>
-                                
-                                {/* Popular Badge */}
-                                {service.popular && (
-                                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2  text-white px-4 py-1 rounded-full text-sm font-semibold shadow-lg">
-                                        ყველაზე პოპულარული
-                                    </div>
-                                )}
+                            <div className={`relative bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105 `}>
+
+                            
 
                                 {/* Service Header */}
                                 <div className="p-6 text-center">
-                                    <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${
-                                        service.popular 
-                                            ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white' 
+                                    <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${service.popular
+                                            ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white'
                                             : 'bg-pink-100 text-pink-600'
-                                    } group-hover:scale-110 transition-transform duration-300`}>
+                                        } group-hover:scale-110 transition-transform duration-300`}>
                                         {service.icon}
                                     </div>
-                                    
-                                    <h3 className="text-xl font-bold text-black mb-2">
+
+                                    <h3 className="text-[18px] md:text-[20px] font-bold text-black mb-2">
                                         {service.titleGeorgian}
                                     </h3>
                                     <p className="text-black text-sm mb-4">
                                         {service.descriptionGeorgian}
                                     </p>
-                                    
+
                                     {/* Price */}
                                     <div className="text-2xl font-bold text-pink-600 mb-4">
                                         {service.price}
@@ -266,7 +256,7 @@ const Services = () => {
                 </div>
 
                 {/* Additional Services */}
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
@@ -290,7 +280,7 @@ const Services = () => {
                     </div>
                 </motion.div>
 
-            
+
             </div>
         </section>
     );

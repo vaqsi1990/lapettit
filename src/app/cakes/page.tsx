@@ -283,7 +283,7 @@ const CakesPage = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            className="text-5xl md:text-6xl font-bold text-white mb-6 drop-shadow-lg"
+            className="text-[20px] md:text-[30px] font-bold text-white mb-6 drop-shadow-lg"
           >
             ჩვენი მაღაზია
           </motion.h1>
@@ -291,7 +291,7 @@ const CakesPage = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl text-white max-w-3xl mx-auto drop-shadow-md"
+            className="text-[18px] md:text-[20px] text-white max-w-3xl mx-auto drop-shadow-md"
           >
             აღმოაჩინეთ ჩვენი ხელით დამზადებული ტორტების ლამაზი და გემრიელი კოლექცია
           </motion.p>
