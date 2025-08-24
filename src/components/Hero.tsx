@@ -134,18 +134,18 @@ const ElegantHeroSlider = () => {
                 transition={{ duration: 0.6 }}
                 className="flex flex-col items-start"
               >
-                <h1 className="drop-shadow-2xl md:text-[38px] text-[24px]  font-serif font-bold text-white mb-4 sm:mb-6 leading-tight drop-shadow-2xl">
+                <h1 className="drop-shadow-2xl md:text-[38px] text-[22px]  font-serif font-bold text-white mb-4 sm:mb-6 leading-tight drop-shadow-2xl">
                   გემო, რომელიც გახდის დღეს განსაკუთრებულს
                 </h1>
 
-                <p className=" md:text-[20px] text-[18px] font-serif italic text-white mb-8 sm:mb-10 max-w-lg leading-relaxed drop-shadow-lg">
+                <p className=" md:text-[20px] text-[16px] font-serif italic text-white mb-8 sm:mb-10 max-w-lg leading-relaxed drop-shadow-lg">
                   გთავაზობთ ხელნაკეთ, გემრიელ ტორტებს ნებისმიერი შემთხვევისთვის – დაბადების დღე, ქორწილი, განსაკუთრებული დღესასწაული. შეუკვეთე ტორტი ონლაინ და მიიღე სწრაფად
                 </p>
                 <div className="bg-gradient-to-br rounded-xl from-pink-50 via-rose-50 to-purple-50 ">
 
                   <Link
                     href="/list"
-                    className=" text-center    md:text-[20px] text-[18px] w-full w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl md:w-[70%] border-radius:20px  px-4 sm:px-6 md:px-8 py-2 text-white rounded-xl font-bold  transition-all duration-300 transform shadow-lg bg-gradient-to-r from-pink-500 to-rose-500   "
+                    className=" text-center    md:text-[20px] text-[18px] w-full w-full bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl md:w-[70%] border-radius:20px  px-4 sm:px-6 md:px-8 py-2 text-white rounded-xl font-bold  transition-all duration-300 transform shadow-lg    "
                   >
                     საუკეთესო ტორტი შენთვის
 
@@ -163,7 +163,7 @@ const ElegantHeroSlider = () => {
               key={index}
               onClick={() => goToSlide(index)}
               className={`w-3 cursor-pointer h-3 rounded-full transition-all duration-300 ${index === currentSlide
-                ? 'bg-pink-600 scale-110'
+                ? 'bg-[#d90b6b] scale-110'
                 : 'bg-white/50 hover:bg-white/80'
                 }`}
               whileHover={{ scale: 1.2 }}

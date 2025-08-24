@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { Plus, Minus } from 'lucide-react';
 
 // Product data interface matching Gallery component
 interface Product {
@@ -164,7 +165,7 @@ const ProductPage = () => {
                     <p className="text-black mb-6">მითითებული ID-ით პროდუქტი არ არსებობს</p>
                     <Link href="/gallery" className="bg-pink-500 text-white px-6 py-3 rounded-lg hover:bg-pink-600 transition-colors">
                         დაბრუნდი გალერეაში
-                    </Link> 
+                    </Link>
                 </div>
             </div>
         );
@@ -173,7 +174,7 @@ const ProductPage = () => {
     const productPrice = getProductPrice(product);
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
+        <div className="min-h-screen bg-color">
 
 
 
@@ -220,44 +221,46 @@ const ProductPage = () => {
                     <motion.div
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="space-y-6"
+                        className="space-y-6  bg-white p-4 rounded-lg"
                     >
                         <div>
-                            <h1 className="text-[20px] md:text-[30px] font-bold text-black mb-2">
+                            <h1 className="text-[20px] md:text-[24px] font-bold text-black mb-2">
                                 {product.titleGeorgian}
                             </h1>
 
                         </div>
 
                         <div className="flex items-center gap-4">
-                                <span className="text-[20px] md:text-[30px] font-bold text-pink-600">₾{productPrice}</span>
+                            <span className="text-[20px] md:text-[24px] font-bold text-pink-600">₾{productPrice}</span>
                         </div>
 
-                        <p className="text-black    leading-relaxed text-[16px] md:text-[18px]    ">
+                        <p className="text-black    leading-relaxed text-[18px] md:text-[20px]    ">
                             {product.descriptionGeorgian}
                         </p>
 
                         <div className="space-y-4">
                             <div className="flex items-center gap-4">
-                                <label className="text-black font-medium">რაოდენობა:</label>
-                                <div className="flex items-center border rounded-lg">
+                                <label className="text-black font-medium md:text-[20px] text-[18px]">რაოდენობა:</label>
+                                <div className="flex items-center  rounded-lg">
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="px-3 py-2  transition-colors"
+                                        className="p-2 md:p-3 cursor-pointer bg-pink-100 rounded-full   transition-colors"
                                     >
-                                        -
+                                        <Minus className="w-5 h-5 text-pink-600  md:w-6 md:h-6" />
                                     </button>
-                                        <span className="px-4 py-2 border-x">{quantity}</span>
+                                    <span className="text-base md:text-lg lg:text-xl font-bold text-black min-w-[2.5rem] md:min-w-[3rem] text-center">
+                                        {quantity}
+                                    </span>
                                     <button
                                         onClick={() => setQuantity(quantity + 1)}
-                                        className="px-3 py-2  transition-colors"
+                                        className="p-2 md:p-3 cursor-pointer rounded-full bg-pink-100  transition-colors"
                                     >
-                                        +
+                                        <Plus className="w-5  text-pink-600 h-5 md:w-6 md:h-6" />
                                     </button>
                                 </div>
                             </div>
 
-                            <button className="w-full md:w-[50%] bg-gradient-to-r from-pink-500 to-rose-500 text-white py-4 px-6 rounded-lg font-semibold hover:from-pink-600 hover:to-rose-600 transition-all duration-300 flex items-center justify-center gap-2">
+                            <button className="w-full md:mt-12  md:w-[300px] mx-auto cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
 
                                 კალათაში დამატება
                             </button>
@@ -271,12 +274,12 @@ const ProductPage = () => {
             </div>
 
             {/* Related Products */}
-            <div className=" py-16">
+            <div className=" py-8">
                 <div className="container mx-auto px-4">
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-[20px] md:text-[30px] font-bold text-center text-black mb-12"
+                        className="text-[20px] md:text-[24px] font-bold text-center text-black mb-12"
                     >
                         მსგავსი პროდუქტები
                     </motion.h2>
@@ -298,16 +301,16 @@ const ProductPage = () => {
                                     />
                                 </div>
                                 <div className="p-4 flex flex-col flex-grow">
-                                    <h3 className="font-semibold text-black mb-2 text-[16px] md:text-[18px] line-clamp-2 min-h-[2.5rem] flex items-center">
+                                    <h3 className="font-semibold text-black mb-2 text-[18px] md:text-[20px] line-clamp-2 min-h-[2.5rem] flex items-center">
                                         {relatedProduct.titleGeorgian}
                                     </h3>
 
                                     <div className="flex items-center gap-2 mb-3 mt-auto">
-                                        <span className="text-pink-600 font-bold text-lg">₾{getProductPrice(relatedProduct)}</span>
+                                        <span className="text-pink-600 font-bold text-2xl">₾{getProductPrice(relatedProduct)}</span>
                                     </div>
                                     <Link
                                         href={`/product/${relatedProduct.id}`}
-                                        className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 px-4 rounded-lg font-medium hover:from-pink-600 hover:to-rose-600 transition-all duration-300 block text-center mt-auto"
+                                        className="w-full mx-auto    text-center md:w-[300px]  cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                                     >
                                         დეტალების ნახვა
                                     </Link>

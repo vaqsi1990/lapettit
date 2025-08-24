@@ -10,7 +10,7 @@ import {
     Users,
     Clock,
     Palette,
-    Truck
+    Truck,
 } from 'lucide-react';
 
 interface Service {
@@ -159,16 +159,16 @@ const Services = () => {
 
     const additionalServices = [
         {
-            icon: <Clock className="w-6 h-6" />,
+            icon: <Clock className="w-8 h-8" />,
             title: "Express Service",
             titleGeorgian: "ექსპრეს სერვისი",
             description: "სწრაფი შეკვეთები"
         },
         {
-            icon: <Truck className="w-6 h-6" />,
+            icon: <Truck className="w-8 h-8" />,
             title: "Delivery",
             titleGeorgian: "მიწოდება",
-            description: "უფასო მიტანა ქალაქის ფარგლებში"
+            description: "უფასო მიტანა "
         }
     ];
 
@@ -188,7 +188,7 @@ const Services = () => {
                     transition={{ duration: 0.8 }}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-[20px] md:text-[30px] font-bold text-black mb-6">
+                    <h2 className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-6">
                         ჩვენი სერვისები
                     </h2>
                     <p className="text-[18px] md:text-[20px] text-black mb-8 max-w-3xl mx-auto">
@@ -211,7 +211,7 @@ const Services = () => {
                                 {/* Service Header */}
                                 <div className="p-6 text-center flex-shrink-0">
                                     <div className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${service.popular
-                                            ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white'
+                                            ? 'bg-pink-100 text-pink-600 '
                                             : 'bg-pink-100 text-pink-600'
                                         } group-hover:scale-110 transition-transform duration-300`}>
                                         {service.icon}
@@ -244,7 +244,7 @@ const Services = () => {
 
                                 {/* CTA Button */}
                                 <div className="px-6 pb-6 flex-shrink-0">
-                                    <button className="w-full cursor-pointer md:text-[20px] text-[18px] bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                                    <button className="w-full cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                                         შეუკვეთე ახლა
                                     </button>
                                 </div>
@@ -260,16 +260,16 @@ const Services = () => {
                     transition={{ duration: 0.8, delay: 0.4 }}
                     className=" rounded-3xl  mt-20"
                 >
-                    <h3 className="text-[20px] md:text-[30px] font-bold text-black mb-8 font-bold text-center mb-4 md:text-2xl text-black max-w-4xl mx-auto leading-relaxed">
+                    <h3 className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-8 font-bold text-center mb-4 md:text-2xl  max-w-4xl mx-auto leading-relaxed">
                         დამატებითი სერვისები
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
                         {additionalServices.map((service, index) => (
-                            <div key={index} className="flex items-center space-x-4 bg-white rounded-xl p-4 shadow-md">
-                                <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center text-pink-600">
+                            <div key={index} className="flex items-center justify-center space-x-4 bg-white rounded-xl p-4 shadow-md">
+                                <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center text-pink-600">
                                     {service.icon}
                                 </div>
-                                <div>
+                                <div className='flex mt-5 flex-col items-center justify-center'>
                                     <h4 className="font-semibold md:text-[20px] text-[18px] text-black">{service.titleGeorgian}</h4>
                                     <p className="text-[14px] md:text-[16px] text-black mb-8 max-w-3xl mx-auto text-black">{service.description}</p>
                                 </div>

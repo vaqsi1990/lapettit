@@ -58,7 +58,7 @@ const Why = () => {
   ];
 
   return (
-    <section className="relative mt-10 bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 overflow-hidden">
+    <section className="relative mt-10  overflow-hidden">
  
       <div className="relative z-10 container mx-auto px-4">
         {/* Header Section */}
@@ -72,7 +72,7 @@ const Why = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-[20px] md:text-[30px] font-bold text-black mb-8"
+            className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-8"
           >
             რატომ აირჩიოთ ჩვენ?
           </motion.h2>
@@ -108,11 +108,11 @@ const Why = () => {
                   {reason.icon}
                 </motion.div>
                 
-                <h3 className="text-2xl font-bold text-black mb-4">
+                <h3 className="text-[20px] md:text-[24px] font-bold text-black mb-4">
                   {reason.titleGeorgian}
                 </h3>
                 
-                <p className="text-black leading-relaxed">
+                <p className="text-black text-[14px] md:text-[16px] leading-relaxed">
                   {reason.descriptionGeorgian}
                 </p>
               </div>
@@ -128,7 +128,7 @@ const Why = () => {
           className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border border-white/20 mb-20"
         >
           <div className="text-center mb-12">
-            <h3 className="text-[20px] md:text-[30px] font-bold text-black mb-4">
+            <h3 className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-4">
               ჩვენი მიღწევები
             </h3>
             <p className="text-[18px] md:text-[20px] text-black">
@@ -149,11 +149,11 @@ const Why = () => {
                   initial={{ scale: 0 }}
                   whileInView={{ scale: 1 }}
                   transition={{ duration: 0.8, delay: 1 + index * 0.1 }}
-                  className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent mb-2"
+                  className=" font-bold  text-[24px] md:text-[30px] text-[#d90b6b]  mb-2"
                 >
                   {stat.number}
                 </motion.div>
-                <p className="text-black font-medium">
+                <p className="text-black text-[16px] md:text-[16px] font-medium">
                   {stat.labelGeorgian}
                 </p>
               </motion.div>
@@ -166,10 +166,10 @@ const Why = () => {
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.8 }}
-          className="bg-white rounded-3xl p-12 shadow-2xl border border-black mb-20"
+          className=" mb-20"
         >
           <div className="text-center mb-12">
-            <h3 className="text-[20px] md:text-[30px] font-bold text-black mb-4">
+            <h3 className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-4">
               მიწოდების სერვისი
             </h3>
             <p className="text-[18px] md:text-[20px] text-black">
@@ -183,7 +183,7 @@ const Why = () => {
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 1 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-black hover:shadow-xl transition-all duration-300"
+              className="bg-white rounded-2xl p-6  hover:shadow-xl transition-all duration-300"
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-pink-50 to-rose-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -204,7 +204,7 @@ const Why = () => {
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 1.1 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-black hover:shadow-xl transition-all duration-300"
+              className="bg-white rounded-2xl p-6  hover:shadow-xl transition-all duration-300"
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-pink-50 to-rose-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -226,7 +226,7 @@ const Why = () => {
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 1.2 }}
-              className="bg-white rounded-2xl p-6 shadow-lg border border-black hover:shadow-xl transition-all duration-300"
+              className="bg-white rounded-2xl p-6  hover:shadow-xl transition-all duration-300"
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-pink-50 to-rose-50 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -251,7 +251,7 @@ const Why = () => {
             transition={{ duration: 0.8, delay: 1.3 }}
             className="mt-8 text-center"
           >
-            <div className="bg-white/80 rounded-2xl p-6 border border-black">
+            <div className="bg-white/80 rounded-2xl p-6 ">
               <h5 className="text-[18px] md:text-[20px] font-semibold text-black mb-4">მიწოდების პირობები</h5>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-[16px] md:text-[18px] text-black">
                 <div className="flex items-center space-x-3">
@@ -260,7 +260,7 @@ const Why = () => {
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <span>უსაფრთხო შეფუთვა</span>
+                  <span className="text-[14px] md:text-[16px]">უსაფრთხო შეფუთვა</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
@@ -276,7 +276,7 @@ const Why = () => {
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <span>საკონტაქტო მიწოდება</span>
+                  <span className="text-[14px] md:text-[16px]">საკონტაქტო მიწოდება</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
@@ -284,7 +284,7 @@ const Why = () => {
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
                   </div>
-                  <span>24/7 მხარდაჭერა</span>
+                  <span className="text-[14px] md:text-[16px]">24/7 მხარდაჭერა</span>
                 </div>
               </div>
             </div>

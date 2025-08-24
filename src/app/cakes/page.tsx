@@ -274,11 +274,11 @@ const CakesPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
+    <div className="min-h-screen bg-color">
       {/* Hero Section */}
       <section className="relative py-16 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: "url('/all/bg_header.jpg')" }}>
         <div className="absolute inset-0 bg-black/40" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative max-w-7xl mx-auto px-6 md:px-6 text-center">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -300,8 +300,8 @@ const CakesPage = () => {
 
       {/* Main Content */}
       <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-6">
+          <div className="flex flex-col lg:flex-row gap-5">
             
             {/* Left Sidebar */}
             <div className="lg:w-1/4">
@@ -309,7 +309,7 @@ const CakesPage = () => {
                 
                 {/* Search Product */}
                 <div className="mb-8">
-                  <h3 className="md:text-[18px] text-[16px] font-semibold text-black mb-4">ძიება</h3>
+                  <h3 className="md:text-[20px] text-[18px] font-semibold text-black mb-4">ძიება</h3>
                   <div className="flex">
                     <input
                       type="text"
@@ -324,13 +324,13 @@ const CakesPage = () => {
 
                 {/* Product Categories */}
                 <div className="mb-8">
-                  <h3 className="md:text-[18px] text-[16px] font-semibold text-black mb-4">კატეგორიები</h3>
+                  <h3 className="md:text-[20px] text-[18px] font-semibold text-black mb-4">კატეგორიები</h3>
                   <div className="space-y-2">
                     {categories.map((category) => (
                       <button
                         key={category.id}
                         onClick={() => setSelectedCategory(category.id)}
-                        className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                        className={`w-full cursor-pointer text-left px-3 py-2 rounded-lg transition-colors text-[16px] md:text-[18px] ${
                           selectedCategory === category.id
                             ? 'bg-pink-100 text-pink-700 font-medium'
                             : 'text-black '
@@ -345,11 +345,11 @@ const CakesPage = () => {
 
                 {/* Top Sale Products */}
                 <div>
-                  <h3 className="md:text-[18px] text-[16px] font-semibold text-black mb-4">ტოპ გაყიდვები</h3>
+                  <h3 className="md:text-[20px] text-[18px] font-semibold text-black mb-4">ტოპ გაყიდვები</h3>
                   <div className="space-y-4">
                     {topProducts.map((product) => (
                       <div key={product.id} className="flex items-center space-x-3">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden">
+                        <div className="w-16 h-16 rounded-lg overflow-hidden text-[16px] md:text-[18px]">
                           <Image
                             src={product.image}
                             alt={product.name}
@@ -363,7 +363,7 @@ const CakesPage = () => {
                           <div className="flex items-center space-x-1">
                             {renderStars(product.rating)}
                           </div>
-                          <p className="text-sm font-bold text-pink-600">₾{product.price}</p>
+                          <p className="md:text-[16px] text-[14px] font-bold text-pink-600">₾{product.price}</p>
                         </div>
                       </div>
                     ))}
@@ -376,10 +376,10 @@ const CakesPage = () => {
             <div className="lg:w-3/4">
               {/* Top Bar */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-                <p className="md:text-[18px] text-[16px] text-black mb-4 sm:mb-0">
+                <p className="md:text-[20px] text-[18px] text-black mb-4 sm:mb-0">
                   {filteredCakes.length} პროდუქტი
                 </p>
-                <select className="md:text-[18px] text-[16px] px-4 py-2 border border-black rounded-lg focus:outline-none focus:border-pink-500">
+                <select className="md:text-[20px] text-[18px] px-4 py-2 border border-black rounded-lg focus:outline-none focus:border-pink-500">
                   <option>სორტირება: ნაგულისხმევი</option>
                   <option>ფასი: დაბლიდან მაღლა</option>
                   <option>ფასი: მაღლიდან დაბლა</option>
@@ -405,16 +405,8 @@ const CakesPage = () => {
                         fill
                         className="object-cover hover:scale-105 transition-transform duration-300"
                       />
-                      {cake.isNew && (
-                        <span className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-                          ახალი
-                        </span>
-                      )}
-                      {cake.isPopular && (
-                        <span className="absolute top-2 right-2 bg-pink-500 text-white px-2 py-1 rounded text-xs font-medium">
-                          პოპულარული
-                        </span>
-                      )}
+                  
+                     
                     </div>
 
                     {/* Product Info */}
@@ -429,7 +421,7 @@ const CakesPage = () => {
                         <p className="md:text-[18px] text-[16px] font-bold text-black mb-4">
                           ₾{cake.price}
                         </p>
-                        <button className="md:text-[20px] cursor-pointer text-[18px] w-full bg-pink-500 text-white py-2 rounded-lg hover:bg-pink-600 transition-colors font-medium">
+                        <button className=" text-center cursor-pointer   md:text-[20px] text-[18px] w-full w-full bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-radius:20px  px-4 sm:px-6 md:px-8 py-2 text-white rounded-xl font-bold  transition-all duration-300 transform shadow-lg    ">
                           კალათაში დამატება
                         </button>
                       </div>
@@ -451,7 +443,7 @@ const CakesPage = () => {
                 <button 
                   onClick={() => handlePageChange(currentPage - 1)} 
                   disabled={currentPage === 1}
-                  className="md:text-[20px] cursor-pointer text-[18px] px-4 py-2 bg-pink-500 text-white rounded-lg font-medium hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="md:text-[20px] cursor-pointer text-[18px] px-4 py-2 bg-[#d90b6b] text-white rounded-lg font-medium hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   წინა
                 </button>
@@ -471,7 +463,7 @@ const CakesPage = () => {
                 <button 
                   onClick={() => handlePageChange(currentPage + 1)} 
                   disabled={currentPage === totalPages || totalPages === 0}
-                  className="md:text-[20px] cursor-pointer text-[18px] px-4 py-2 bg-pink-500 text-white rounded-lg font-medium hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="md:text-[20px] cursor-pointer text-[18px] px-4 py-2 bg-[#d90b6b] text-white rounded-lg font-medium hover:bg-pink-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   შემდეგი
                 </button>

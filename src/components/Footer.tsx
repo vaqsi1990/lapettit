@@ -11,7 +11,7 @@ const Footer = () => {
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 ">
           
           {/* Company Info */}
           <motion.div
@@ -21,7 +21,7 @@ const Footer = () => {
             className="lg:col-span-2"
           >
             <h3 className="text-2xl font-bold text-white mb-4"> Sweet Dreams</h3>
-            <p className="text-white leading-relaxed mb-6 max-w-md">
+            <p className="text-white text-[16px] md:text-[18px] leading-relaxed mb-6 max-w-md">
               ჩვენ ვქმნით არა მხოლოდ ტორტებს, არამედ უნიკალურ გამოცდილებას, 
               რომელიც თქვენს სპეციალურ დღეს გახდის უვივი და დავიწყებადი.
             </p>
@@ -54,7 +54,7 @@ const Footer = () => {
           </motion.div>
 
           {/* Quick Links */}
-          <motion.div
+          <motion.div className='text-[16px] md:text-[18px]'
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.1 }}
@@ -90,24 +90,24 @@ const Footer = () => {
           </motion.div>
 
           {/* Contact Info */}
-          <motion.div
+          <motion.div className='text-[16px] md:text-[18px]'
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <h4 className="text-lg font-semibold text-white mb-4">კონტაქტი</h4>
-              <div className="space-y-3">
+            <h4 className=" text-[16px] md:text-[18px] font-semibold text-white mb-4">კონტაქტი</h4>
+              <div className="space-y-3 text-[16px] md:text-[18px]">
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-pink-400" />
-                <span className="text-white text-sm">+995 555 123 456</span>
+                <span className="text-white text-[16px] md:text-[18px]">+995 555 123 456</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="w-4 h-4 text-pink-400" />
-                <span className="text-white text-sm">info@sweetdreams.ge</span>
+                <span className="text-white text-[16px] md:text-[18px]">info@sweetdreams.ge</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="w-4 h-4 text-pink-400" />
-                <span className="text-white text-sm">თბილისი, საქართველო</span>
+                <span className="text-white text-[16px] md:text-[18px]">თბილისი, საქართველო</span>
               </div>
             
             </div>

@@ -60,7 +60,7 @@ const Swiper = () => {
             <div className="max-w-7xl mx-auto ">
                 {/* Header */}
                 <div className="text-center mb-12">
-                    <h2 className="text-[20px] md:text-[30px] font-bold text-black ">
+                    <h2 className="text-[20px] md:text-[30px] font-bold text-[#d90b6b]">
                        დაათვალიერეთ ჩვენი ტორტები
                     </h2>
                 </div>
@@ -113,7 +113,7 @@ const Swiper = () => {
                             <SwiperSlide key={image.id} className="h-full">
                                 <div className="relative pb-10  h-full group cursor-pointer">
                                     {/* Image Container */}
-                                    <div className="relative h-full w-full overflow-hidden rounded-2xl shadow-2xl">
+                                    <div className="relative h-full w-full overflow-hidden rounded-2xl">
                                         <img
                                             src={image.src}
                                             alt={image.title}

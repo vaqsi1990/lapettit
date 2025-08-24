@@ -132,7 +132,7 @@ const SpecialOffers = () => {
     };
 
     return (
-        <section className="relative mt-15 bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 overflow-hidden">
+        <section className="relative mt-15 overflow-hidden">
           
 
             <div className="relative z-10 container mx-auto px-4">
@@ -143,7 +143,7 @@ const SpecialOffers = () => {
                     transition={{ duration: 0.8 }}
                     className="text-center mb-16"
                 >
-                    <h2 className="text-[20px] md:text-[30px] font-bold text-black mb-6">
+                    <h2 className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-6">
                         სპეციალური შეთავაზებები
                     </h2>
                     <p className="text-[18px] md:text-[20px] text-black mb-8 max-w-2xl mx-auto">
@@ -154,19 +154,19 @@ const SpecialOffers = () => {
                     <div className="flex justify-center space-x-4 mb-8">
                         <div className="bg-white rounded-lg px-4 py-2 shadow-lg">
                             <div className="text-2xl font-bold text-pink-600">{timeLeft.days}</div>
-                            <div className="text-sm text-black">დღე</div>
+                            <div className="text-[18px] text-black">დღე</div>
                         </div>
                         <div className="bg-white rounded-lg px-4 py-2 shadow-lg">
                             <div className="text-2xl font-bold text-pink-600">{timeLeft.hours}</div>
-                            <div className="text-sm text-black">საათი</div>
+                            <div className="text-[18px] text-black">საათი</div>
                         </div>
                         <div className="bg-white rounded-lg px-4 py-2 shadow-lg">
                             <div className="text-2xl font-bold text-pink-600">{timeLeft.minutes}</div>
-                            <div className="text-sm text-black">წუთი</div>
+                            <div className="text-[18px] text-black">წუთი</div>
                         </div>
                         <div className="bg-white rounded-lg px-4 py-2 shadow-lg">
                             <div className="text-2xl font-bold text-pink-600">{timeLeft.seconds}</div>
-                            <div className="text-sm text-black">წამი</div>
+                            <div className="text-[18px] text-black">წამი</div>
                         </div>
                     </div>
                 </motion.div>
@@ -181,7 +181,7 @@ const SpecialOffers = () => {
                             transition={{ duration: 0.6, delay: index * 0.2 }}
                             className="group"
                         >
-                            <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                            <div className="bg-white rounded-2xl shadow-xl overflow-hidden transform transition-all duration-300 hover:scale-105 ">
                                 {/* Product Image */}
                                 <div className="relative h-64 overflow-hidden">
                                     <Image
@@ -200,7 +200,7 @@ const SpecialOffers = () => {
                                     <h3 className="text-xl font-bold text-black mb-2">
                                         {offer.nameGeorgian}
                                     </h3>
-                                    <p className="text-black text-sm mb-4 line-clamp-2">
+                                    <p className="text-black text-[18px] mb-4 line-clamp-2">
                                         {offer.descriptionGeorgian}
                                     </p>
                                     
@@ -210,27 +210,21 @@ const SpecialOffers = () => {
                                             <span className="text-2xl font-bold text-pink-600">
                                                 ₾{offer.newPrice}
                                             </span>
-                                            <span className="text-lg text-black line-through">
+                                            <span className="text-[18px] text-black line-through">
                                                 ₾{offer.oldPrice}
                                             </span>
                                         </div>
                                     </div>
 
                                     {/* Offer Details */}
-                                    <div className="bg-pink-50 rounded-lg p-3 mb-4">
-                                        <p className="text-sm text-pink-700 font-medium">
-                                            {offer.discountType === 'bogo' ? 'აიღე 2, გადაიხადე 1' : 
-                                             offer.discountType === 'percentage' ? `ფასდაკლება ${offer.discountValue}%` : 
-                                             `ფასდაკლება ₾${offer.discountValue}`}
-                                        </p>
-                                    </div>
+                                  
 
                                     {/* CTA Button */}
                                     <Link
                                         href={`/order/${offer.id}`}
-                                        className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold text-center transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl block"
+                                        className="w-full md:w-[50%] mx-auto md:text-[20px] text-[18px] bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold text-center transition-all duration-300 transform  shadow-lg  block"
                                     >
-                                        შეკვეთე ახლა
+                                        შეუკვეთე ახლა
                                     </Link>
                                 </div>
                             </div>

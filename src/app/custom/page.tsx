@@ -108,20 +108,20 @@ const Custom = () => {
 
   const customizationOptions: CustomizationOption[] = [
     // Flavors
-    { id: 'vanilla', name: 'Vanilla', nameGeorgian: 'ვანილა', price: 0, category: 'flavor' },
+    { id: 'vanilla', name: 'Vanilla', nameGeorgian: 'ვანილა', price: 10, category: 'flavor' },
     { id: 'chocolate', name: 'Chocolate', nameGeorgian: 'შოკოლადი', price: 5, category: 'flavor' },
     { id: 'red-velvet', name: 'Red Velvet', nameGeorgian: 'წითელი ბარხატი', price: 8, category: 'flavor' },
     { id: 'strawberry', name: 'Strawberry', nameGeorgian: 'მარწყვი', price: 6, category: 'flavor' },
     { id: 'lemon', name: 'Lemon', nameGeorgian: 'ლიმონი', price: 4, category: 'flavor' },
     
     // Fillings
-    { id: 'cream', name: 'Cream', nameGeorgian: 'კრემი', price: 0, category: 'filling' },
+    { id: 'cream', name: 'Cream', nameGeorgian: 'კრემი', price: 10, category: 'filling' },
     { id: 'chocolate-ganache', name: 'Chocolate Ganache', nameGeorgian: 'შოკოლადის განაში', price: 7, category: 'filling' },
     { id: 'fruit-jam', name: 'Fruit Jam', nameGeorgian: 'ხილის ჯემი', price: 5, category: 'filling' },
     { id: 'caramel', name: 'Caramel', nameGeorgian: 'კარამელი', price: 6, category: 'filling' },
     
     // Frostings
-    { id: 'buttercream', name: 'Buttercream', nameGeorgian: 'კარაქის კრემი', price: 0, category: 'frosting' },
+    { id: 'buttercream', name: 'Buttercream', nameGeorgian: 'კარაქის კრემი', price: 10, category: 'frosting' },
     { id: 'fondant', name: 'Fondant', nameGeorgian: 'ფონდანი', price: 12, category: 'frosting' },
     { id: 'cream-cheese', name: 'Cream Cheese', nameGeorgian: 'ყველის კრემი', price: 8, category: 'frosting' },
     { id: 'whipped-cream', name: 'Whipped Cream', nameGeorgian: 'შპრიცის კრემი', price: 4, category: 'frosting' },
@@ -133,7 +133,7 @@ const Custom = () => {
     { id: 'extra-large', name: 'Extra Large (12")', nameGeorgian: 'ძალიან დიდი (12")', price: 35, category: 'size' },
     
     // Shapes
-    { id: 'round', name: 'Round', nameGeorgian: 'მრგვალი', price: 0, category: 'shape' },
+    { id: 'round', name: 'Round', nameGeorgian: 'მრგვალი', price: 10, category: 'shape' },
     { id: 'square', name: 'Square', nameGeorgian: 'კვადრატული', price: 5, category: 'shape' },
     { id: 'heart', name: 'Heart', nameGeorgian: 'გული', price: 8, category: 'shape' },
     { id: 'oval', name: 'Oval', nameGeorgian: 'ოვალური', price: 6, category: 'shape' },
@@ -279,14 +279,14 @@ const Custom = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
+    <div className="min-h-screen bg-color">
       {/* Header */}
       <div className="  top-0 z-50">
-        <div className="container mx-auto px-4 py-6">
+        <div className="container  mx-auto px-4 py-4">
           <motion.h1 
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-[20px] md:text-[30px] pb-10 font-bold text-center bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent"
+            className="text-[20px] md:text-[30px] pb-5 mt-10 font-bold text-center text-[#d90b6b]"
           >
             შექმენით თქვენი ტორტი
           </motion.h1>
@@ -314,18 +314,18 @@ const Custom = () => {
                     key={design.id}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`relative cursor-pointer rounded-xl overflow-hidden border-2 transition-all duration-300 ${
+                    className={`relative cursor-pointer rounded-xl overflow-hidden border-1 transition-all duration-300 ${
                       selectedDesign === design.id
                         ? 'border-pink-500 shadow-lg'
-                        : 'border-gray-200 hover:border-pink-300'
+                        : ''
                     }`}
                     onClick={() => setSelectedDesign(design.id)}
                   >
                     <img src={design.image} alt={design.name} className="w-full h-32 sm:h-36 md:h-40 object-cover" />
                     <div className="p-2 md:p-3 bg-white/90">
-                      <h3 className="font-semibold text-black text-sm md:text-base lg:text-lg">{design.nameGeorgian}</h3>
-                      <p className="text-xs text-black">{design.name}</p>
-                      <p className="text-pink-600 font-bold text-sm md:text-base lg:text-lg">₾{design.basePrice}</p>
+                      <h3 className="font-semibold text-black text-[18px] md:text-[20px] font-semibold text-black mb-2 line-clamp-1">{design.nameGeorgian}</h3>
+                      <p className=" text-[18px] md:text-[20px] text-black">{design.name}</p>
+                      <p className="text-pink-600 font-bold  text-black text-2xl font-bold text-pink-600  line-clamp-3">₾{design.basePrice}</p>
                     </div>
                     {selectedDesign === design.id && (
                       <div className="absolute top-2 right-2 bg-pink-500 text-white rounded-full p-1">
@@ -344,27 +344,27 @@ const Custom = () => {
               transition={{ delay: 0.1 }}
               className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-xl border border-white/20"
             >
-                <h2 className="text-lg md:text-xl font-bold text-black mb-4 flex items-center gap-2">
+                <h2 className=" md:text-[24px] text-[20px] font-bold text-black mb-4 flex items-center gap-2">
              
                 ძირითადი ოფციები
               </h2>
               
               {/* Flavor */}
               <div className="mb-4 md:mb-6">
-                <label className="block text-sm md:text-base font-medium text-black mb-2">გემო</label>
+                <label className="block md:text-[20px] text-[18px] font-medium text-black mb-2">გემო</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {getOptionByCategory('flavor').map((option) => (
                     <button
                       key={option.id}
                       onClick={() => setSelectedFlavor(option.id)}
-                      className={`p-2 md:p-3 rounded-lg text-sm md:text-base font-medium transition-all duration-300 ${
+                      className={`p-2 md:p-3 cursor-pointer rounded-lg md:text-[20px] text-[18px] font-medium transition-all duration-300 ${
                         selectedFlavor === option.id
-                          ? 'bg-purple-500 text-white'
-                          : 'bg-gray-100 text-black hover:bg-purple-100'
+                          ? 'bg-[#d90b6b] text-white'
+                          : ' border-1 border-black text-black '
                       }`}
                     >
                       {option.nameGeorgian}
-                      {option.price > 0 && <span className="text-xs ml-1">+₾{option.price}</span>}
+                      {option.price > 0 && <span className=" md:text-[18px] text-[16px] font-medium ml-1">+₾{option.price}</span>}
                     </button>
                   ))}
                 </div>
@@ -372,20 +372,20 @@ const Custom = () => {
 
               {/* Filling */}
               <div className="mb-4 md:mb-6">
-                <label className="block text-sm md:text-base font-medium text-black mb-2">შევსება</label>
+                <label className="block md:text-[20px] text-[18px] font-medium text-black mb-2">შევსება</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {getOptionByCategory('filling').map((option) => (
                     <button
                       key={option.id}
                       onClick={() => setSelectedFilling(option.id)}
-                      className={`p-2 md:p-3 rounded-lg text-sm md:text-base font-medium transition-all duration-300 ${
+                      className={`p-2 md:p-3 cursor-pointer rounded-lg md:text-[20px] text-[18px] font-medium transition-all duration-300 ${
                         selectedFilling === option.id
-                          ? 'bg-purple-500 text-white'
-                          : 'bg-gray-100 text-black hover:bg-purple-100'
+                          ? 'bg-[#d90b6b] text-white'
+                          : ' border-1 border-black text-black '
                       }`}
                     >
                       {option.nameGeorgian}
-                      {option.price > 0 && <span className="text-xs ml-1">+₾{option.price}</span>}
+                      {option.price > 0 && <span className=" md:text-[18px] text-[16px] font-medium ml-1">+₾{option.price}</span>}
                     </button>
                   ))}
                 </div>
@@ -393,20 +393,20 @@ const Custom = () => {
 
               {/* Frosting */}
               <div className="mb-4 md:mb-6">
-                <label className="block text-sm md:text-base font-medium text-black mb-2">გლაზური</label>
+                <label className="block md:text-[20px] text-[18px] font-medium text-black mb-2">გლაზური</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {getOptionByCategory('frosting').map((option) => (
                     <button
                       key={option.id}
                       onClick={() => setSelectedFrosting(option.id)}
-                      className={`p-2 md:p-3 rounded-lg text-sm md:text-base font-medium transition-all duration-300 ${
+                      className={`p-2 md:p-3 cursor-pointer rounded-lg md:text-[20px] text-[18px] font-medium transition-all duration-300 ${
                         selectedFrosting === option.id
-                          ? 'bg-purple-500 text-white'
-                          : 'bg-gray-100 text-black hover:bg-purple-100'
+                          ? 'bg-[#d90b6b] text-white'
+                          : ' border-1 border-black text-black '
                       }`}
                     >
                       {option.nameGeorgian}
-                      {option.price > 0 && <span className="text-xs ml-1">+₾{option.price}</span>}
+                      {option.price > 0 && <span className=" md:text-[18px] text-[16px] font-medium ml-1">+₾{option.price}</span>}
                     </button>
                   ))}
                 </div>
@@ -415,30 +415,30 @@ const Custom = () => {
               {/* Size and Shape */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                 <div>
-                  <label className="block text-sm md:text-base font-medium text-black mb-2">ზომა</label>
+                  <label className="block md:text-[20px] text-[18px] font-medium text-black mb-2">ზომა</label>
                   <select
                     value={selectedSize}
                     onChange={(e) => setSelectedSize(e.target.value)}
-                    className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm md:text-base"
+                      className="w-full p-2 md:p-3 border border-black rounded-lg text-[18px] md:text-[20px] font-medium"
                   >
-                    <option value="">აირჩიეთ ზომა</option>
+                    <option className=" md:text-[18px] text-[16px] font-medium" value="">აირჩიეთ ზომა</option>
                     {getOptionByCategory('size').map((option) => (
-                      <option key={option.id} value={option.id}>
+                      <option className=" md:text-[18px] text-[16px] font-medium" key={option.id} value={option.id}>
                         {option.nameGeorgian} {option.price > 0 && `(+₾${option.price})`}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm md:text-base font-medium text-black mb-2">ფორმა</label>
+                  <label className="block md:text-[20px] text-[18px] font-medium text-black mb-2">ფორმა</label>
                   <select
                     value={selectedShape}
                     onChange={(e) => setSelectedShape(e.target.value)}
-                    className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm md:text-base"
+                      className="w-full p-2 md:p-3 border border-black rounded-lg text-[18px] md:text-[20px] font-medium"
                   >
-                    <option value="">აირჩიეთ ფორმა</option>
+                    <option className=" md:text-[18px] text-[16px] font-medium" value="">აირჩიეთ ფორმა</option>
                     {getOptionByCategory('shape').map((option) => (
-                      <option key={option.id} value={option.id}>
+                      <option className=" md:text-[18px] text-[16px] font-medium" key={option.id} value={option.id}>
                         {option.nameGeorgian} {option.price > 0 && `(+₾${option.price})`}
                       </option>
                     ))}
@@ -454,7 +454,7 @@ const Custom = () => {
               transition={{ delay: 0.2 }}
               className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-xl border border-white/20"
             >
-              <h2 className="text-lg md:text-xl font-bold text-black mb-4 flex items-center gap-2">
+              <h2 className=" md:text-[24px] text-[20px] font-bold text-black mb-4 flex items-center gap-2">
              
                 დეკორაციები
               </h2>
@@ -463,14 +463,14 @@ const Custom = () => {
                   <button
                     key={option.id}
                     onClick={() => handleDecorationToggle(option.id)}
-                    className={`p-2 md:p-3 rounded-lg text-sm md:text-base font-medium transition-all duration-300 flex items-center justify-between ${
+                    className={`p-2 md:p-3 cursor-pointer rounded-lg md:text-[20px] text-[18px] font-medium transition-all duration-300 flex items-center justify-between ${
                       selectedDecorations.includes(option.id)
-                        ? 'bg-yellow-500 text-white'
-                        : 'bg-gray-100 text-black hover:bg-yellow-100'
+                        ? 'bg-[#d90b6b] text-white'
+                        : ' border-1 border-black text-black '
                     }`}
                   >
                     <span>{option.nameGeorgian}</span>
-                    <span className="text-xs">+₾{option.price}</span>
+                    <span className=" md:text-[18px] text-[16px] font-medium">+₾{option.price}</span>
                   </button>
                 ))}
               </div>
@@ -483,92 +483,92 @@ const Custom = () => {
               transition={{ delay: 0.3 }}
               className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-xl border border-white/20"
             >
-                    <h2 className="text-lg md:text-xl font-bold text-black mb-4 flex items-center gap-2">
+                    <h2 className=" md:text-[24px] text-[20px] font-bold text-black mb-4 flex items-center gap-2">
              
                 პერსონალიზაცია
               </h2>
               
               <div className="mb-4">
-                <label className="block text-sm md:text-base font-medium text-black mb-2">პერსონალური შეტყობინება</label>
+                <label className="block md:text-[20px] text-[18px] font-medium text-black mb-2">პერსონალური შეტყობინება</label>
                 <textarea
                   value={customMessage}
                   onChange={(e) => setCustomMessage(e.target.value)}
                   placeholder="დაწერეთ თქვენი შეტყობინება ტორტზე..."
-                  className="w-full p-2 md:p-3 border border-black rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none text-sm md:text-base"
+                  className="w-full p-2 md:p-3 border border-black rounded-lg "
                   rows={3}
                 />
                                  {customMessage && (
                    <div className="mt-2">
-                     <p className="text-xs md:text-sm text-black">
-                       💡 ტექსტის გადასატანად უბრალოდ დააწკაპეთ და გადაიტანეთ ტორტზე
+                     <p className=" md:text-[20px] text-[18px] font-bold  text-[#d90b6b]">
+                        ტექსტის გადასატანად უბრალოდ დააწკაპეთ და გადაიტანეთ ტორტზე
                      </p>
                    </div>
                  )}
               </div>
 
               <div className="mb-4">
-                <label className="block text-sm md:text-base font-medium text-black mb-2">სპეციალური მითითებები</label>
+                <label className="block md:text-[20px] text-[18px] font-medium text-black mb-2">სპეციალური მითითებები</label>
                 <textarea
                   value={specialInstructions}
                   onChange={(e) => setSpecialInstructions(e.target.value)}
                   placeholder="დამატებითი მითითებები ან სურვილები..."
-                  className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none text-sm md:text-base"
+                  className="w-full p-2 md:p-3 border border-black rounded-lg "
                   rows={3}
                 />
               </div>
 
               {/* Date and Time Selection */}
               <div className="mb-4">
-                    <label className="block text-sm md:text-base font-medium text-black mb-2">მიწოდების თარიღი და დრო</label>
+                    <label className="block md:text-[20px] text-[18px] font-medium text-black mb-2">მიწოდების თარიღი და დრო</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                   <div>
-                    <label className="block text-sm md:text-base text-black mb-1">თარიღი</label>
+                    <label className="block md:text-[20px] text-[18px] text-black mb-1">თარიღი</label>
                     <div className="relative">
                       <input
                         type="date"
                         value={selectedDate}
                         onChange={(e) => setSelectedDate(e.target.value)}
                         min={new Date().toISOString().split('T')[0]}
-                        className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10 text-sm md:text-base"
+                        className="w-full md:text-[20px] text-[16px] h-[50px] p-2 md:p-3 border border-black rounded-lg "
                       />
-                      <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-black" />
+                     
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm md:text-base text-black mb-1">დრო</label>
+                    <label className="block md:text-[20px] text-[18px] text-black mb-1">დრო</label>
                     <div className="relative">
                       <select
                         value={selectedTime}
                         onChange={(e) => setSelectedTime(e.target.value)}
-                        className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10 text-sm md:text-base"
+                        className="w-full md:text-[20px] text-[16px]  h-[50px] p-2 md:p-3 border border-black rounded-lg "
                       >
-                        <option value="">აირჩიეთ დრო</option>
-                        <option value="09:00">09:00 - დილა</option>
-                        <option value="10:00">10:00 - დილა</option>
-                        <option value="11:00">11:00 - დილა</option>
-                        <option value="12:00">12:00 - შუადღე</option>
-                        <option value="13:00">13:00 - შუადღე</option>
-                        <option value="14:00">14:00 - შუადღე</option>
-                        <option value="15:00">15:00 - შუადღე</option>
-                        <option value="16:00">16:00 - შუადღე</option>
-                        <option value="17:00">17:00 - საღამო</option>
-                        <option value="18:00">18:00 - საღამო</option>
-                        <option value="19:00">19:00 - საღამო</option>
-                        <option value="20:00">20:00 - საღამო</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="">აირჩიეთ დრო</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="09:00">09:00 - დილა</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="10:00">10:00 - დილა</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="11:00">11:00 - დილა</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="12:00">12:00 - შუადღე</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="13:00">13:00 - შუადღე</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="14:00">14:00 - შუადღე</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="15:00">15:00 - შუადღე</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="16:00">16:00 - შუადღე</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="17:00">17:00 - საღამო</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="18:00">18:00 - საღამო</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="19:00">19:00 - საღამო</option>
+                        <option className=" md:text-[20px] text-[16px] font-medium" value="20:00">20:00 - საღამო</option>
                       </select>
-                      <Clock className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-black" />
+                    
                     </div>
                   </div>
                 </div>
-                <p className="text-xs text-black mt-2">
-                  ⚠️ მინიმალური შეკვეთის დრო: 3 თვით ადრე
+                <p className=" md:text-[20px] text-[18px] font-bold text-[#d90b6b] mt-2">
+                   მინიმალური შეკვეთის დრო: 3 თვით ადრე
                 </p>
               </div>
 
               {/* Reference Image Upload */}
               <div>
-                <label className="block text-sm md:text-base font-medium text-black mb-2">რეფერენსის სურათი</label>
-                <div className="border-2 border-dashed border-black rounded-lg p-3 md:p-4 text-center hover:border-pink-300 transition-colors">
+                <label className="block md:text-[20px] text-[18px] font-medium text-black mb-2">რეფერენსის სურათი</label>
+                <div className="border-2 border-dashed border-black rounded-lg p-3 md:p-4 text-center ">
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -578,7 +578,7 @@ const Custom = () => {
                   />
                   <button
                     onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center justify-center gap-2 text-black hover:text-pink-500 transition-colors text-sm md:text-base"
+                    className="flex items-center justify-center gap-2 text-black hover:text-pink-500 transition-colors md:text-[20px] text-[18px] font-medium"
                   >
                     <Upload className="w-4 h-4 md:w-5 md:h-5" />
                     ატვირთეთ სურათი
@@ -607,7 +607,7 @@ const Custom = () => {
               animate={{ opacity: 1, x: 0 }}
               className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-xl border border-white/20"
             >
-                <h2 className="text-lg md:text-xl font-bold text-black mb-4 flex items-center gap-2">
+                <h2 className=" md:text-[24px] text-[20px] font-bold text-black mb-4 flex items-center gap-2">
               
                 ტორტის ნახვა
               </h2>
@@ -639,14 +639,14 @@ const Custom = () => {
                                            {/* Custom Message Overlay */}
                       {customMessage && (
                         <div 
-                          className="absolute bg-white/90 backdrop-blur-sm rounded-lg px-3 md:px-4 py-2 shadow-lg cursor-grab active:cursor-grabbing select-none"
+                          className="absolute md:text-[20px] text-[18px] bg-white/90 backdrop-blur-sm rounded-lg px-3 md:px-4 py-2 shadow-lg cursor-grab active:cursor-grabbing select-none md:text-[20px] text-[18px] font-medium"
                           style={{
                             left: `${messagePosition.x}%`,
                             top: `${messagePosition.y}%`,
                             transform: 'translate(-50%, -50%)'
                           }}
                         >
-                          <p className="text-black font-semibold text-xs md:text-sm lg:text-base break-words max-w-[150px] md:max-w-[200px] text-center">
+                          <p className="text-black md:text-[20px] text-[18px] font-semibold text-xs md:text-sm lg:text-base break-words max-w-[150px] md:max-w-[200px] text-center">
                             {customMessage}
                           </p>
                         </div>
@@ -654,11 +654,11 @@ const Custom = () => {
                    </div>    
                   
                   {/* Selected Options Summary */}
-                  <div className="text-left space-y-2 text-sm md:text-base lg:text-lg">
+                  <div className="text-left space-y-2 md:text-[20px] text-[18px] font-medium">
                     {selectedFlavor && (
                       <div className="flex justify-between">
                         <span className="text-black">გემო:</span>
-                        <span className="font-medium">
+                        <span className="font-medium ">
                           {customizationOptions.find(o => o.id === selectedFlavor)?.nameGeorgian}
                         </span>
                       </div>
@@ -681,24 +681,24 @@ const Custom = () => {
                     )}
                     {selectedSize && (
                       <div className="flex justify-between">
-                        <span className="text-black">ზომა:</span>
-                        <span className="font-medium">
+                        <span className=" md:text-[20px] text-[18px] text-black">ზომა:</span>
+                        <span className="  font-medium">
                           {customizationOptions.find(o => o.id === selectedSize)?.nameGeorgian}
                         </span>
                       </div>
                     )}
                     {selectedShape && (
                       <div className="flex justify-between">
-                        <span className="text-black">ფორმა:</span>
-                        <span className="font-medium">
+                        <span className=" md:text-[20px] text-[18px] text-black">ფორმა:</span>
+                        <span className=" font-medium">
                           {customizationOptions.find(o => o.id === selectedShape)?.nameGeorgian}
                         </span>
                       </div>
                     )}
                     {selectedDecorations.length > 0 && (
                       <div className="flex justify-between">
-                        <span className="text-black">დეკორაციები:</span>
-                        <span className="font-medium text-right">
+                        <span className=" md:text-[20px] text-[18px] text-black">დეკორაციები:</span>
+                        <span className="  font-medium text-right">
                           {selectedDecorations.map(id => 
                             customizationOptions.find(o => o.id === id)?.nameGeorgian
                           ).join(', ')}
@@ -707,16 +707,16 @@ const Custom = () => {
                     )}
                     {selectedDate && (
                       <div className="flex justify-between">
-                        <span className="text-black">თარიღი:</span>
-                        <span className="font-medium">
-                          {new Date(selectedDate).toLocaleDateString('ka-GE')}
+                        <span className=" md:text-[20px] text-[18px] text-black">თარიღი:</span>
+                        <span className=" md:text-[18px] text-[16px] font-medium">
+                         <input type="date" value={selectedDate} readOnly className="w-full p-2 md:p-3 border border-black rounded-lg " />
                         </span>
                       </div>
                     )}
                     {selectedTime && (
                       <div className="flex justify-between">
-                        <span className="text-black">დრო:</span>
-                        <span className="font-medium">
+                        <span className=" md:text-[20px] text-[18px] text-black">დრო:</span>
+                        <span className=" md:text-[18px] text-[16px] font-medium">
                           {selectedTime}
                         </span>
                       </div>
@@ -738,49 +738,49 @@ const Custom = () => {
               transition={{ delay: 0.1 }}
               className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 md:p-6 shadow-xl border border-white/20"
             >
-              <h2 className="text-lg md:text-xl font-bold text-black mb-4 flex items-center gap-2">
+              <h2 className=" md:text-[24px] text-[20px] font-bold text-black mb-4 flex items-center gap-2">
               
                 შეკვეთა
               </h2>
               
               {/* Quantity */}
               <div className="mb-4 md:mb-6">
-                    <label className="block text-sm md:text-base font-medium text-black mb-2">რაოდენობა</label>
+                    <label className="block md:text-[20px] text-[18px] font-medium text-black mb-2">რაოდენობა</label>
                 <div className="flex items-center gap-3 md:gap-4">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="p-2 md:p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                    className="p-2 md:p-3 cursor-pointer bg-pink-100 rounded-full   transition-colors"
                   >
-                    <Minus className="w-4 h-4 md:w-5 md:h-5" />
+                    <Minus className="w-5 h-5 text-pink-600  md:w-6 md:h-6" />
                   </button>
                   <span className="text-base md:text-lg lg:text-xl font-bold text-black min-w-[2.5rem] md:min-w-[3rem] text-center">
                     {quantity}
                   </span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="p-2 md:p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition-colors"
+                    className="p-2 md:p-3 cursor-pointer rounded-full bg-pink-100  transition-colors"
                   >
-                    <Plus className="w-4 h-4 md:w-5 md:h-5" />
+                    <Plus className="w-5  text-pink-600 h-5 md:w-6 md:h-6" />
                   </button>
                 </div>
               </div>
 
               {/* Total Price */}
-              <div className="border-t border-gray-200 pt-4">
+              <div className="border-t border-gray-200 pt-4 flex flex-col ">
                 <div className="flex justify-between items-center text-base md:text-lg lg:text-xl font-bold text-black mb-4">
                   <span>საერთო ფასი:</span>
-                  <span className="text-pink-600">₾{totalPrice}</span>
+                  <span className="text-pink-600 text-2xl">₾{totalPrice}</span>
                 </div>
                 
                 <button
                   onClick={handleSubmit}
                   disabled={!selectedDesign || !selectedDate || !selectedTime}
-                  className={`w-full py-2 md:py-3 px-4 md:px-6 rounded-lg font-semibold text-white transition-all duration-300 text-sm md:text-base ${
+                  className={`w-full md:w-[300px] mx-auto md:text-[20px] text-[18px] cursor-pointer py-2 md:py-3 px-4 md:px-6 rounded-lg font-bold text-white transition-all duration-300 text-sm md:text-base ${
                     selectedDesign && selectedDate && selectedTime
-                      ? 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 shadow-lg hover:shadow-xl'
-                      : 'bg-gray-300 cursor-not-allowed'
+                      ? 'bg-[#d90b6b] md:text-[20px] text-[18px] text-white'
+                      : 'bg-gray-300 md:text-[20px] text-[18px] cursor-not-allowed'
                   }`}
-                >
+                >       
                   <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 inline mr-2" />
                   შეუკვეთე ახლა
                 </button>
@@ -788,9 +788,9 @@ const Custom = () => {
                 <button
                   onClick={() => setIsPreviewOpen(true)}
                   disabled={!selectedDesign}
-                  className={`w-full mt-3 py-2 px-3 md:px-4 rounded-lg font-medium transition-all duration-300 text-sm md:text-base ${
+                  className={`w-full w-full md:w-[300px] mx-auto  md:text-[20px] text-[18px] cursor-pointer mt-3 py-2 px-3 md:px-4 rounded-lg font-bold transition-all duration-300 text-sm md:text-base ${
                     selectedDesign
-                      ? 'border-2 border-pink-500 text-pink-600 hover:bg-pink-50'
+                      ? 'border-2 '
                       : 'border-2 border-gray-300 text-black cursor-not-allowed'
                   }`}
                 >

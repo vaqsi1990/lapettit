@@ -185,7 +185,7 @@ const Gallery = () => {
   }
 
   return (
-    <section ref={containerRef} className="relative min-h-screen mt-20 bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 overflow-hidden">
+    <section ref={containerRef} className="relative min-h-screen mt-20  overflow-hidden">
       {/* Parallax Background Elements */}
       {isMounted && <ParallaxBackground containerRef={containerRef} />}
 
@@ -193,7 +193,7 @@ const Gallery = () => {
       <div className="relative z-10 container mx-auto px-4 ">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 100 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }} className="text-center mb-10">
-          <motion.h2 className="text-[20px] md:text-[30px] font-bold text-black mb-4">ჩვენი ნამუშევრები</motion.h2>
+          <motion.h2 className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-4">ჩვენი ნამუშევრები</motion.h2>
           <motion.p className="text-[18px] md:text-[20px] md:text-2xl text-black max-w-4xl mx-auto leading-relaxed">
             გაიხილეთ ჩვენი ტორტების კოლექცია და აირჩიეთ თქვენი იდეალური დიზაინი
           </motion.p>
@@ -201,15 +201,15 @@ const Gallery = () => {
 
         {/* Category Filter */}
         <motion.div className="flex justify-center mb-8 md:mb-16 px-4">
-          <div className="bg-white/80 backdrop-blur-sm rounded-full p-1 md:p-2 shadow-xl border border-white/20 w-full max-w-4xl">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-1 md:p-2 shadow-xl border border-white/20 w-full max-w-6xl">
             <div className="flex flex-wrap justify-center gap-2 md:gap-3">
               {categories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`px-4 cursor-pointer md:px-6 py-2 md:py-3 rounded-full text-sm md:text-base lg:text-lg font-medium transition-all duration-300 whitespace-nowrap ${
+                  className={`px-4 font-bold cursor-pointer px-5 md:px-6 py-3 rounded-2xl md:text-[20px] text-[18px] font-medium transition-all duration-300 whitespace-nowrap ${
                     selectedCategory === category.id
-                      ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg'
+                      ? 'bg-[#d90b6b] text-white shadow-lg'
                       : 'text-black hover:bg-white/50'
                   }`}
                 >
@@ -225,7 +225,7 @@ const Gallery = () => {
           <AnimatePresence mode="wait">
             {filteredImages.map((image, index) => (
               <motion.div key={image.id} className="break-inside-avoid group cursor-pointer mb-6" onClick={() => openLightbox(image)}>
-                <motion.div className="relative bg-white h-[600px] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
+                <motion.div className="relative bg-white  md:h-[600px] h-[450px] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
                   <div className="relative aspect-square  overflow-hidden">
                     <Image src={image.src} alt={image.alt} fill className=" h-[300px] object-cover group-hover:scale-110 transition-transform duration-700" priority={index < 4} />
                   
@@ -263,7 +263,7 @@ const Gallery = () => {
                   <p className="text-black mb-6 leading-relaxed">{selectedImage.descriptionGeorgian}</p>
                   
                   <div className="space-y-3">
-                    <button className="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white py-3 px-4 rounded-lg md:text-[20px] text-[18px] font-semibold hover:from-pink-600 hover:to-rose-600 transition-all duration-300">შეუკვეთე ახლა</button>
+                    <button className="w-full bg-[#d90b6b] text-white py-3 px-4 rounded-lg md:text-[20px] text-[18px] font-semibold hover:from-pink-600 hover:to-rose-600 transition-all duration-300">შეუკვეთე ახლა</button>
                     <Link href={`/product/${selectedImage.id}`} className="w-full border border-gray-300 text-black py-3 md:text-[20px] text-[18px] px-4 rounded-lg font-medium hover:bg-gray-50 transition-all duration-300">დეტალების ნახვა</Link>
                   </div>
                 </div>

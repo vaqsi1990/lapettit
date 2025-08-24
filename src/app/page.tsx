@@ -9,7 +9,7 @@ import Gallery from "@/components/Gallery";
 export default function Home() {
   return (
     <>
-      <div className="bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
+      <div className="bg-color">
         <Hero />
         <Services />
         <Gallery />
