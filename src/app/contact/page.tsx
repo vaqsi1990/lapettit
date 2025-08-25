@@ -181,7 +181,7 @@ const Contact = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-black mb-2">
                     სახელი და გვარი *
                   </label>
                   <input
@@ -196,7 +196,7 @@ const Contact = () => {
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-black mb-2">
                     ელ-ფოსტა *
                   </label>
                   <input
@@ -211,7 +211,7 @@ const Contact = () => {
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-black mb-2">
                     ტელეფონის ნომერი
                   </label>
                   <input
@@ -225,7 +225,7 @@ const Contact = () => {
 
                 {/* Subject */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-black mb-2">
                     თემა *
                   </label>
                   <select
@@ -245,7 +245,7 @@ const Contact = () => {
 
                 {/* Message */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-black mb-2">
                     შეტყობინება *
                   </label>
                   <textarea
@@ -343,10 +343,10 @@ const Contact = () => {
               viewport={{ once: true }}
               className="bg-white rounded-2xl p-6 shadow-lg"
             >
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+              <h3 className="text-xl font-semibold text-black mb-3">
                 რამდენი დრო სჭირდება ტორტის მომზადებას?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-black">
                 მორგებული ტორტებისთვის საჭიროა მინიმუმ 3-5 დღე. 
                 მარტივი ტორტებისთვის - 1-2 დღე.
               </p>
@@ -359,10 +359,10 @@ const Contact = () => {
               viewport={{ once: true }}
               className="bg-white rounded-2xl p-6 shadow-lg"
             >
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+              <h3 className="text-xl font-semibold text-black mb-3">
                 მიწოდება ხდება თბილისის მთელ ტერიტორიაზე?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-black">
                 კი, ჩვენ ვმიწოდებთ თბილისის მთელ ტერიტორიაზე. 
                 მიწოდების ფასი დამოკიდებულია მანძილზე.
               </p>
@@ -375,10 +375,10 @@ const Contact = () => {
               viewport={{ once: true }}
               className="bg-white rounded-2xl p-6 shadow-lg"
             >
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+              <h3 className="text-xl font-semibold text-black mb-3">
                 შეგვიძლია ტორტი მოვამზადოთ თქვენი ფოტოს მიხედვით?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-black">
                 რა თქმა უნდა! ჩვენ ვქმნით ტორტებს თქვენი ფოტოს ან 
                 ნახატის მიხედვით. უბრალოდ გაგვიგზავნეთ ინსპირაცია!
               </p>
@@ -391,10 +391,10 @@ const Contact = () => {
               viewport={{ once: true }}
               className="bg-white rounded-2xl p-6 shadow-lg"
             >
-              <h3 className="text-xl font-semibold text-gray-800 mb-3">
+              <h3 className="text-xl font-semibold text-black mb-3">
                 რა ინგრედიენტები იყენებთ?
               </h3>
-              <p className="text-gray-600">
+              <p className="text-black">
                 ჩვენ ვიყენებთ მხოლოდ ბუნებრივ და ხარისხიან ინგრედიენტებს. 
                 ყველა პროდუქტი ფრეში და ხარისხიანია.
               </p>
