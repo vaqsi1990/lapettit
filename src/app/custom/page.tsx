@@ -2,8 +2,8 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Cake, 
+import {
+  Cake,
   Plus,
   Minus,
   ShoppingCart,
@@ -147,45 +147,45 @@ const Custom = () => {
     calculateTotal();
   }, [selectedDesign, selectedFlavor, selectedFilling, selectedFrosting, selectedSize, selectedShape, selectedDecorations, quantity]);
 
-    const calculateTotal = useCallback(() => {
+  const calculateTotal = useCallback(() => {
     let total = 0;
-    
+
     // Base design price
     const design = cakeDesigns.find(d => d.id === selectedDesign);
     if (design) total += design.basePrice;
-    
+
     // Customization options
     if (selectedFlavor) {
       const flavor = customizationOptions.find(o => o.id === selectedFlavor);
       if (flavor) total += flavor.price;
     }
-    
+
     if (selectedFilling) {
       const filling = customizationOptions.find(o => o.id === selectedFilling);
       if (filling) total += filling.price;
     }
-    
+
     if (selectedFrosting) {
       const frosting = customizationOptions.find(o => o.id === selectedFrosting);
       if (frosting) total += frosting.price;
     }
-    
+
     if (selectedSize) {
       const size = customizationOptions.find(o => o.id === selectedSize);
       if (size) total += size.price;
     }
-    
+
     if (selectedShape) {
       const shape = customizationOptions.find(o => o.id === selectedShape);
       if (shape) total += shape.price;
     }
-    
+
     // Decorations
     selectedDecorations.forEach(decorationId => {
       const decoration = customizationOptions.find(o => o.id === decorationId);
       if (decoration) total += decoration.price;
     });
-    
+
     setTotalPrice(total * quantity);
   }, [selectedDesign, selectedFlavor, selectedFilling, selectedFrosting, selectedSize, selectedShape, selectedDecorations, quantity]);
 
@@ -208,9 +208,9 @@ const Custom = () => {
     }
   };
 
-    const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!customMessage) return;
-    
+
     setIsDragging(true);
   };
 
@@ -322,6 +322,7 @@ const Custom = () => {
   const getOptionByCategory = (category: string) => {
     return customizationOptions.filter(option => option.category === category);
   };
+ 
 
   return (
     <div className="min-h-screen bg-color">
@@ -360,8 +361,8 @@ const Custom = () => {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     className={`relative cursor-pointer rounded-xl overflow-hidden border-1 transition-all duration-300 ${selectedDesign === design.id
-                        ? 'border-pink-500 shadow-lg'
-                        : ''
+                      ? 'border-pink-500 shadow-lg'
+                      : ''
                       }`}
                     onClick={() => setSelectedDesign(design.id)}
                   >
@@ -402,8 +403,8 @@ const Custom = () => {
                       key={option.id}
                       onClick={() => setSelectedFlavor(option.id)}
                       className={`p-2 md:p-3 cursor-pointer rounded-lg md:text-[20px] text-[18px] font-medium transition-all duration-300 ${selectedFlavor === option.id
-                          ? 'bg-[#d90b6b] text-white'
-                          : ' border-1 border-black text-black '
+                        ? 'bg-[#d90b6b] text-white'
+                        : ' border-1 border-black text-black '
                         }`}
                     >
                       {option.nameGeorgian}
@@ -422,8 +423,8 @@ const Custom = () => {
                       key={option.id}
                       onClick={() => setSelectedFilling(option.id)}
                       className={`p-2 md:p-3 cursor-pointer rounded-lg md:text-[20px] text-[18px] font-medium transition-all duration-300 ${selectedFilling === option.id
-                          ? 'bg-[#d90b6b] text-white'
-                          : ' border-1 border-black text-black '
+                        ? 'bg-[#d90b6b] text-white'
+                        : ' border-1 border-black text-black '
                         }`}
                     >
                       {option.nameGeorgian}
@@ -442,8 +443,8 @@ const Custom = () => {
                       key={option.id}
                       onClick={() => setSelectedFrosting(option.id)}
                       className={`p-2 md:p-3 cursor-pointer rounded-lg md:text-[20px] text-[18px] font-medium transition-all duration-300 ${selectedFrosting === option.id
-                          ? 'bg-[#d90b6b] text-white'
-                          : ' border-1 border-black text-black '
+                        ? 'bg-[#d90b6b] text-white'
+                        : ' border-1 border-black text-black '
                         }`}
                     >
                       {option.nameGeorgian}
@@ -505,8 +506,8 @@ const Custom = () => {
                     key={option.id}
                     onClick={() => handleDecorationToggle(option.id)}
                     className={`p-2 md:p-3 cursor-pointer rounded-lg md:text-[20px] text-[18px] font-medium transition-all duration-300 flex items-center justify-between ${selectedDecorations.includes(option.id)
-                        ? 'bg-[#d90b6b] text-white'
-                        : ' border-1 border-black text-black '
+                      ? 'bg-[#d90b6b] text-white'
+                      : ' border-1 border-black text-black '
                       }`}
                   >
                     <span>{option.nameGeorgian}</span>
@@ -816,8 +817,8 @@ const Custom = () => {
                   onClick={handleSubmit}
                   disabled={!selectedDesign || !selectedDate || !selectedTime}
                   className={`w-full md:w-[300px] mx-auto md:text-[20px] text-[18px] cursor-pointer py-2 md:py-3 px-4 md:px-6 rounded-lg font-bold text-white transition-all duration-300 text-sm md:text-base ${selectedDesign && selectedDate && selectedTime
-                      ? 'bg-[#d90b6b] md:text-[20px] text-[18px] text-white'
-                      : 'bg-gray-300 md:text-[20px] text-[18px] cursor-not-allowed'
+                    ? 'bg-[#d90b6b] md:text-[20px] text-[18px] text-white'
+                    : 'bg-gray-300 md:text-[20px] text-[18px] cursor-not-allowed'
                     }`}
                 >
                   <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 inline mr-2" />
@@ -828,8 +829,8 @@ const Custom = () => {
                   onClick={() => setIsPreviewOpen(true)}
                   disabled={!selectedDesign}
                   className={`w-full w-full md:w-[300px] mx-auto  md:text-[20px] text-[18px] cursor-pointer mt-3 py-2 px-3 md:px-4 rounded-lg font-bold transition-all duration-300 text-sm md:text-base ${selectedDesign
-                      ? 'border-2 '
-                      : 'border-2 border-gray-300 text-black cursor-not-allowed'
+                    ? 'border-2 '
+                    : 'border-2 border-gray-300 text-black cursor-not-allowed'
                     }`}
                 >
                   <Save className="w-3 h-3 md:w-4 md:h-4 inline mr-2" />
@@ -887,114 +888,118 @@ const Custom = () => {
             onClick={() => setIsClientFormOpen(false)}
           >
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-xl max-w-4xl w-full mx-4 overflow-hidden"
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-xl text-center mt-10 font-bold text-black mb-4">შეავსეთ ინფორმაცია</h3>
-              <form onSubmit={handleClientFormSubmit} className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="col-span-1">
-                  <label className="block  md:text-[20px] text-[18px] font-medium  mb-1">სახელი</label>
+              <h3 className="text-lg sm:text-xl text-center mt-6 font-bold text-black mb-4">
+                შეავსეთ ინფორმაცია
+              </h3>
+
+              <form
+                onSubmit={handleClientFormSubmit}
+                className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6"
+              >
+                <div>
+                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">სახელი</label>
                   <input
                     type="text"
                     value={clientForm.firstName}
-                    onChange={(e) => handleInputChange('firstName', e.target.value)}
-                      className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none outline-none transition"
+                    onChange={(e) => handleInputChange("firstName", e.target.value)}
+                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none transition"
                     placeholder="სახელი"
                     required
                   />
-                </div>  
+                </div>
 
-                <div className="col-span-1">
-                  <label className="block  md:text-[20px] text-[18px] font-medium  mb-1">გვარი</label>
+                <div>
+                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">გვარი</label>
                   <input
                     type="text"
                     value={clientForm.lastName}
-                    onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none outline-none transition"
+                    onChange={(e) => handleInputChange("lastName", e.target.value)}
+                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none transition"
                     placeholder="გვარი"
                     required
                   />
                 </div>
 
-                <div className="col-span-1">
-                  <label className="block  md:text-[20px] text-[18px] font-medium  mb-1">ტელეფონი</label>
+                <div>
+                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">ტელეფონი</label>
                   <input
                     type="tel"
                     value={clientForm.phone}
-                    onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none outline-none transition"
+                    onChange={(e) => handleInputChange("phone", e.target.value)}
+                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none transition"
                     placeholder="ტელეფონი"
                     required
                   />
                 </div>
 
-                <div className="col-span-1">
-                  <label className="block  md:text-[20px] text-[18px] font-medium  mb-1">ელ-ფოსტა</label>
+                <div>
+                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">ელ-ფოსტა</label>
                   <input
                     type="email"
                     value={clientForm.email}
-                    onChange={(e) => handleInputChange('email', e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-400 focus:border-pink-400 outline-none transition"
+                    onChange={(e) => handleInputChange("email", e.target.value)}
+                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
                     placeholder="ელ-ფოსტა"
                   />
                 </div>
 
-                <div className="col-span-2">
-                  <label className="block  md:text-[20px] text-[18px] font-medium  mb-1">მისამართი</label>
+                <div className="sm:col-span-2">
+                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">მისამართი</label>
                   <input
                     type="text"
                     value={clientForm.address}
-                    onChange={(e) => handleInputChange('address', e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-400 focus:border-pink-400 outline-none transition"
+                    onChange={(e) => handleInputChange("address", e.target.value)}
+                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
                     placeholder="მისამართი"
                     required
                   />
                 </div>
 
-                <div className="col-span-1">
-                      <label className="block  md:text-[20px] text-[18px] font-medium  mb-1">ქალაქი</label>
+                <div>
+                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">ქალაქი</label>
                   <input
                     type="text"
                     value={clientForm.city}
-                    onChange={(e) => handleInputChange('city', e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-400 focus:border-pink-400 outline-none transition"
+                    onChange={(e) => handleInputChange("city", e.target.value)}
+                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
                     placeholder="ქალაქი"
                     required
                   />
                 </div>
 
-                <div className="col-span-1">
-                  <label className="block  md:text-[20px] text-[18px] font-medium  mb-1">პოსტის კოდი</label>
+                <div>
+                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">პოსტის კოდი</label>
                   <input
                     type="text"
                     value={clientForm.zipCode}
-                    onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-400 focus:border-pink-400 outline-none transition"
+                    onChange={(e) => handleInputChange("zipCode", e.target.value)}
+                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
                     placeholder="პოსტის კოდი"
                   />
                 </div>
 
-                <div className="col-span-2">
-                  <label className="block  md:text-[20px] text-[18px] font-medium  mb-1">შეტყობინება</label>
+                <div className="sm:col-span-2">
+                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">შეტყობინება</label>
                   <textarea
                     value={clientForm.notes}
-                    onChange={(e) => handleInputChange('notes', e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-400 focus:border-pink-400 outline-none transition"
+                    onChange={(e) => handleInputChange("notes", e.target.value)}
+                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
                     placeholder="შეტყობინება (არასავალდებულო)"
                     rows={3}
                   />
                 </div>
 
-                <div className="col-span-2 flex justify-center">
+                <div className="sm:col-span-2 flex justify-center">
                   <button
                     type="submit"
-                    className="w-full md:w-[250px] md:text-[20px] text-[18px] py-3 px-6 rounded-xl font-bold cursor-pointer text-white text-lg 
-        bg-[#d90b6b] hover:scale-105 transform transition-all shadow-md"
+                    className="w-full sm:w-[250px] text-[16px] sm:text-[18px] py-3 px-6 rounded-xl font-bold cursor-pointer text-white bg-[#d90b6b] hover:scale-105 transform transition-all shadow-md"
                   >
-                    <ShoppingCart className="w-5 h-5 inline mr-2" />
                     შეკვეთა
                   </button>
                 </div>
@@ -1002,6 +1007,7 @@ const Custom = () => {
             </motion.div>
           </motion.div>
         )}
+
       </AnimatePresence>
     </div>
   );
