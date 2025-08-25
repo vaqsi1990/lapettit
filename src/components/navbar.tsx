@@ -90,7 +90,7 @@ const Navbar = () => {
         
             <Link 
               href="/cakes" 
-              className="text-black  block px-3 py-2 rounded-md  text-[18px] font-bold transition-colors duration-200"
+              className="text-white block px-3 py-2 rounded-md  text-[18px] font-bold transition-colors duration-200"
               onClick={() => setIsMenuOpen(false)}
             >
               ნამუშევრები
@@ -98,21 +98,21 @@ const Navbar = () => {
 
             <Link 
               href="/custom" 
-              className="text-black  block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"
+              className="text-white  block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"
               onClick={() => setIsMenuOpen(false)}
             >
               მორგებული შეკვეთები
             </Link>
             <Link 
               href="/about" 
-              className="text-black  block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"
+              className="text-white  block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"
               onClick={() => setIsMenuOpen(false)}
             >
               ჩვენს შესახებ
             </Link>
             <Link 
               href="/contact" 
-              className="text-black  block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"
+              className="text-white  block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"
               onClick={() => setIsMenuOpen(false)}
             >
               კონტაქტი

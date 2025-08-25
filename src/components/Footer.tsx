@@ -22,19 +22,19 @@ const Footer = () => {
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="w-10 h-10 bg-pink-500 hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
+                className="w-10 h-10 bg-pink-600  hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
               >
                 <Facebook className="w-5 h-5" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 bg-pink-500 hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
+                className="w-10 h-10 bg-pink-600  hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
               >
                 <Instagram className="w-5 h-5" />
               </a>
               <a
                 href="#"
-                className="w-10 h-10 bg-pink-500 hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
+                className="w-10 h-10 bg-pink-600  hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
               >
                 <Twitter className="w-5 h-5" />
               </a>
@@ -80,15 +80,15 @@ const Footer = () => {
             <h4 className=" text-[16px] md:text-[18px] font-semibold text-white mb-4">კონტაქტი</h4>
               <div className="space-y-3 text-[16px] md:text-[18px]">
               <div className="flex items-center space-x-3">
-                <Phone className="w-4 h-4 text-pink-400" />
+                <Phone className="w-4 h-4 text-pink-600" />
                 <span className="text-white text-[16px] md:text-[18px]">+995 555 123 456</span>
               </div>
               <div className="flex items-center space-x-3">
-                <Mail className="w-4 h-4 text-pink-400" />
+                <Mail className="w-4 h-4 text-pink-600" />
                 <span className="text-white text-[16px] md:text-[18px]">info@sweetdreams.ge</span>
               </div>
               <div className="flex items-center space-x-3">
-                <MapPin className="w-4 h-4 text-pink-400" />
+                <MapPin className="w-4 h-4 text-pink-600" />
                 <span className="text-white text-[16px] md:text-[18px]">თბილისი, საქართველო</span>
               </div>
             

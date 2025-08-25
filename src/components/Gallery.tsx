@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, useTransform, AnimatePresence, useScroll } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight,  } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, } from 'lucide-react';
 import Link from 'next/link';
 
 interface GalleryImage {
@@ -54,7 +54,7 @@ const Gallery = () => {
   const [isMounted, setIsMounted] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   const categories = [
     { id: 'all', name: 'ყველა', nameGeorgian: 'ყველა' },
     { id: 'birthday', name: 'Birthday', nameGeorgian: 'დაბადების დღე' },
@@ -202,16 +202,15 @@ const Gallery = () => {
         {/* Category Filter */}
         <motion.div className="flex justify-center mb-8 md:mb-16 px-4">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-1 md:p-2 shadow-xl border border-white/20 w-full max-w-6xl">
-            <div className="flex flex-wrap justify-center gap-2 md:gap-3">
+            <div className="flex flex-col md:flex-row flex-wrap justify-center gap-2 md:gap-3">
               {categories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`px-4 font-bold cursor-pointer px-5 md:px-6 py-3 rounded-2xl md:text-[20px] text-[18px] font-medium transition-all duration-300 whitespace-nowrap ${
-                    selectedCategory === category.id
+                  className={`px-4 font-bold cursor-pointer px-5 md:px-6 py-3 rounded-2xl md:text-[20px] text-[18px] font-medium transition-all duration-300 whitespace-nowrap ${selectedCategory === category.id
                       ? 'bg-[#d90b6b] text-white shadow-lg'
                       : 'text-black hover:bg-white/50'
-                  }`}
+                    }`}
                 >
                   {category.nameGeorgian}
                 </button>
@@ -224,18 +223,32 @@ const Gallery = () => {
         <div className="columns-1 sm:columns-2 md:columns-3 gap-6 space-y-6">
           <AnimatePresence mode="wait">
             {filteredImages.map((image, index) => (
-              <motion.div key={image.id} className="break-inside-avoid group cursor-pointer mb-6" onClick={() => openLightbox(image)}>
-                <motion.div className="relative bg-white  md:h-[600px] h-[450px] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
-                  <div className="relative aspect-square  overflow-hidden">
-                    <Image src={image.src} alt={image.alt} fill className=" h-[300px] object-cover group-hover:scale-110 transition-transform duration-700" priority={index < 4} />
-                  
+              <motion.div
+                key={image.id}
+                className="break-inside-avoid group cursor-pointer mb-6"
+                onClick={() => openLightbox(image)}
+              >
+                <motion.div className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02]">
+                  <div className="relative w-full aspect-[4/5] overflow-hidden">
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
+                      priority={index < 4}
+                    />
                   </div>
                   <div className="p-4">
-                    <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-2 line-clamp-1">{image.titleGeorgian}</h3>
-                    <p className="text-black text-[14px] md:text-[16px] mb-4 line-clamp-3">{image.descriptionGeorgian}</p>
+                    <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-2 line-clamp-1">
+                      {image.titleGeorgian}
+                    </h3>
+                    <p className="text-black text-[14px] md:text-[16px] mb-4 line-clamp-3">
+                      {image.descriptionGeorgian}
+                    </p>
                   </div>
                 </motion.div>
               </motion.div>
+
             ))}
           </AnimatePresence>
         </div>
@@ -261,7 +274,7 @@ const Gallery = () => {
                     </div>
                   </div>
                   <p className="text-black mb-6 leading-relaxed">{selectedImage.descriptionGeorgian}</p>
-                  
+
                   <div className="space-y-3">
                     <button className="w-full bg-[#d90b6b] text-white py-3 px-4 rounded-lg md:text-[20px] text-[18px] font-semibold hover:from-pink-600 hover:to-rose-600 transition-all duration-300">შეუკვეთე ახლა</button>
                     <Link href={`/product/${selectedImage.id}`} className="w-full border border-gray-300 text-black py-3 md:text-[20px] text-[18px] px-4 rounded-lg font-medium hover:bg-gray-50 transition-all duration-300">დეტალების ნახვა</Link>

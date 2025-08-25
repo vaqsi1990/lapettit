@@ -85,6 +85,7 @@ const Contact = () => {
           <div className="grid lg:grid-cols-2 gap-16">
             {/* Contact Information */}
             <motion.div
+            className='bg-white rounded-3xl shadow-2xl p-8'
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
@@ -256,15 +257,15 @@ const Contact = () => {
                     placeholder="დაწერეთ თქვენი შეტყობინება..."
                   />
                 </div>
-
+                
                 {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`w-full py-4 px-6 rounded-lg font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2 ${
+                  className={`w-full md:text-[20px] cursor-pointer text-[18px] text-bold py-4 px-6 rounded-lg font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2 ${
                     isSubmitting
                       ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-pink-500 hover:bg-pink-600 hover:shadow-lg'
+                      : ' bg-[#d90b6b] hover:scale-105 hover:bg-pink-600 hover:shadow-lg'
                   }`}
                 >
                   {isSubmitting ? (

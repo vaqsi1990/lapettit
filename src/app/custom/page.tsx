@@ -137,7 +137,7 @@ const Custom = () => {
 
     // Decorations
     { id: 'fresh-flowers', name: 'Fresh Flowers', nameGeorgian: 'ახალი ყვავილები', price: 20, category: 'decoration' },
-    { id: 'edible-gold', name: 'Edible Gold', nameGeorgian: 'ჭამადი ოქრო', price: 15, category: 'decoration' },
+    { id: 'edible-gold', name: 'Edible Gold', nameGeorgian: 'ოქრო', price: 15, category: 'decoration' },
     { id: 'chocolate-shavings', name: 'Chocolate Shavings', nameGeorgian: 'შოკოლადის ნაჭრები', price: 8, category: 'decoration' },
     { id: 'sprinkles', name: 'Sprinkles', nameGeorgian: 'საფრთხილები', price: 5, category: 'decoration' },
     { id: 'custom-figurine', name: 'Custom Figurine', nameGeorgian: 'ინდივიდუალური ფიგურა', price: 25, category: 'decoration' }
@@ -534,7 +534,7 @@ const Custom = () => {
                   value={customMessage}
                   onChange={(e) => setCustomMessage(e.target.value)}
                   placeholder="დაწერეთ თქვენი შეტყობინება ტორტზე..."
-                  className="w-full p-2 md:p-3 border border-black rounded-lg "
+                  className="w-full p-2 border-2 focus:border-pink-500 focus:outline-none md:p-3 border border-black rounded-lg "
                   rows={3}
                 />
                 {customMessage && (
@@ -552,7 +552,7 @@ const Custom = () => {
                   value={specialInstructions}
                   onChange={(e) => setSpecialInstructions(e.target.value)}
                   placeholder="დამატებითი მითითებები ან სურვილები..."
-                  className="w-full p-2 md:p-3 border border-black rounded-lg "
+                  className="w-full p-2 border-2 focus:border-pink-500 focus:outline-none md:p-3 border md:p-3 border border-black rounded-lg "
                   rows={3}
                 />
               </div>
@@ -562,25 +562,25 @@ const Custom = () => {
                 <label className="block md:text-[20px] text-[18px] font-medium text-black mb-2">მიწოდების თარიღი და დრო</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                   <div>
-                    <label className="block md:text-[20px] text-[18px] text-black mb-1">თარიღი</label>
+                    <label className="block md:text-[18px] text-[16px] text-black mb-1">თარიღი</label>
                     <div className="relative">
                       <input
                         type="date"
                         value={selectedDate}
                         onChange={(e) => setSelectedDate(e.target.value)}
                         min={new Date().toISOString().split('T')[0]}
-                        className="w-full md:text-[20px] text-[16px] h-[50px] p-2 md:p-3 border border-black rounded-lg "
+                        className="w-full md:text-[20px] text-[16px] h-[50px] p-2 md:p-3 border-2 focus:border-pink-500 focus:outline-none md:p-3 borderlack rounded-lg "
                       />
 
                     </div>
                   </div>
                   <div>
-                    <label className="block md:text-[20px] text-[18px] text-black mb-1">დრო</label>
+                    <label className="block md:text-[18px] text-[16px] text-black mb-1">დრო</label>
                     <div className="relative">
                       <select
                         value={selectedTime}
                         onChange={(e) => setSelectedTime(e.target.value)}
-                        className="w-full md:text-[20px] text-[16px]  h-[50px] p-2 md:p-3 border border-black rounded-lg "
+                        className="w-full md:text-[20px] text-[16px]  h-[50px] p-2 md:p-3 border-2 focus:border-pink-500 focus:outline-none md:p-3 border rounded-lg "
                       >
                         <option className=" md:text-[20px] text-[16px] font-medium" value="">აირჩიეთ დრო</option>
                         <option className=" md:text-[20px] text-[16px] font-medium" value="09:00">09:00 - დილა</option>
@@ -694,7 +694,7 @@ const Custom = () => {
                   </div>
 
                   {/* Selected Options Summary */}
-                  <div className="text-left space-y-2 md:text-[20px] text-[18px] font-medium">
+                  <div className="text-left space-y-2 md:text-[18px] text-[16px] font-medium">
                     {selectedFlavor && (
                       <div className="flex justify-between">
                         <span className="text-black">გემო:</span>
@@ -721,7 +721,7 @@ const Custom = () => {
                     )}
                     {selectedSize && (
                       <div className="flex justify-between">
-                        <span className=" md:text-[20px] text-[18px] text-black">ზომა:</span>
+                        <span className=" md:text-[18px] text-[16px] text-black">ზომა:</span>
                         <span className="  font-medium">
                           {customizationOptions.find(o => o.id === selectedSize)?.nameGeorgian}
                         </span>
@@ -729,7 +729,7 @@ const Custom = () => {
                     )}
                     {selectedShape && (
                       <div className="flex justify-between">
-                        <span className=" md:text-[20px] text-[18px] text-black">ფორმა:</span>
+                        <span className=" md:text-[18px] text-[16px] text-black">ფორმა:</span>
                         <span className=" font-medium">
                           {customizationOptions.find(o => o.id === selectedShape)?.nameGeorgian}
                         </span>
@@ -737,7 +737,7 @@ const Custom = () => {
                     )}
                     {selectedDecorations.length > 0 && (
                       <div className="flex justify-between">
-                        <span className=" md:text-[20px] text-[18px] text-black">დეკორაციები:</span>
+                        <span className=" md:text-[18px] text-[16px] text-black">დეკორაციები:</span>
                         <span className="  font-medium text-right">
                           {selectedDecorations.map(id =>
                             customizationOptions.find(o => o.id === id)?.nameGeorgian
@@ -901,11 +901,11 @@ const Custom = () => {
                     type="text"
                     value={clientForm.firstName}
                     onChange={(e) => handleInputChange('firstName', e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-400 focus:border-pink-400 outline-none transition"
+                      className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none outline-none transition"
                     placeholder="სახელი"
                     required
                   />
-                </div>
+                </div>  
 
                 <div className="col-span-1">
                   <label className="block  md:text-[20px] text-[18px] font-medium  mb-1">გვარი</label>
@@ -913,7 +913,7 @@ const Custom = () => {
                     type="text"
                     value={clientForm.lastName}
                     onChange={(e) => handleInputChange('lastName', e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-400 focus:border-pink-400 outline-none transition"
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none outline-none transition"
                     placeholder="გვარი"
                     required
                   />
@@ -925,7 +925,7 @@ const Custom = () => {
                     type="tel"
                     value={clientForm.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-pink-400 focus:border-pink-400 outline-none transition"
+                    className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none outline-none transition"
                     placeholder="ტელეფონი"
                     required
                   />
