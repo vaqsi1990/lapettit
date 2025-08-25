@@ -1,12 +1,9 @@
 "use client";
 
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Heart, Phone, Mail, MapPin,  Facebook, Instagram, Twitter } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
-
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       {/* Main Footer Content */}
@@ -14,10 +11,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 ">
           
           {/* Company Info */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+          <div
             className="lg:col-span-2"
           >
             <h3 className="text-2xl font-bold text-white mb-4"> Sweet Dreams</h3>
@@ -26,38 +20,29 @@ const Footer = () => {
               რომელიც თქვენს სპეციალურ დღეს გახდის უვივი და დავიწყებადი.
             </p>
             <div className="flex space-x-4">
-              <motion.a
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+              <a
                 href="#"
                 className="w-10 h-10 bg-pink-500 hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
               >
                 <Facebook className="w-5 h-5" />
-              </motion.a>
-              <motion.a
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+              </a>
+              <a
                 href="#"
                 className="w-10 h-10 bg-pink-500 hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
               >
                 <Instagram className="w-5 h-5" />
-              </motion.a>
-              <motion.a
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+              </a>
+              <a
                 href="#"
                 className="w-10 h-10 bg-pink-500 hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
               >
                 <Twitter className="w-5 h-5" />
-              </motion.a>
+              </a>
             </div>
-          </motion.div>
+          </div>
 
           {/* Quick Links */}
-          <motion.div className='text-[16px] md:text-[18px]'
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
+          <div className='text-[16px] md:text-[18px]'
           >
             <h4 className="text-lg font-semibold text-white mb-4">სწრაფი ბმულები</h4>
             <ul className="space-y-2">
@@ -87,13 +72,10 @@ const Footer = () => {
                 </a>
               </li>
             </ul>
-          </motion.div>
+          </div>
 
           {/* Contact Info */}
-          <motion.div className='text-[16px] md:text-[18px]'
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+          <div className='text-[16px] md:text-[18px]'
           >
             <h4 className=" text-[16px] md:text-[18px] font-semibold text-white mb-4">კონტაქტი</h4>
               <div className="space-y-3 text-[16px] md:text-[18px]">
@@ -111,7 +93,7 @@ const Footer = () => {
               </div>
             
             </div>
-          </motion.div>
+          </div>
         </div>
 
    

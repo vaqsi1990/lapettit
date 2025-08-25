@@ -85,7 +85,7 @@ const Navbar = () => {
       {/* Mobile Navigation */}
       {isMenuOpen && (
         <div className="md:hidden">
-          <div className="px-2 text-[16px] md:text-[18px] h-screen text-center pt-2 pb-3 space-y-1 sm:px-3 bg-gradient-to-r from-pink-50 to-rose-100 border-t border-pink-200">
+          <div className="px-2 text-[16px] md:text-[18px] h-screen text-center pt-2 pb-3 space-y-1 sm:px-3 bg-header ">
         
         
             <Link 
