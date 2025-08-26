@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+enum CakeCategory {
+  BIRTHDAY
+  WEDDING
+  ANNIVERSARY
+  CUSTOM
+  Desserts
+}
+model Cake {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  price       Float
+  imageUrl    String?
+  category    CakeCategory
+  createdAt   DateTime     @default(now())
+  orders      OrderItem[]
+}
+
+model CustomCake {
+  id       Int    @id @default(autoincrement())
+  text     String?
+  flavor   String?
+  size     String?
+  imageUrl String?
+  createdAt DateTime @default(now())
+
+  order    Order   @relation(fields: [orderId], references: [id])
+  orderId  Int     @unique
+}
+
+model Order {
+  id            Int          @id @default(autoincrement())
+  customerName  String
+  customerPhone String
+  address       String
+
+  items         OrderItem[]
+  total         Float
+
+  customCake    CustomCake?
+
+  bogOrderId    String?   @unique
+  paidAt        DateTime? @db.Timestamp(6)
+  isPaid        Boolean   @default(false)
+
+  isDelivered   Boolean   @default(false)
+  deliveredAt   DateTime? @db.Timestamp(6)
+
+  status        String    @default("PENDING")
+  createdAt     DateTime  @default(now())
+}
+
+model OrderItem {
+  id       Int   @id @default(autoincrement())
+  order    Order @relation(fields: [orderId], references: [id])
+  orderId  Int
+  cake     Cake  @relation(fields: [cakeId], references: [id])
+  cakeId   Int
+  quantity Int   @default(1)
+}

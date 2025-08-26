@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Swiper as SwiperComponent, SwiperSlide } from 'swiper/react'
-import { Navigation, Pagination, Autoplay, EffectCards, EffectCoverflow } from 'swiper/modules'
+import { Navigation, Pagination, Autoplay, EffectCoverflow } from 'swiper/modules'
 import { ChevronLeft, ChevronRight, } from 'lucide-react'
 
 // Import Swiper styles

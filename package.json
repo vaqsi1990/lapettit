@@ -6,9 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate",
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.10.0",
+    "@prisma/adapter-neon": "^6.14.0",
+    "@prisma/client": "^6.14.0",
     "@react-three/drei": "^10.7.3",
     "@react-three/fiber": "^9.3.0",
     "framer-motion": "^12.23.12",
@@ -16,11 +21,13 @@
     "gsap": "^3.13.0",
     "lucide-react": "^0.540.0",
     "next": "15.5.0",
+    "prisma": "^6.14.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.62.0",
     "swiper": "^11.2.10",
-    "three": "^0.179.1"
+    "three": "^0.179.1",
+    "zod": "^4.1.3"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -31,6 +38,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.5.0",
     "tailwindcss": "^4",
+    "tsx": "^4.20.5",
     "typescript": "^5"
   }
 }

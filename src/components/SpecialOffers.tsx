@@ -105,31 +105,8 @@ const SpecialOffers = () => {
         return () => clearInterval(timer);
     }, []);
 
-    const getDiscountLabel = (offer: SpecialOffer) => {
-        switch (offer.discountType) {
-            case 'percentage':
-                return `-${offer.discountValue}%`;
-            case 'fixed':
-                return `-₾${offer.discountValue}`;
-            case 'bogo':
-                return '2x1';
-            default:
-                return '';
-        }
-    };
+ 
 
-    const getDiscountColor = (offer: SpecialOffer) => {
-        switch (offer.discountType) {
-            case 'percentage':
-                return 'bg-red-500';
-            case 'fixed':
-                return 'bg-pink-500';
-            case 'bogo':
-                return 'bg-purple-500';
-            default:
-                return 'bg-pink-500';
-        }
-    };
 
     return (
         <section className="relative mt-15 overflow-hidden">

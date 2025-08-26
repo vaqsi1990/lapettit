@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 const CakesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [priceRange, setPriceRange] = useState([0, 100])
+ 
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 9
 
