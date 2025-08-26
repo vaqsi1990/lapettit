@@ -189,7 +189,7 @@ const Contact = () => {
                     required
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
+                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                     placeholder="შეიყვანეთ თქვენი სახელი"
                   />
                 </div>
@@ -204,7 +204,7 @@ const Contact = () => {
                     required
                     value={formData.email}
                     onChange={(e) => handleInputChange('email', e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
+                    className="w-full px-4 py-3  text-black placeholder:text-black border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                     placeholder="example@email.com"
                   />
                 </div>
@@ -218,7 +218,7 @@ const Contact = () => {
                     type="tel"
                     value={formData.phone}
                     onChange={(e) => handleInputChange('phone', e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
+                    className="w-full px-4 py-3  text-black placeholder:text-black border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                     placeholder="+995 5XX XX XX XX"
                   />
                 </div>
@@ -232,14 +232,14 @@ const Contact = () => {
                     required
                     value={formData.subject}
                     onChange={(e) => handleInputChange('subject', e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
+                    className="w-full  text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                   >
-                    <option value="">აირჩიეთ თემა</option>
-                    <option value="order">შეკვეთის შესახებ</option>
-                    <option value="custom">მორგებული ტორტი</option>
-                    <option value="delivery">მიწოდების შესახებ</option>
-                    <option value="pricing">ფასების შესახებ</option>
-                    <option value="other">სხვა</option>
+                    <option className=' text-black placeholder:text-black' value="">აირჩიეთ თემა</option>
+                    <option className=' text-black placeholder:text-black' value="order">შეკვეთის შესახებ</option>
+                    <option className=' text-black placeholder:text-black' value="custom">მორგებული ტორტი</option>
+                    <option className=' text-black placeholder:text-black' value="delivery">მიწოდების შესახებ</option>
+                    <option className=' text-black placeholder:text-black' value="pricing">ფასების შესახებ</option>
+                    <option className=' text-black placeholder:text-black' value="other">სხვა</option>
                   </select>
                 </div>
 
@@ -253,7 +253,7 @@ const Contact = () => {
                     rows={5}
                     value={formData.message}
                     onChange={(e) => handleInputChange('message', e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors resize-none"
+                    className="w-full  text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors resize-none"
                     placeholder="დაწერეთ თქვენი შეტყობინება..."
                   />
                 </div>

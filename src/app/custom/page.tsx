@@ -570,7 +570,7 @@ const Custom = () => {
                         value={selectedDate}
                         onChange={(e) => setSelectedDate(e.target.value)}
                         min={new Date().toISOString().split('T')[0]}
-                        className="w-full md:text-[20px] text-[16px] h-[50px] p-2 md:p-3 border-2 focus:border-pink-500 focus:outline-none md:p-3 borderlack rounded-lg "
+                        className="w-full md:text-[20px] text-black placeholder:text-black  text-[16px] h-[50px] p-2 md:p-3 border-2 focus:border-pink-500 focus:outline-none md:p-3 borderlack rounded-lg "
                       />
 
                     </div>
