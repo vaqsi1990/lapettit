@@ -119,7 +119,7 @@ export async function searchCakes(query: string) {
 
 export async function getOrders() {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/orders`, {
+    const response = await fetch(`${process.env.BASE_URL || 'http://localhost:3000'}/api/orders`, {
       cache: 'no-store'
     });
     
