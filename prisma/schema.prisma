@@ -26,15 +26,22 @@ model Cake {
 }
 
 model CustomCake {
-  id       Int    @id @default(autoincrement())
-  text     String?
-  flavor   String?
-  size     String?
-  imageUrl String?
-  createdAt DateTime @default(now())
+  id            Int       @id @default(autoincrement())
+  design        String
+  flavor        String
+  filling       String?
+  glaze         String?
+  shape         String?
+  decorations   String[]  // Array of decoration names
+  text          String?
+  quantity      Int
+  deliveryDate  DateTime
+  deliveryTime  String?
+  imageUrl      String?
+  createdAt     DateTime  @default(now())
 
-  order    Order   @relation(fields: [orderId], references: [id])
-  orderId  Int     @unique
+  order    Order @relation(fields: [orderId], references: [id])
+  orderId  Int   @unique
 }
 
 model Order {
