@@ -7,14 +7,11 @@ import {
   ShoppingCart, 
   Users, 
   DollarSign, 
-  TrendingUp, 
   Eye,
   Edit,
   Trash2,
   Plus,
   Search,
-  Filter,
-  Calendar,
   Phone,
   MapPin,
   Cake,
@@ -398,9 +395,9 @@ const AdminPage = () => {
                            {order.customCake.text && (
                              <div className="mt-4 pt-4 border-t border-purple-200">
                                <p className="text-sm font-medium text-gray-600 mb-2">მორგებული ტექსტი</p>
-                               <p className="font-semibold text-gray-800 bg-white p-3 rounded-lg border border-purple-200">
-                                 "{order.customCake.text}"
-                               </p>
+                                                                <p className="font-semibold text-gray-800 bg-white p-3 rounded-lg border border-purple-200">
+                                   &ldquo;{order.customCake.text}&rdquo;
+                                 </p>
                              </div>
                            )}
                            
