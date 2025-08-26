@@ -208,8 +208,15 @@ const Gallery = () => {
                   <p className="text-black mb-6 leading-relaxed">{selectedImage.descriptionGeorgian}</p>
 
                   <div className="space-y-3">
-                    <button className="w-full bg-[#d90b6b] text-white py-3 px-4 rounded-lg md:text-[20px] text-[18px] font-semibold hover:from-pink-600 hover:to-rose-600 transition-all duration-300">შეუკვეთე ახლა</button>
-                    <Link href={`/product/${selectedImage.id}`} className="w-full text-center border border-gray-300 text-black py-3 md:text-[20px] text-[18px] px-4 rounded-lg font-medium hover:bg-gray-50 transition-all duration-300 block">დეტალების ნახვა</Link>
+                    <Link 
+                      href={`/order/${selectedImage.id}`}
+                      className="w-full bg-[#d90b6b] text-white py-3 px-4 rounded-lg md:text-[20px] text-[18px] font-semibold hover:bg-pink-700 transition-all duration-300 text-center block"
+                    >
+                      შეუკვეთე ახლა
+                    </Link>
+                    <Link href={`/product/${selectedImage.id}`} className="w-full border border-gray-300 text-black py-3 md:text-[20px] text-[18px] px-4 rounded-lg font-medium hover:bg-gray-50 transition-all duration-300 block text-center">
+                      დეტალების ნახვა
+                    </Link>
                   </div>
                 </div>
               </div>

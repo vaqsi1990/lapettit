@@ -3,195 +3,46 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
+import { getCakes } from '@/lib/action'
+import { mapCakeToGalleryImage, type GalleryImage } from '@/lib/utils'
+import Link from 'next/link'
 
 const CakesPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
- 
   const [currentPage, setCurrentPage] = useState(1)
+  const [cakes, setCakes] = useState<GalleryImage[]>([])
+  const [loading, setLoading] = useState(true)
   const itemsPerPage = 9
 
   const categories = [
-    { id: 'all', name: 'ყველა ტორტი',  },
-    { id: 'birthday', name: 'დაბადების დღე',  },
-    { id: 'wedding', name: 'ქორწილი', },
-    { id: 'chocolate', name: 'შოკოლადი',  },
-    { id: 'fruit', name: 'ხილის',  },
-    { id: 'custom', name: 'პერსონალური', },
-    { id: 'cupcake', name: 'კაპკეიქები',},
-    { id: 'desserts', name: 'დესერტები',  },
+    { id: 'all', name: 'ყველა ტორტი' },
+    { id: 'birthday', name: 'დაბადების დღე' },
+    { id: 'wedding', name: 'ქორწილი' },
+    { id: 'anniversary', name: 'დღესასწაული' },
+    { id: 'custom', name: 'პერსონალური' },
+    { id: 'desserts', name: 'დესერტები' },
   ]
 
-  const topProducts = [
-    {
-      id: 1,
-      name: 'შოკოლადის ოცნების ტორტი',
-      price: 45.99,
-      image: '/catalog/1.jpg',
-      rating: 5
-    },
-    {
-      id: 2,
-      name: 'ვანილის ქორწილის ტორტი',
-      price: 89.99,
-      image: '/catalog/2.jpg',
-      rating: 5
-    },
-    {
-      id: 3,
-      name: 'მარწყვის სიამოვნება',
-      price: 38.99,
-      image: '/hero/1.png',
-      rating: 5
+  // Fetch cakes from database
+  useEffect(() => {
+    const fetchCakes = async () => {
+      try {
+        setLoading(true)
+        const result = await getCakes()
+        if (result.success && result.data) {
+          const mappedCakes = result.data.map(mapCakeToGalleryImage)
+          setCakes(mappedCakes)
+        }
+      } catch (error) {
+        console.error('Error fetching cakes:', error)
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
 
-  const cakes = [
-    {
-      id: 1,
-      name: 'შოკოლადის ოცნების ტორტი',
-      category: 'chocolate',
-      price: 45.99,
-      rating: 4.8,
-      reviews: 127,
-      image: '/catalog/1.jpg',
-      description: 'მდიდარი შოკოლადის ფენები კრემიანი განაშიით',
-      isNew: true,
-      isPopular: true
-    },
-    {
-      id: 2,
-      name: 'ვანილის ქორწილის ტორტი',
-      category: 'wedding',
-      price: 89.99,
-      rating: 4.9,
-      reviews: 89,
-      image: '/catalog/2.jpg',
-      description: 'ელეგანტური ვანილის ტორტი სპეციალური დღეებისთვის',
-      isNew: false,
-      isPopular: true
-    },
-    {
-      id: 3,
-      name: 'მარწყვის სიამოვნება',
-      category: 'fruit',
-      price: 38.99,
-      rating: 4.7,
-      reviews: 156,
-      image: '/hero/1.png',
-      description: 'ახალი მარწყვი მსუბუქი კრემის შევსებით',
-      isNew: true,
-      isPopular: false
-    },
-    {
-      id: 4,
-      name: 'დაბადების დღის აღნიშვნა',
-      category: 'birthday',
-      price: 42.99,
-      rating: 4.6,
-      reviews: 203,
-      image: '/hero/2.png',
-      description: 'ფერადი დაბადების დღის ტორტი სპრინკლებით',
-      isNew: false,
-      isPopular: true
-    },
-    {
-      id: 5,
-      name: 'წითელი ველვეტის კლასიკა',
-      category: 'chocolate',
-      price: 49.99,
-      rating: 4.8,
-      reviews: 178,
-      image: '/hero/3.png',
-      description: 'კლასიკური წითელი ველვეტი კრემ-ყველის ყინულით',
-      isNew: false,
-      isPopular: true
-    },
-    {
-      id: 6,
-      name: 'ლიმონის ზესტის ტორტი',
-      category: 'fruit',
-      price: 36.99,
-      rating: 4.5,
-      reviews: 94,
-      image: '/catalog/1.jpg',
-      description: 'მოგვიანებული ლიმონის ტორტი ციტრუსის გლაზურით',
-      isNew: true,
-      isPopular: false
-    },
-    {
-      id: 7,
-      name: 'პერსონალური დიზაინის ტორტი',
-      category: 'custom',
-      price: 75.99,
-      rating: 5.0,
-      reviews: 67,
-      image: '/catalog/2.jpg',
-      description: 'პერსონალური ტორტის დიზაინი თქვენი სპეციფიკაციების მიხედვით',
-      isNew: false,
-      isPopular: true
-    },
-    {
-      id: 8,
-      name: 'სტაფილოს ტორტი დელუქს',
-      category: 'fruit',
-      price: 41.99,
-      rating: 4.7,
-      reviews: 112,
-      image: '/hero/1.png',
-      description: 'ტენიანი სტაფილოს ტორტი ნაძვის თხილით და კრემ-ყველით',
-      isNew: false,
-      isPopular: false
-    },
-    {
-      id: 9,
-      name: 'კაპკეიქების კომპლექტი',
-      category: 'cupcake',
-      price: 28.99,
-      rating: 4.4,
-      reviews: 89,
-      image: '/catalog/1.jpg',
-      description: '6 ცალი უნიკალური კაპკეიქი სხვადასხვა გემოთი',
-      isNew: true,
-      isPopular: false
-    },
-    {
-      id: 10,
-      name: 'ტირამისუ',
-      category: 'desserts',
-      price: 32.99,
-      rating: 4.9,
-      reviews: 156,
-      image: '/catalog/2.jpg',
-      description: 'იტალიური ტირამისუ ყავისა და მასკარპონის გემოთი',
-      isNew: false,
-      isPopular: true
-    },
-    {
-      id: 11,
-      name: 'შოკოლადის მაფინები',
-      category: 'chocolate',
-      price: 24.99,
-      rating: 4.6,
-      reviews: 78,
-      image: '/hero/1.png',
-      description: '4 ცალი რბილი შოკოლადის მაფინი',
-      isNew: false,
-      isPopular: false
-    },
-    {
-      id: 12,
-      name: 'ბანანის ტორტი',
-      category: 'fruit',
-      price: 34.99,
-      rating: 4.7,
-      reviews: 92,
-      image: '/hero/2.png',
-      description: 'ტენიანი ბანანის ტორტი კარამელის სოუსით',
-      isNew: false,
-      isPopular: true
-    }
-  ]
+    fetchCakes()
+  }, [])
 
   // Filter cakes based on category and search
   const filteredCakes = useMemo(() => {
@@ -203,13 +54,13 @@ const CakesPage = () => {
     
     if (searchQuery) {
       filtered = filtered.filter(cake => 
-        cake.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        cake.description.toLowerCase().includes(searchQuery.toLowerCase())
+        cake.titleGeorgian.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cake.descriptionGeorgian.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
     
     return filtered
-  }, [selectedCategory, searchQuery])
+  }, [selectedCategory, searchQuery, cakes])
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredCakes.length / itemsPerPage)
@@ -273,6 +124,17 @@ const CakesPage = () => {
     ))
   }
 
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-black">იტვირთება...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-color">
       {/* Hero Section */}
@@ -318,7 +180,6 @@ const CakesPage = () => {
                       onChange={(e) => setSearchQuery(e.target.value)}
                       className="flex-1 px-4 py-2 w-full border border-gray-300 rounded-l-lg focus:outline-none focus:border-pink-500"
                     />
-                    
                   </div>
                 </div>
 
@@ -342,28 +203,27 @@ const CakesPage = () => {
                   </div>
                 </div>
 
-
                 {/* Top Sale Products */}
                 <div>
                   <h3 className="md:text-[20px] text-[18px] font-semibold text-black mb-4">ტოპ გაყიდვები</h3>
                   <div className="space-y-4">
-                    {topProducts.map((product) => (
-                      <div key={product.id} className="flex items-center space-x-3">
+                    {cakes.slice(0, 3).map((cake) => (
+                      <div key={cake.id} className="flex items-center space-x-3">
                         <div className="w-16 h-16 rounded-lg overflow-hidden text-[16px] md:text-[18px]">
                           <Image
-                            src={product.image}
-                            alt={product.name}
+                            src={cake.src}
+                            alt={cake.titleGeorgian}
                             width={64}
                             height={64}
                             className="w-full h-full object-cover"
                           />
                         </div>
                         <div className="flex-1">
-                          <h4 className="md:text-[18px] text-[16px] font-medium text-black">{product.name}</h4>
+                          <h4 className="md:text-[18px] text-[16px] font-medium text-black">{cake.titleGeorgian}</h4>
                           <div className="flex items-center space-x-1">
-                            {renderStars(product.rating)}
+                            {renderStars(4.5)}
                           </div>
-                          <p className="md:text-[16px] text-[14px] font-bold text-pink-600">₾{product.price}</p>
+                          <p className="md:text-[16px] text-[14px] font-bold text-pink-600">₾{cake.price}</p>
                         </div>
                       </div>
                     ))}
@@ -400,30 +260,26 @@ const CakesPage = () => {
                     {/* Product Image */}
                     <div className="relative h-48 overflow-hidden flex-shrink-0">
                       <Image
-                        src={cake.image}
-                        alt={cake.name}
+                        src={cake.src}
+                        alt={cake.titleGeorgian}
                         fill
                         className="object-cover hover:scale-105 transition-transform duration-300"
                       />
-                  
-                     
                     </div>
 
                     {/* Product Info */}
                     <div className="p-4 flex flex-col flex-grow">
-                      <div className="flex items-center space-x-1 mb-2">
-                        {renderStars(cake.rating)}
-                      </div>
+                     
                       <h3 className="md:text-[18px] text-[16px] font-semibold text-black mb-2 min-h-[3.5rem] flex items-start leading-tight">
-                        {cake.name}
+                        {cake.titleGeorgian}
                       </h3>
                       <div className="mt-auto">
                         <p className="md:text-[18px] text-[16px] font-bold text-black mb-4">
                           ₾{cake.price}
                         </p>
-                        <button className=" text-center cursor-pointer   md:text-[20px] text-[18px] w-full w-full bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl border-radius:20px  px-4 sm:px-6 md:px-8 py-2 text-white rounded-xl font-bold  transition-all duration-300 transform shadow-lg    ">
-                          კალათაში დამატება
-                        </button>
+                        <Link href={`/product/${cake.id}`} className="text-center cursor-pointer md:text-[20px] text-[18px] w-full bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                        დაათვალიერეთ
+                        </Link>
                       </div>
                     </div>
                   </motion.div>
@@ -450,7 +306,6 @@ const CakesPage = () => {
                 {getPageNumbers().map((page, index) => (
                   <button
                     key={index}
-                   
                     className={`px-4 py-2 bg-white text-black border border-gray-300 rounded-lg hover:bg-gray-50 ${
                       typeof page === 'number' && page === currentPage
                         ? 'bg-pink-500 text-black font-medium'

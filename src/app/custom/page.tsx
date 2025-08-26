@@ -12,6 +12,7 @@ import {
   Check,
   X
 } from 'lucide-react';
+import { submitCustomCakeOrder, type CustomCakeFormData } from '@/lib/customCakeActions';
 
 interface CakeDesign {
   id: string;
@@ -50,6 +51,7 @@ const Custom = () => {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [isClientFormOpen, setIsClientFormOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Client form state
@@ -264,7 +266,7 @@ const Custom = () => {
     setIsClientFormOpen(true);
   };
 
-  const handleClientFormSubmit = (e: React.FormEvent) => {
+  const handleClientFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Validate required fields
@@ -273,43 +275,64 @@ const Custom = () => {
       return;
     }
 
-    // Here you would typically send the data to your backend
-    console.log('Order submitted:', {
-      cakeDetails: {
-        design: selectedDesign,
-        flavor: selectedFlavor,
-        filling: selectedFilling,
-        frosting: selectedFrosting,
-        size: selectedSize,
-        shape: selectedShape,
-        decorations: selectedDecorations,
-        customMessage,
-        specialInstructions,
-        quantity,
-        selectedDate,
-        selectedTime,
-        totalPrice
-      },
-      clientInfo: clientForm
-    });
+    const customCakeData: CustomCakeFormData = {
+      design: selectedDesign,
+      flavor: selectedFlavor,
+      filling: selectedFilling,
+      glaze: selectedFrosting,
+      shape: selectedShape,
+      decorations: selectedDecorations,
+      text: customMessage,
+      quantity: quantity,
+      deliveryDate: selectedDate,
+      deliveryTime: selectedTime,
+      totalPrice: totalPrice,
+      customerName: clientForm.firstName,
+      lastName: clientForm.lastName,
+      customerPhone: clientForm.phone,
+      customerEmail: clientForm.email,
+      address: clientForm.address,
+      city: clientForm.city,
+      zipCode: clientForm.zipCode,
+      notes: clientForm.notes,
+      imageUrl: uploadedImage || undefined,
+    };
 
-    // Show success message
-    alert('თქვენი ტორტის შეკვეთა წარმატებით გაიგზავნა!');
-
-    // Close the popup
-    setIsClientFormOpen(false);
-
-    // Reset form
-    setClientForm({
-      firstName: '',
-      lastName: '',
-      phone: '',
-      email: '',
-      address: '',
-      city: '',
-      zipCode: '',
-      notes: ''
-    });
+    try {
+      setIsSubmitting(true);
+      await submitCustomCakeOrder(customCakeData);
+      alert('თქვენი ტორტის შეკვეთა წარმატებით გაიგზავნა!');
+      setIsClientFormOpen(false);
+      setClientForm({
+        firstName: '',
+        lastName: '',
+        phone: '',
+        email: '',
+        address: '',
+        city: '',
+        zipCode: '',
+        notes: ''
+      });
+      setUploadedImage(null);
+      setCustomMessage('');
+      setSpecialInstructions('');
+      setQuantity(1);
+      setSelectedDate('');
+      setSelectedTime('');
+      setTotalPrice(0);
+      setSelectedDesign('');
+      setSelectedFlavor('');
+      setSelectedFilling('');
+      setSelectedFrosting('');
+      setSelectedSize('');
+      setSelectedShape('');
+      setSelectedDecorations([]);
+    } catch (error) {
+      console.error('Error submitting custom cake order:', error);
+      alert('ტორტის შეკვეთის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -999,8 +1022,9 @@ const Custom = () => {
                   <button
                     type="submit"
                     className="w-full sm:w-[250px] text-[16px] sm:text-[18px] py-3 px-6 rounded-xl font-bold cursor-pointer text-white bg-[#d90b6b] hover:scale-105 transform transition-all shadow-md"
+                    disabled={isSubmitting}
                   >
-                    შეკვეთა
+                    {isSubmitting ? 'დამატება...' : 'შეკვეთა'}
                   </button>
                 </div>
               </form>

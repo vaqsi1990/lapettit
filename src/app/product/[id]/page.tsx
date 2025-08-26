@@ -179,9 +179,9 @@ const ProductPage = () => {
 
                             {/* Action Buttons */}
                             <div className="space-y-3">
-                                <button className="w-full cursor-pointer bg-[#d90b6b] hover:bg-pink-700 text-white py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl">
-                                    კალათაში დამატება
-                                </button>
+                                <Link href={`/order/${product.id}`} className="w-full cursor-pointer bg-[#d90b6b] hover:bg-pink-700 text-white py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl">
+                                   შეუკვეთე ახლა
+                                </Link>
 
                             </div>
                         </div>
