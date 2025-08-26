@@ -116,3 +116,21 @@ export async function searchCakes(query: string) {
     return { success: false, error: 'Failed to search cakes' };
   }
 }
+
+export async function getOrders() {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/orders`, {
+      cache: 'no-store'
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch orders');
+    }
+    
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    return { success: false, error: 'Failed to fetch orders' };
+  }
+}
