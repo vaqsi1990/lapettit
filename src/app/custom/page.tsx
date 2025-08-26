@@ -461,11 +461,11 @@ const Custom = () => {
                   <select
                     value={selectedSize}
                     onChange={(e) => setSelectedSize(e.target.value)}
-                    className="w-full p-2 md:p-3 border border-black rounded-lg text-[18px] md:text-[20px] font-medium"
+                    className="w-full text-black p-2 md:p-3 border border-black rounded-lg text-[18px] md:text-[20px] font-medium"
                   >
                     <option className=" md:text-[18px] text-[16px] font-medium" value="">აირჩიეთ ზომა</option>
                     {getOptionByCategory('size').map((option) => (
-                      <option className=" md:text-[18px] text-[16px] font-medium" key={option.id} value={option.id}>
+                      <option className=" md:text-[18px] text-black text-[16px] font-medium" key={option.id} value={option.id}>
                         {option.nameGeorgian} {option.price > 0 && `(+₾${option.price})`}
                       </option>
                     ))}
@@ -476,11 +476,11 @@ const Custom = () => {
                   <select
                     value={selectedShape}
                     onChange={(e) => setSelectedShape(e.target.value)}
-                    className="w-full p-2 md:p-3 border border-black rounded-lg text-[18px] md:text-[20px] font-medium"
+                    className="w-full text-black p-2 md:p-3 border border-black rounded-lg text-[18px] md:text-[20px] font-medium"
                   >
-                    <option className=" md:text-[18px] text-[16px] font-medium" value="">აირჩიეთ ფორმა</option>
+                    <option className=" md:text-[18px] text-black text-[16px] font-medium" value="">აირჩიეთ ფორმა</option>
                     {getOptionByCategory('shape').map((option) => (
-                      <option className=" md:text-[18px] text-[16px] font-medium" key={option.id} value={option.id}>
+                      <option className=" md:text-[18px] text-black text-[16px] font-medium" key={option.id} value={option.id}>
                         {option.nameGeorgian} {option.price > 0 && `(+₾${option.price})`}
                       </option>
                     ))}
@@ -535,7 +535,7 @@ const Custom = () => {
                   value={customMessage}
                   onChange={(e) => setCustomMessage(e.target.value)}
                   placeholder="დაწერეთ თქვენი შეტყობინება ტორტზე..."
-                  className="w-full p-2 border-2 focus:border-pink-500 focus:outline-none md:p-3 border border-black rounded-lg "
+                  className="w-full text-black placeholder:text-black p-2 border-2 focus:border-pink-500 focus:outline-none md:p-3 border border-black rounded-lg "
                   rows={3}
                 />
                 {customMessage && (
@@ -553,7 +553,7 @@ const Custom = () => {
                   value={specialInstructions}
                   onChange={(e) => setSpecialInstructions(e.target.value)}
                   placeholder="დამატებითი მითითებები ან სურვილები..."
-                  className="w-full p-2 border-2 focus:border-pink-500 focus:outline-none md:p-3 border md:p-3 border border-black rounded-lg "
+                  className="w-full text-black placeholder:text-black p-2 border-2 focus:border-pink-500 focus:outline-none md:p-3 border md:p-3 border border-black rounded-lg "
                   rows={3}
                 />
               </div>
@@ -581,7 +581,7 @@ const Custom = () => {
                       <select
                         value={selectedTime}
                         onChange={(e) => setSelectedTime(e.target.value)}
-                        className="w-full md:text-[20px] text-[16px]  h-[50px] p-2 md:p-3 border-2 focus:border-pink-500 focus:outline-none md:p-3 border rounded-lg "
+                        className="w-full md:text-[20px] text-black text-[16px]  h-[50px] p-2 md:p-3 border-2 focus:border-pink-500 focus:outline-none md:p-3 border rounded-lg "
                       >
                         <option className=" md:text-[20px] text-[16px] font-medium" value="">აირჩიეთ დრო</option>
                         <option className=" md:text-[20px] text-[16px] font-medium" value="09:00">09:00 - დილა</option>
@@ -894,102 +894,102 @@ const Custom = () => {
               className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-lg sm:text-xl text-center mt-6 font-bold text-black mb-4">
+              <h3 className="text-lg  sm:text-xl text-center mt-6 font-bold text-black mb-4">
                 შეავსეთ ინფორმაცია
               </h3>
 
               <form
                 onSubmit={handleClientFormSubmit}
-                className="p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6"
+                className="p-4 sm:p-6 text-black grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6"
               >
                 <div>
-                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">სახელი</label>
+                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">სახელი</label>
                   <input
                     type="text"
                     value={clientForm.firstName}
                     onChange={(e) => handleInputChange("firstName", e.target.value)}
-                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none transition"
+                    className="w-full p-2 text-black placeholder:text-black sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none transition"
                     placeholder="სახელი"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">გვარი</label>
+                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">გვარი</label>
                   <input
                     type="text"
                     value={clientForm.lastName}
                     onChange={(e) => handleInputChange("lastName", e.target.value)}
-                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none transition"
+                    className="w-full p-2 text-black placeholder:text-black sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none transition"
                     placeholder="გვარი"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">ტელეფონი</label>
+                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">ტელეფონი</label>
                   <input
                     type="tel"
                     value={clientForm.phone}
                     onChange={(e) => handleInputChange("phone", e.target.value)}
-                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none transition"
+                    className="w-full text-black p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none transition"
                     placeholder="ტელეფონი"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">ელ-ფოსტა</label>
+                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">ელ-ფოსტა</label>
                   <input
                     type="email"
                     value={clientForm.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
+                    className="w-full text-black p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
                     placeholder="ელ-ფოსტა"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">მისამართი</label>
+                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">მისამართი</label>
                   <input
                     type="text"
                     value={clientForm.address}
                     onChange={(e) => handleInputChange("address", e.target.value)}
-                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
+                    className="w-full p-2 text-black sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
                     placeholder="მისამართი"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">ქალაქი</label>
+                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">ქალაქი</label>
                   <input
                     type="text"
                     value={clientForm.city}
                     onChange={(e) => handleInputChange("city", e.target.value)}
-                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
+                    className="w-full text-black p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
                     placeholder="ქალაქი"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">პოსტის კოდი</label>
+                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">პოსტის კოდი</label>
                   <input
                     type="text"
                     value={clientForm.zipCode}
                     onChange={(e) => handleInputChange("zipCode", e.target.value)}
-                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
+                    className="w-full p-2 text-black sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
                     placeholder="პოსტის კოდი"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-[16px] sm:text-[18px] font-medium mb-1">შეტყობინება</label>
+                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">შეტყობინება</label>
                   <textarea
                     value={clientForm.notes}
                     onChange={(e) => handleInputChange("notes", e.target.value)}
-                    className="w-full p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
+                    className="w-full text-black p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
                     placeholder="შეტყობინება (არასავალდებულო)"
                     rows={3}
                   />

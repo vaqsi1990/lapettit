@@ -97,58 +97,58 @@ const Contact = () => {
               
               <div className="space-y-8">
                 {/* Phone */}
-                <div className="flex items-start gap-4">
+                <div className="flex text-black items-start gap-4">
                   <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <Phone className="w-8 h-8 text-pink-600" />
                   </div>
                   <div>
-                    <h3 className="text-[18px] md:text-[20px] font-semibold  mb-2">ტელეფონი</h3>
-                    <p className=" text-[18px] md:text-[20px]">+995 599 123 456</p>
-                    <p className=" text-[18px] md:text-[20px]">ორშაბათი - შაბათი: 9:00 - 20:00</p>
+                    <h3 className="text-[18px] text-black md:text-[20px] font-semibold  mb-2">ტელეფონი</h3>
+                    <p className=" text-[18px] text-black md:text-[20px]">+995 599 123 456</p>
+                    <p className=" text-[18px] text-black md:text-[20px]">ორშაბათი - შაბათი: 9:00 - 20:00</p>
                   </div>
                 </div>
 
                 {/* Email */}
-                <div className="flex items-start gap-4">
+                <div className="flex text-black items-start gap-4">
                   <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <Mail className="w-8 h-8 text-pink-600" />
                   </div>
                   <div>
-                    <h3 className="text-[18px] md:text-[20px] font-semibold  mb-2">ელ-ფოსტა</h3>
-                    <p className=" text-[18px] md:text-[20px]">info@cakes.ge</p>
-                    <p className="">პასუხს მოგცემთ 24 საათის განმავლობაში</p>
+                    <h3 className="text-[18px] text-black md:text-[20px] font-semibold  mb-2">ელ-ფოსტა</h3>
+                    <p className=" text-[18px] text-black md:text-[20px]">info@cakes.ge</p>
+                    <p className="text-black">პასუხს მოგცემთ 24 საათის განმავლობაში</p>
                   </div>
                 </div>
 
                 {/* Address */}
-                <div className="flex items-start gap-4">
+                <div className="flex text-black items-start gap-4">
                   <div className="w-14 h-14 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <MapPin className="w-8 h-8 text-pink-600" />
                   </div>
                   <div>
-                    <h3 className="text-[18px] md:text-[20px] font-semibold  mb-2">მისამართი</h3>
-                    <p className=" text-[18px] md:text-[20px]">რუსთავის გზატკეცილი 123</p>
-                    <p className=" text-[18px] md:text-[20px]">თბილისი, საქართველო</p>
+                    <h3 className="text-[18px] text-black md:text-[20px] font-semibold  mb-2">მისამართი</h3>
+                    <p className=" text-[18px] text-black md:text-[20px]">რუსთავის გზატკეცილი 123</p>
+                    <p className=" text-[18px] text-black md:text-[20px]">თბილისი, საქართველო</p>
                   </div>
                 </div>
 
                 {/* Working Hours */}
-                <div className="flex items-start gap-4">
+                <div className="flex text-black items-start gap-4">
                   <div className="w-14 h-14 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
                     <Clock className="w-8 h-8 text-pink-600" />
                   </div>
                   <div>
-                    <h3 className="text-[18px] md:text-[20px] font-semibold  mb-2">სამუშაო საათები</h3>
-                    <p className=" text-[18px] md:text-[20px]">ორშაბათი - პარასკევი: 9:00 - 20:00</p>
-                    <p className=" text-[18px] md:text-[20px]">შაბათი: 10:00 - 18:00</p>
-                    <p className=" text-[18px] md:text-[20px]">კვირა: დახურული</p>
+                    <h3 className="text-[18px]text-black  md:text-[20px] font-semibold  mb-2">სამუშაო საათები</h3>
+                    <p className=" text-[18px]text-black  md:text-[20px]">ორშაბათი - პარასკევი: 9:00 - 20:00</p>
+                    <p className=" text-[18px] text-black md:text-[20px]">შაბათი: 10:00 - 18:00</p>
+                    <p className=" text-[18px]text-black  md:text-[20px]">კვირა: დახურული</p>
                   </div>
                 </div>
               </div>
 
               {/* Social Media */}
               <div className="mt-12">
-                <h3 className="text-[18px] md:text-[20px] font-semibold  mb-4">გამოგვყევით</h3>
+                <h3 className="text-[18px] text-black md:text-[20px] font-semibold  mb-4">გამოგვყევით</h3>
                 <div className="flex gap-4">
                   <a 
                     href="#" 
