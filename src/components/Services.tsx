@@ -12,6 +12,7 @@ import {
     Palette,
     Truck,
 } from 'lucide-react';
+import Link from 'next/link';
 
 interface Service {
     id: number;
@@ -244,9 +245,9 @@ const Services = () => {
 
                                 {/* CTA Button */}
                                 <div className="px-6 pb-6 flex-shrink-0">
-                                    <button className="w-full cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                                    <Link    href="/cakes" className="w-full cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                                         შეუკვეთე ახლა
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
                         </motion.div>
