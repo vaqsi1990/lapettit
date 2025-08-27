@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { sendOrderConfirmation } from '@/lib/emailService';
 
 const prisma = new PrismaClient();
 
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
       address,
       city,
       zipCode,
-      notes,
+     
       totalPrice
     } = body;
 
@@ -76,11 +77,47 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Send confirmation email if customer email is provided
+    if (customerEmail) {
+      try {
+        const emailData = {
+          orderId: order.id,
+          customerName: order.customerName,
+          customerEmail: customerEmail,
+          customerPhone: order.customerPhone,
+          address: order.address,
+          design: design,
+          flavor: flavor,
+          filling: filling,
+          glaze: glaze,
+          shape: shape,
+          decorations: decorations || [],
+          text: text,
+          quantity: quantity,
+          deliveryDate: deliveryDate,
+          deliveryTime: deliveryTime,
+          totalPrice: totalPrice || 0,
+          orderDate: order.createdAt.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })
+        };
+
+        await sendOrderConfirmation(emailData, true);
+      } catch (emailError) {
+        console.error('Error sending confirmation email:', emailError);
+        // Don't fail the order if email fails
+      }
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Custom cake order created successfully',
       orderId: order.id,
-      customCakeId: customCake.id
+      customCakeId: customCake.id,
+      emailSent: !!customerEmail
     });
 
   } catch (error) {

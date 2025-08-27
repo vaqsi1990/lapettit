@@ -15,7 +15,8 @@ import {
   Phone,
   MapPin,
   Cake,
-  Star
+  Star,
+  Mail
 } from 'lucide-react';
 import { getCakes, getOrders, deleteCake, deleteOrder } from '@/lib/action';
 
@@ -33,6 +34,7 @@ interface Order {
   id: number;
   customerName: string;
   customerPhone: string;
+  customerEmail?: string;
   address: string;
   total: number;
   status: string;
@@ -331,21 +333,28 @@ const AdminPage = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <div className="text-3xl font-bold text-[#d90b6b] mb-2">₾{order.total}</div>
-                        <span className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                          {getStatusText(order.status)}
-                        </span>
-                        <div className="text-sm text-gray-500 mt-2">
-                          {new Date(order.createdAt).toLocaleDateString('ka-GE', {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </div>
-                      </div>
+                                             <div className="text-right">
+                         <div className="text-3xl font-bold text-[#d90b6b] mb-2">₾{order.total}</div>
+                         <span className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
+                           {getStatusText(order.status)}
+                         </span>
+                         <div className="text-sm text-gray-500 mt-2">
+                           {new Date(order.createdAt).toLocaleDateString('ka-GE', {
+                             year: 'numeric',
+                             month: 'long',
+                             day: 'numeric',
+                             hour: '2-digit',
+                             minute: '2-digit'
+                           })}
+                         </div>
+                         {/* Email Status Indicator */}
+                         <div className="flex items-center justify-end mt-2 space-x-2">
+                           <Mail className="w-4 h-4 text-gray-400" />
+                           <span className="text-xs text-gray-500">
+                             {order.customerEmail ? 'Email confirmation sent' : 'No email provided'}
+                           </span>
+                         </div>
+                       </div>
                     </div>
                   </div>
 

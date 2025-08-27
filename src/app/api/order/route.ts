@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { sendOrderConfirmation } from '@/lib/emailService';
 
 const prisma = new PrismaClient();
 
@@ -62,12 +63,40 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    // Send confirmation email if customer email is provided
+    if (customerEmail) {
+      try {
+        const emailData = {
+          orderId: order.id,
+          customerName: order.customerName,
+          customerEmail: customerEmail,
+          customerPhone: order.customerPhone,
+          address: order.address,
+          cakeName: cake.name,
+          quantity: quantity,
+          totalPrice: finalTotal,
+          orderDate: order.createdAt.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })
+        };
+
+        await sendOrderConfirmation(emailData, false);
+      } catch (emailError) {
+        console.error('Error sending confirmation email:', emailError);
+        // Don't fail the order if email fails
+      }
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Order created successfully',
       orderId: order.id,
       orderItemId: orderItem.id,
-      total: finalTotal
+      total: finalTotal,
+      emailSent: !!customerEmail
     });
 
   } catch (error) {
