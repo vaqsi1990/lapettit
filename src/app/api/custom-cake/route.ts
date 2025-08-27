@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log('Custom cake order received:', body);
     
     const {
       design,
@@ -21,12 +22,13 @@ export async function POST(request: NextRequest) {
       deliveryTime,
       imageUrl,
       customerName,
+      lastName,
       customerPhone,
       customerEmail,
       address,
       city,
       zipCode,
-     
+      notes,
       totalPrice
     } = body;
 

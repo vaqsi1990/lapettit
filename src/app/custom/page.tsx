@@ -13,6 +13,7 @@ import {
   X
 } from 'lucide-react';
 import { submitCustomCakeOrder, type CustomCakeFormData } from '@/lib/customCakeActions';
+import Link from 'next/link';
 
 interface CakeDesign {
   id: string;
@@ -836,9 +837,7 @@ const Custom = () => {
                   <span className="text-pink-600 text-2xl">₾{totalPrice}</span>
                 </div>
 
-                <button
-                  onClick={handleSubmit}
-                  disabled={!selectedDesign || !selectedDate || !selectedTime}
+                <Link href={`/order/custom?design=${selectedDesign}&date=${selectedDate}&time=${selectedTime}&size=${selectedSize}&flavor=${selectedFlavor}&filling=${selectedFilling}&frosting=${selectedFrosting}&shape=${selectedShape}&decorations=${selectedDecorations.join(',')}&price=${totalPrice}`}
                   className={`w-full md:w-[300px] mx-auto md:text-[20px] text-[18px] cursor-pointer py-2 md:py-3 px-4 md:px-6 rounded-lg font-bold text-white transition-all duration-300 text-sm md:text-base ${selectedDesign && selectedDate && selectedTime
                     ? 'bg-[#d90b6b] md:text-[20px] text-[18px] text-white'
                     : 'bg-gray-300 md:text-[20px] text-[18px] cursor-not-allowed'
@@ -846,193 +845,17 @@ const Custom = () => {
                 >
                   <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 inline mr-2" />
                   შეუკვეთე ახლა
-                </button>
+                </Link>
 
-                <button
-                  onClick={() => setIsPreviewOpen(true)}
-                  disabled={!selectedDesign}
-                  className={`w-full w-full md:w-[300px] mx-auto  md:text-[20px] text-[18px] cursor-pointer mt-3 py-2 px-3 md:px-4 rounded-lg font-bold transition-all duration-300 text-sm md:text-base ${selectedDesign
-                    ? 'border-2 '
-                    : 'border-2 border-gray-300 text-black cursor-not-allowed'
-                    }`}
-                >
-                  <Save className="w-3 h-3 md:w-4 md:h-4 inline mr-2" />
-                  შეინახე დიზაინი
-                </button>
+               
               </div>
             </motion.div>
           </div>
         </div>
       </div>
 
-      {/* Success Message */}
-      <AnimatePresence>
-        {isPreviewOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-            onClick={() => setIsPreviewOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-white rounded-2xl   w-full text-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-8 h-8 text-green-600" />
-              </div>
-              <h3 className="text-xl font-bold text-black mb-2">დიზაინი შენახულია!</h3>
-              <p className="text-black mb-6">
-                თქვენი ტორტის დიზაინი წარმატებით შენახულია. შეგიძლიათ მოგვიანებით გააგრძელოთ ან შეუკვეთოთ.
-              </p>
-              <button
-                onClick={() => setIsPreviewOpen(false)}
-                className="w-full bg-pink-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-pink-600 transition-colors"
-              >
-                კარგი
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* Client Information Form */}
-      <AnimatePresence>
-        {isClientFormOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-            onClick={() => setIsClientFormOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-lg  sm:text-xl text-center mt-6 font-bold text-black mb-4">
-                შეავსეთ ინფორმაცია
-              </h3>
-
-              <form
-                onSubmit={handleClientFormSubmit}
-                className="p-4 sm:p-6 text-black grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6"
-              >
-                <div>
-                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">სახელი</label>
-                  <input
-                    type="text"
-                    value={clientForm.firstName}
-                    onChange={(e) => handleInputChange("firstName", e.target.value)}
-                    className="w-full p-2 text-black placeholder:text-black sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none transition"
-                    placeholder="სახელი"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">გვარი</label>
-                  <input
-                    type="text"
-                    value={clientForm.lastName}
-                    onChange={(e) => handleInputChange("lastName", e.target.value)}
-                    className="w-full p-2 text-black placeholder:text-black sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none transition"
-                    placeholder="გვარი"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">ტელეფონი</label>
-                  <input
-                    type="tel"
-                    value={clientForm.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    className="w-full text-black p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-500 focus:outline-none transition"
-                    placeholder="ტელეფონი"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">ელ-ფოსტა</label>
-                  <input
-                    type="email"
-                    value={clientForm.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="w-full text-black p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
-                    placeholder="ელ-ფოსტა"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">მისამართი</label>
-                  <input
-                    type="text"
-                    value={clientForm.address}
-                    onChange={(e) => handleInputChange("address", e.target.value)}
-                    className="w-full p-2 text-black sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
-                    placeholder="მისამართი"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">ქალაქი</label>
-                  <input
-                    type="text"
-                    value={clientForm.city}
-                    onChange={(e) => handleInputChange("city", e.target.value)}
-                    className="w-full text-black p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
-                    placeholder="ქალაქი"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">პოსტის კოდი</label>
-                  <input
-                    type="text"
-                    value={clientForm.zipCode}
-                    onChange={(e) => handleInputChange("zipCode", e.target.value)}
-                    className="w-full p-2 text-black sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
-                    placeholder="პოსტის კოდი"
-                  />
-                </div>
-
-                <div className="sm:col-span-2">
-                  <label className="block text-black text-[16px] sm:text-[18px] font-medium mb-1">შეტყობინება</label>
-                  <textarea
-                    value={clientForm.notes}
-                    onChange={(e) => handleInputChange("notes", e.target.value)}
-                    className="w-full text-black p-2 sm:p-3 border border-gray-300 rounded-xl focus:ring-2 focus:border-pink-400 focus:outline-none transition"
-                    placeholder="შეტყობინება (არასავალდებულო)"
-                    rows={3}
-                  />
-                </div>
-
-                <div className="sm:col-span-2 flex justify-center">
-                  <button
-                    type="submit"
-                    className="w-full sm:w-[250px] text-[16px] sm:text-[18px] py-3 px-6 rounded-xl font-bold cursor-pointer text-white bg-[#d90b6b] hover:scale-105 transform transition-all shadow-md"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? 'დამატება...' : 'შეკვეთა'}
-                  </button>
-                </div>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-
-      </AnimatePresence>
+    
     </div>
   );
 };
