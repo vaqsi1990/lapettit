@@ -30,6 +30,96 @@ const OrderPage = () => {
     notes: ''
   });
 
+  const [otpSent, setOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
+
+  const handleVerifyOtp = async () => {
+    if (!otp || otp.length !== 6) {
+      alert('გთხოვთ შეიყვანოთ 6-ნიშნა კოდი');
+      return;
+    }
+
+    if (!cake) {
+      alert('ტორტის ინფორმაცია ვერ მოიძებნა');
+      return;
+    }
+
+    if (isSubmitting) {
+      alert('გთხოვთ დაელოდოთ, ვერიფიკაცია მიმდინარეობს...');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      
+      // Verify OTP
+      const response = await fetch('/api/verify-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: orderForm.customerEmail,
+          otp: otp
+        }),
+      });
+
+      if (response.ok) {
+        // OTP verified, now submit the order
+        const orderData: OrderFormData = {
+          cakeId: cake.id,
+          quantity: quantity,
+          customerName: orderForm.customerName,
+          lastName: orderForm.lastName,
+          customerPhone: orderForm.customerPhone,
+          customerEmail: orderForm.customerEmail,
+          address: orderForm.address,
+          city: orderForm.city,
+          zipCode: orderForm.zipCode,
+          notes: orderForm.notes,
+          totalPrice: cake.price * quantity
+        };
+
+        await submitOrder(orderData);
+        
+        // Send receipt email
+        try {
+          const receiptResponse = await fetch('/api/send-receipt', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              email: orderForm.customerEmail,
+              customerName: orderForm.customerName,
+              orderData: orderData,
+              cake: cake
+            }),
+          });
+          
+          if (receiptResponse.ok) {
+            alert('თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითარი გაიგზავნა თქვენს ელ-ფოსტაზე.');
+          } else {
+            alert('თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითრის გამოიგზავნაა.');
+          }
+        } catch (error) {
+          console.error('Error sending receipt:', error);
+          alert('თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითრის გაგზავნა ვერ მოხერხდა.');
+        }
+        
+        router.push('/');
+      } else {
+        alert('არასწორი OTP კოდი. სცადეთ თავიდან.');
+        setOtp('');
+      }
+    } catch (error) {
+      console.error('Error verifying OTP:', error);
+      alert('OTP-ის დადასტურება ვერ მოხერხდა. სცადეთ მოგვიანებით.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Fetch cake details
   useEffect(() => {
     const fetchCake = async () => {
@@ -68,29 +158,46 @@ const OrderPage = () => {
 
     if (!cake) return;
 
-    const orderData: OrderFormData = {
-      cakeId: cake.id,
-      quantity: quantity,
-      customerName: orderForm.customerName,
-      lastName: orderForm.lastName,
-      customerPhone: orderForm.customerPhone,
-      customerEmail: orderForm.customerEmail,
-      address: orderForm.address,
-      city: orderForm.city,
-      zipCode: orderForm.zipCode,
-      notes: orderForm.notes,
-      totalPrice: cake.price * quantity
-    };
+    // Check if email is provided for OTP
+    if (!orderForm.customerEmail) {
+      alert('გთხოვთ შეიყვანოთ ელ-ფოსტა OTP-ის მისაღებად');
+      return;
+    }
 
     try {
       setIsSubmitting(true);
-      await submitOrder(orderData);
+      
+      // Send OTP to email
+      const response = await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: orderForm.customerEmail,
+          customerName: orderForm.customerName
+        }),
+      });
 
-      alert('თქვენი შეკვეთა წარმატებით გაიგზავნა!');
-      router.push('/');
+             if (response.ok) {
+         setOtpSent(true);
+         
+         // Store OTP locally as backup (for development mode issues)
+         const responseData = await response.json();
+         if (responseData.otp) {
+           localStorage.setItem('backup_otp', responseData.otp);
+           localStorage.setItem('backup_otp_timestamp', Date.now().toString());
+         }
+         
+         alert('OTP კოდი გაიგზავნა თქვენს ელ-ფოსტაზე! გთხოვთ დაელოდოთ 2-3 წამი კოდის მისაღებამდე.');
+         // Small delay to ensure OTP is properly stored
+         await new Promise(resolve => setTimeout(resolve, 2000));
+       } else {
+         alert('OTP-ის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან.');
+       }
     } catch (error) {
-      console.error('Error submitting order:', error);
-      alert('შეკვეთის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
+      console.error('Error sending OTP:', error);
+      alert('OTP-ის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
     } finally {
       setIsSubmitting(false);
     }
@@ -235,14 +342,16 @@ const OrderPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-black font-medium mb-1">ელ-ფოსტა</label>
+                  <label className="block text-black font-medium mb-1">ელ-ფოსტა *</label>
                   <input
                     type="email"
                     value={orderForm.customerEmail}
                     onChange={(e) => handleInputChange("customerEmail", e.target.value)}
                     className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                     placeholder="ელ-ფოსტა"
+                    required
                   />
+                  <p className="text-sm text-gray-500 mt-1">OTP კოდი გაიგზავნება ამ ელ-ფოსტაზე</p>
                 </div>
 
                 <div>
@@ -292,13 +401,72 @@ const OrderPage = () => {
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full md:text-[20px] text-[18px] cursor-pointer bg-[#d90b6b] hover:bg-pink-700 text-white py-3 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? 'იგზავნება...' : 'შეკვეთის გაგზავნა'}
-                </button>
+                {!otpSent ? (
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-[#d90b6b] hover:bg-pink-700 text-white py-3 px-6 rounded-xl font-bold transition-all"
+                  >
+                    {isSubmitting ? "იგზავნება..." : "შეკვეთის გაგზავნა"}
+                  </button>
+                                 ) : (
+                   <div className="space-y-4">
+                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                       <p className="text-sm text-blue-800">
+                         ✅ OTP კოდი გაიგზავნა! გთხოვთ შეამოწმოთ თქვენი ელ-ფოსტა და შეიყვანოთ 6-ნიშნა კოდი.
+                       </p>
+                     </div>
+                     <label className="block text-black font-medium mb-1">
+                       შეიყვანე კოდი ელფოსტიდან
+                     </label>
+                     <input
+                       type="text"
+                       value={otp}
+                       onChange={(e) => setOtp(e.target.value)}
+                       className="w-full text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500"
+                       placeholder="6-ნიშნა კოდი"
+                     />
+                     <div className="flex gap-3">
+                       <button
+                         onClick={handleVerifyOtp}
+                         disabled={isSubmitting}
+                         className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-xl font-bold transition-all disabled:opacity-50"
+                       >
+                         {isSubmitting ? "დადასტურება..." : "დადასტურება"}
+                       </button>
+                       <button
+                         onClick={async () => {
+                           try {
+                             setIsSubmitting(true);
+                             const response = await fetch('/api/send-otp', {
+                               method: 'POST',
+                               headers: { 'Content-Type': 'application/json' },
+                               body: JSON.stringify({
+                                 email: orderForm.customerEmail,
+                                 customerName: orderForm.customerName
+                               }),
+                             });
+                             if (response.ok) {
+                               alert('ახალი OTP კოდი გაიგზავნა!');
+                               setOtp('');
+                             } else {
+                               alert('OTP-ის ხელახლა გაგზავნა ვერ მოხერხდა.');
+                             }
+                           } catch (error) {
+                             alert('OTP-ის ხელახლა გაგზავნა ვერ მოხერხდა.');
+                           } finally {
+                             setIsSubmitting(false);
+                           }
+                         }}
+                         disabled={isSubmitting}
+                         className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all disabled:opacity-50"
+                       >
+                         ხელახლა გაგზავნა
+                       </button>
+                     </div>
+                   </div>
+                 )}
+
               </form>
             </motion.div>
           </div>
