@@ -134,3 +134,78 @@ export async function getOrders() {
     return { success: false, error: 'Failed to fetch orders' };
   }
 }
+
+// Delete a cake by ID
+export async function deleteCake(id: number) {
+  try {
+    // First check if the cake exists
+    const cake = await prisma.cake.findUnique({
+      where: { id },
+      include: {
+        orders: true
+      }
+    });
+
+    if (!cake) {
+      return { success: false, error: 'Cake not found' };
+    }
+
+    // Check if the cake is used in any orders
+    if (cake.orders.length > 0) {
+      return { success: false, error: 'Cannot delete cake that is used in orders' };
+    }
+
+    // Delete the cake
+    await prisma.cake.delete({
+      where: { id }
+    });
+
+    return { success: true, message: 'Cake deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting cake:', error);
+    return { success: false, error: 'Failed to delete cake' };
+  }
+}
+
+// Delete an order by ID
+export async function deleteOrder(id: number) {
+  try {
+    // First check if the order exists
+    const order = await prisma.order.findUnique({
+      where: { id },
+      include: {
+        items: true,
+        customCake: true
+      }
+    });
+
+    if (!order) {
+      return { success: false, error: 'Order not found' };
+    }
+
+    // Delete related records first to avoid foreign key constraint violations
+    // Delete order items first
+    if (order.items && order.items.length > 0) {
+      await prisma.orderItem.deleteMany({
+        where: { orderId: id }
+      });
+    }
+
+    // Delete custom cake if it exists
+    if (order.customCake) {
+      await prisma.customCake.delete({
+        where: { orderId: id }
+      });
+    }
+
+    // Now delete the order
+    await prisma.order.delete({
+      where: { id }
+    });
+
+    return { success: true, message: 'Order deleted successfully' };
+  } catch (error) {
+    console.error('Error deleting order:', error);
+    return { success: false, error: 'Failed to delete order' };
+  }
+}

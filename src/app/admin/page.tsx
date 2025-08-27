@@ -17,7 +17,7 @@ import {
   Cake,
   Star
 } from 'lucide-react';
-import { getCakes, getOrders } from '@/lib/action';
+import { getCakes, getOrders, deleteCake, deleteOrder } from '@/lib/action';
 
 interface Cake {
   id: number;
@@ -92,6 +92,44 @@ const AdminPage = () => {
 
     fetchData();
   }, []);
+
+  // Handle cake deletion
+  const handleDeleteCake = async (cakeId: number) => {
+    if (window.confirm('ნამდვილად გსურთ ამ ტორტის წაშლა?')) {
+      try {
+        const result = await deleteCake(cakeId);
+        if (result.success) {
+          // Remove the cake from the local state
+          setCakes(cakes.filter(cake => cake.id !== cakeId));
+          alert('ტორტი წარმატებით წაიშალა');
+        } else {
+          alert(`შეცდომა: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Error deleting cake:', error);
+        alert('ტორტის წაშლისას მოხდა შეცდომა');
+      }
+    }
+  };
+
+  // Handle order deletion
+  const handleDeleteOrder = async (orderId: number) => {
+    if (window.confirm('ნამდვილად გსურთ ამ შეკვეთის წაშლა?')) {
+      try {
+        const result = await deleteOrder(orderId);
+        if (result.success) {
+          // Remove the order from the local state
+          setOrders(orders.filter(order => order.id !== orderId));
+          alert('შეკვეთა წარმატებით წაიშალა');
+        } else {
+          alert(`შეცდომა: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Error deleting order:', error);
+        alert('შეკვეთის წაშლისას მოხდა შეცდომა');
+      }
+    }
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -451,7 +489,10 @@ const AdminPage = () => {
                         <Edit className="w-4 h-4" />
                         <span>რედაქტირება</span>
                       </button>
-                      <button className="px-4 py-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors flex items-center space-x-2">
+                      <button 
+                        onClick={() => handleDeleteOrder(order.id)}
+                        className="px-4 py-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors flex items-center space-x-2"
+                      >
                         <Trash2 className="w-4 h-4" />
                         <span>წაშლა</span>
                       </button>
@@ -507,7 +548,10 @@ const AdminPage = () => {
                         <button className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors">
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-colors">
+                        <button 
+                          onClick={() => handleDeleteCake(cake.id)}
+                          className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                        >
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>

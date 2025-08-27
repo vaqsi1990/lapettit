@@ -19,7 +19,7 @@ const Footer = () => {
               ჩვენ ვქმნით არა მხოლოდ ტორტებს, არამედ უნიკალურ გამოცდილებას, 
               რომელიც თქვენს სპეციალურ დღეს გახდის უვივი და დავიწყებადი.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 mb-4">
               <a
                 href="#"
                 className="w-10 h-10 bg-pink-600  hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
