@@ -53,7 +53,7 @@ const OrderPage = () => {
 
     try {
       setIsSubmitting(true);
-      
+
       // Verify OTP
       const response = await fetch('/api/verify-otp', {
         method: 'POST',
@@ -83,7 +83,7 @@ const OrderPage = () => {
         };
 
         await submitOrder(orderData);
-        
+
         // Send receipt email
         try {
           const receiptResponse = await fetch('/api/send-receipt', {
@@ -98,7 +98,7 @@ const OrderPage = () => {
               cake: cake
             }),
           });
-          
+
           if (receiptResponse.ok) {
             showToast('success', 'თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითარი გაიგზავნა თქვენს ელ-ფოსტაზე.');
           } else {
@@ -108,7 +108,7 @@ const OrderPage = () => {
           console.error('Error sending receipt:', error);
           showToast('success', 'თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითრის გაგზავნა ვერ მოხერხდა.');
         }
-        
+
         router.push('/');
       } else {
         showToast('error', 'არასწორი ერთჯერადი კოდი. სცადეთ თავიდან.');
@@ -168,7 +168,7 @@ const OrderPage = () => {
 
     try {
       setIsSubmitting(true);
-      
+
       // Send OTP to email
       const response = await fetch('/api/send-otp', {
         method: 'POST',
@@ -181,22 +181,22 @@ const OrderPage = () => {
         }),
       });
 
-             if (response.ok) {
-         setOtpSent(true);
-         
-         // Store OTP locally as backup (for development mode issues)
-         const responseData = await response.json();
-         if (responseData.otp) {
-           localStorage.setItem('backup_otp', responseData.otp);
-           localStorage.setItem('backup_otp_timestamp', Date.now().toString());
-         }
-         
-         showToast('success', 'ერთჯერადი  კოდი გაიგზავნა თქვენს ელ-ფოსტაზე! გთხოვთ დაელოდოთ 2-3 წამი კოდის მისაღებამდე.');
-         // Small delay to ensure OTP is properly stored
-         await new Promise(resolve => setTimeout(resolve, 2000));
-       } else {
-         showToast('error', 'ერთჯერადი კოდის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან.');
-       }
+      if (response.ok) {
+        setOtpSent(true);
+
+        // Store OTP locally as backup (for development mode issues)
+        const responseData = await response.json();
+        if (responseData.otp) {
+          localStorage.setItem('backup_otp', responseData.otp);
+          localStorage.setItem('backup_otp_timestamp', Date.now().toString());
+        }
+
+        showToast('success', 'ერთჯერადი  კოდი გაიგზავნა თქვენს ელ-ფოსტაზე! გთხოვთ დაელოდოთ 2-3 წამი კოდის მისაღებამდე.');
+        // Small delay to ensure OTP is properly stored
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      } else {
+        showToast('error', 'ერთჯერადი კოდის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან.');
+      }
     } catch (error) {
       console.error('Error sending OTP:', error);
       showToast('error', 'ერთჯერადი კოდის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
@@ -230,17 +230,17 @@ const OrderPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-color pt-20">
+    <div className="min-h-screen bg-color">
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <Link href="/" className="inline-flex items-center text-[#d90b6b] hover:text-pink-700 mb-4">
+            <Link href="/" className="inline-flex md:text-[20px] text-[18px] font-semibold items-center text-[#d90b6b] hover:text-pink-700 mb-4">
               <ArrowLeft className="w-5 h-5 mr-2" />
               დაბრუნდი უკან
             </Link>
-            <h1 className="text-3xl font-bold text-black mb-2">შეკვეთის ფორმა</h1>
-            <p className="text-gray-600">შეიყვანეთ თქვენი ინფორმაცია ტორტის შეკვეთისთვის</p>
+            <h1 className="md:text-[20px] text-[18px] font-bold text-black mb-2">შეკვეთის ფორმა</h1>
+            <p className="text-black">შეიყვანეთ თქვენი ინფორმაცია ტორტის შეკვეთისთვის</p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8">
@@ -250,7 +250,7 @@ const OrderPage = () => {
               animate={{ opacity: 1, x: 0 }}
               className="bg-white rounded-2xl shadow-xl p-6"
             >
-              <h2 className="text-xl font-bold text-black mb-4">ტორტის დეტალები</h2>
+              <h2 className=" md:text-[24px] text-[20px] font-bold text-black mb-4 flex items-center gap-2">ტორტის დეტალები</h2>
 
               <div className="space-y-4">
                 <div className="relative h-64 overflow-hidden rounded-xl">
@@ -263,13 +263,13 @@ const OrderPage = () => {
 
                 <div>
                   <h3 className="text-lg font-semibold text-black mb-2">{cake.titleGeorgian}</h3>
-                  <p className="text-gray-600 mb-3">{cake.descriptionGeorgian}</p>
-                  <p className="text-2xl font-bold text-[#d90b6b]">₾{cake.price}</p>
+                  <p className="text-black mb-3">{cake.descriptionGeorgian}</p>
+                
                 </div>
 
                 <div className="border-t pt-4">
                   <div className="flex items-center justify-between mb-4">
-                    <label className="text-black font-medium">რაოდენობა:</label>
+                    <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">რაოდენობა:</label>
                     <div className="flex items-center rounded-lg">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -290,7 +290,7 @@ const OrderPage = () => {
                   </div>
 
                   <div className="flex items-center justify-between py-3 border-t border-gray-200">
-                    <span className="text-lg font-medium text-gray-700">სულ:</span>
+                    <span className="md:text-[20px] text-[18px] block text-black font-medium mb-1">სულ:</span>
                     <span className="text-2xl font-bold text-[#d90b6b]">₾{(cake.price * quantity).toFixed(2)}</span>
                   </div>
                 </div>
@@ -303,12 +303,12 @@ const OrderPage = () => {
               animate={{ opacity: 1, x: 0 }}
               className="bg-white rounded-2xl shadow-xl p-6"
             >
-              <h2 className="text-xl font-bold text-black mb-6">შეკვეთის ინფორმაცია</h2>
+              <h2 className="md:text-[24px] text-[20px] font-bold text-black mb-6 flex items-center gap-2">შეკვეთის ინფორმაცია</h2>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-black font-medium mb-1">სახელი *</label>
+                    <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">სახელი *</label>
                     <input
                       type="text"
                       value={orderForm.customerName}
@@ -320,7 +320,7 @@ const OrderPage = () => {
                   </div>
 
                   <div>
-                    <label className="block text-black font-medium mb-1">გვარი</label>
+                    <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">გვარი</label>
                     <input
                       type="text"
                       value={orderForm.lastName}
@@ -332,7 +332,7 @@ const OrderPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-black font-medium mb-1">ტელეფონი *</label>
+                  <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">ტელეფონი *</label>
                   <input
                     type="tel"
                     value={orderForm.customerPhone}
@@ -344,7 +344,7 @@ const OrderPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-black font-medium mb-1">ელ-ფოსტა *</label>
+                  <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">ელ-ფოსტა *</label>
                   <input
                     type="email"
                     value={orderForm.customerEmail}
@@ -353,11 +353,11 @@ const OrderPage = () => {
                     placeholder="ელ-ფოსტა"
                     required
                   />
-                  <p className="text-sm text-gray-500 mt-1">ერთჯერადი კოდი გაიგზავნება ამ ელ-ფოსტაზე</p>
+                  <p className="text-sm text-black mt-1">ერთჯერადი კოდი გაიგზავნება ამ ელ-ფოსტაზე</p>
                 </div>
 
                 <div>
-                  <label className="block text-black font-medium mb-1">მისამართი *</label>
+                  <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">მისამართი *</label>
                   <input
                     type="text"
                     value={orderForm.address}
@@ -370,7 +370,7 @@ const OrderPage = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-black font-medium mb-1">ქალაქი</label>
+                    <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">ქალაქი</label>
                     <input
                       type="text"
                       value={orderForm.city}
@@ -381,7 +381,7 @@ const OrderPage = () => {
                   </div>
 
                   <div>
-                    <label className="block text-black font-medium mb-1">პოსტის კოდი</label>
+                    <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">პოსტის კოდი</label>
                     <input
                       type="text"
                       value={orderForm.zipCode}
@@ -393,7 +393,7 @@ const OrderPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-black font-medium mb-1">დამატებითი ინფორმაცია</label>
+                  <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">დამატებითი ინფორმაცია</label>
                   <textarea
                     value={orderForm.notes}
                     onChange={(e) => handleInputChange("notes", e.target.value)}
@@ -407,67 +407,67 @@ const OrderPage = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-[#d90b6b] hover:bg-pink-700 text-white py-3 px-6 rounded-xl font-bold transition-all"
+                    className="w-full flex justify-center md:w-[300px] mx-auto  cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                   >
                     {isSubmitting ? "იგზავნება..." : "შეკვეთის გაგზავნა"}
                   </button>
-                                 ) : (
-                   <div className="space-y-4">
-                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                       <p className="text-sm text-blue-800">
-                          ერთჯერადი კოდი გაიგზავნა! გთხოვთ შეამოწმოთ თქვენი ელ-ფოსტა და შეიყვანოთ 6-ნიშნა კოდი.
-                       </p>
-                     </div>
-                     <label className="block text-black font-medium mb-1">
-                       შეიყვანე კოდი ელფოსტიდან
-                     </label>
-                     <input
-                       type="text"
-                       value={otp}
-                       onChange={(e) => setOtp(e.target.value)}
-                       className="w-full text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500"
-                       placeholder="6-ნიშნა კოდი"
-                     />
-                     <div className="flex gap-3">
-                       <button
-                         onClick={handleVerifyOtp}
-                         disabled={isSubmitting}
-                         className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-xl font-bold transition-all disabled:opacity-50"
-                       >
-                         {isSubmitting ? "დადასტურება..." : "დადასტურება"}
-                       </button>
-                       <button
-                         onClick={async () => {
-                           try {
-                             setIsSubmitting(true);
-                             const response = await fetch('/api/send-otp', {
-                               method: 'POST',
-                               headers: { 'Content-Type': 'application/json' },
-                               body: JSON.stringify({
-                                 email: orderForm.customerEmail,
-                                 customerName: orderForm.customerName
-                               }),
-                             });
-                             if (response.ok) {
-                               showToast('success', 'ახალი ერთჯერადი კოდი გაიგზავნა!');
-                               setOtp('');
-                             } else {
-                               showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
-                             }
-                           } catch (error) {
-                             showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
-                           } finally {
-                             setIsSubmitting(false);
-                           }
-                         }}
-                         disabled={isSubmitting}
-                         className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all disabled:opacity-50"
-                       >
-                         ხელახლა გაგზავნა
-                       </button>
-                     </div>
-                   </div>
-                 )}
+                ) : (
+                  <div className="space-y-4">
+                    <div className="bg-white  rounded-lg p-3 mb-4">
+                      <p className="md:text-[20px] text-[18px] font-bold  text-[#d90b6b]">
+                        ერთჯერადი კოდი გაიგზავნა! გთხოვთ შეამოწმოთ თქვენი ელ-ფოსტა და შეიყვანოთ 6-ნიშნა კოდი.
+                      </p>
+                    </div>
+                    <label className="block text-center mb-3 text-black md:text-[20px] text-[18px] font-medium mb-1">
+                      შეიყვანე კოდი ელფოსტიდან
+                    </label>
+                    <input
+                      type="text"
+                      value={otp}
+                      onChange={(e) => setOtp(e.target.value)}
+                      className="w-full md:w-[300px] mx-auto flex justify-center items-center text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500"
+                      placeholder="6-ნიშნა კოდი"
+                    />
+                    <div className="flex flex-col  gap-3">
+                      <button
+                        onClick={handleVerifyOtp}
+                        disabled={isSubmitting}
+                        className="w-full md:w-[300px] mx-auto flex justify-center items-center  cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                      >
+                        {isSubmitting ? "დადასტურება..." : "დადასტურება"}
+                      </button>
+                      <button
+                        onClick={async () => {
+                          try {
+                            setIsSubmitting(true);
+                            const response = await fetch('/api/send-otp', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                email: orderForm.customerEmail,
+                                customerName: orderForm.customerName
+                              }),
+                            });
+                            if (response.ok) {
+                              showToast('success', 'ახალი ერთჯერადი კოდი გაიგზავნა!');
+                              setOtp('');
+                            } else {
+                              showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
+                            }
+                          } catch (error) {
+                            showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
+                          } finally {
+                            setIsSubmitting(false);
+                          }
+                        }}
+                        disabled={isSubmitting}
+                        className="w-full md:w-[300px] mx-auto flex justify-center items-center md:text-[20px] text-[18px] text-[#d90b6b] border border-[#d90b6b] cursor-pointer border-2 bg-white  px-4 py-3   py-3 px-6 rounded-xl font-bold transition-all disabled:opacity-50"
+                      >
+                        ხელახლა გაგზავნა
+                      </button>
+                    </div>
+                  </div>
+                )}
 
               </form>
             </motion.div>

@@ -182,17 +182,17 @@ const CustomCakeOrderContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-color pt-20">
+    <div className="min-h-screen bg-color ">
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="mb-8">
-            <Link href="/custom" className="inline-flex items-center text-[#d90b6b] hover:text-pink-700 mb-4">
+            <Link href="/custom" className="inline-flex md:text-[20px] text-[18px] font-semibold items-center text-[#d90b6b] hover:text-pink-700 mb-4">
               <ArrowLeft className="w-5 h-5 mr-2" />
               დაბრუნდი უკან
             </Link>
-            <h1 className="text-3xl font-bold text-black mb-2">კასტომ ტორტის შეკვეთა</h1>
-            <p className="text-gray-600">შეიყვანეთ თქვენი ინფორმაცია კასტომ ტორტის შეკვეთისთვის</p>
+            <h1 className="md:text-[20px] text-[18px] font-bold text-black mb-2">მორგებული ტორტის შეკვეთა</h1>
+            <p className="text-black">შეიყვანეთ თქვენი ინფორმაცია </p>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-8">
@@ -202,63 +202,63 @@ const CustomCakeOrderContent = () => {
               animate={{ opacity: 1, x: 0 }}
               className="bg-white rounded-2xl shadow-xl p-6"
             >
-              <h2 className="text-xl font-bold text-black mb-4">ტორტის დეტალები</h2>
+              <h2 className="  md:text-[24px] text-[20px] font-bold text-black mb-4 flex items-center gap-2">ტორტის დეტალები</h2>
 
               <div className="space-y-4">
                 <div className="bg-gradient-to-br from-pink-50 to-purple-50 p-6 rounded-xl">
-                  <h3 className="text-lg font-semibold text-black mb-4">თქვენი არჩევანი</h3>
+                  <h3 className=" md:text-[24px] text-[20px] font-semibold text-black mb-4">თქვენი არჩევანი</h3>
                   
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">დიზაინი:</span>
-                      <span className="font-medium text-black">{design}</span>
+                      <span className="md:text-[20px] text-[18px] text-black">დიზაინი:</span>
+                      <span className="font-medium md:text-[18px] text-[16px] text-black">{design}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">თარიღი:</span>
-                      <span className="font-medium text-black">{date}</span>
+                      <span className="md:text-[20px] text-[18px] text-black">თარიღი:</span>
+                      <span className="font-medium md:text-[18px] text-[16px] text-black">{date}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">დრო:</span>
-                      <span className="font-medium text-black">{time}</span>
+                      <span className="md:text-[20px] text-[18px] text-black">დრო:</span>
+                      <span className="font-medium md:text-[18px] text-[16px] text-black">{time}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">ზომა:</span>
-                      <span className="font-medium text-black">{size}</span>
+                      <span className="md:text-[20px] text-[18px] text-black">ზომა:</span>
+                      <span className="font-medium md:text-[18px] text-[16px] text-black">{size}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-600">გემო:</span>
-                      <span className="font-medium text-black">{flavor}</span>
+                      <span className="md:text-[20px] text-[18px] text-black">გემო:</span>
+                      <span className="font-medium md:text-[18px] text-[16px] text-black">{flavor}</span>
                     </div>
                     {filling && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">ფილინგი:</span>
-                        <span className="font-medium text-black">{filling}</span>
+                        <span className="md:text-[20px] text-[18px] text-black">ფილინგი:</span>
+                        <span className="font-medium md:text-[18px] text-[16px] text-black">{filling}</span>
                       </div>
                     )}
                     {frosting && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">გლაზურა:</span>
-                        <span className="font-medium text-black">{frosting}</span>
+                        <span className="md:text-[20px] text-[18px] text-black">გლაზურა:</span>
+                        <span className="font-medium md:text-[18px] text-[16px] text-black">{frosting}</span>
                       </div>
                     )}
                     {shape && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">ფორმა:</span>
-                        <span className="font-medium text-black">{shape}</span>
+                        <span className="md:text-[20px] text-[18px] text-black">ფორმა:</span>
+                        <span className="font-medium md:text-[18px] text-[16px] text-black">{shape}</span>
                       </div>
                     )}
                     {decorations && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">დეკორაციები:</span>
-                        <span className="font-medium text-black">{decorations}</span>
+                        <span className="md:text-[20px] text-[18px] text-black">დეკორაციები:</span>
+                        <span className="font-medium md:text-[18px] text-[16px] text-black">{decorations}</span>
                       </div>
                     )}
                   </div>
                   
                   <div className="border-t pt-4 mt-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-lg font-medium text-gray-700">ფასი:</span>
-                      <span className="text-2xl font-bold text-[#d90b6b]">₾{price}</span>
+                      <span className="md:text-[24px] text-[20px] font-medium text-black">ფასი:</span>
+                      <span className="md:text-[24px] text-[20px] font-bold text-[#d90b6b]">₾{price}</span>
                     </div>
                   </div>
                 </div>
@@ -271,53 +271,53 @@ const CustomCakeOrderContent = () => {
               animate={{ opacity: 1, x: 0 }}
               className="bg-white rounded-2xl shadow-xl p-6"
             >
-              <h2 className="text-xl font-bold text-black mb-6">შეკვეთის ინფორმაცია</h2>
+              <h2 className="md:text-[24px] text-[20px] font-bold text-black mb-6">შეკვეთის ინფორმაცია</h2>
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-black font-medium mb-1">სახელი *</label>
+                    <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">სახელი *</label>
                     <input
                       type="text"
                       value={orderForm.customerName}
                       onChange={(e) => handleInputChange("customerName", e.target.value)}
-                      className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
+                      className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-black rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                       placeholder="სახელი"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-black font-medium mb-1">გვარი</label>
+                    <label className="block text-black md:text-[20px] text-[18px] font-medium mb-1">გვარი</label>
                     <input
                       type="text"
                       value={orderForm.lastName}
                       onChange={(e) => handleInputChange("lastName", e.target.value)}
-                      className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
+                      className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-black rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                       placeholder="გვარი"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-black font-medium mb-1">ტელეფონი *</label>
+                  <label className="block md:text-[20px] text-[18px] font-medium mb-1">ტელეფონი *</label>
                   <input
                     type="tel"
                     value={orderForm.customerPhone}
                     onChange={(e) => handleInputChange("customerPhone", e.target.value)}
-                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
+                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-black rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                     placeholder="ტელეფონი"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-black font-medium mb-1">ელ-ფოსტა *</label>
+                  <label className="block text-black md:text-[20px] text-[18px] font-medium mb-1">ელ-ფოსტა *</label>
                   <input
                     type="email"
                     value={orderForm.customerEmail}
                     onChange={(e) => handleInputChange("customerEmail", e.target.value)}
-                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
+                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-black rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                     placeholder="ელ-ფოსტა"
                     required
                   />
@@ -325,12 +325,12 @@ const CustomCakeOrderContent = () => {
                 </div>
 
                 <div>
-                  <label className="block text-black font-medium mb-1">მისამართი *</label>
+                  <label className="block text-black md:text-[20px] text-[18px] font-medium mb-1">მისამართი *</label>
                   <input
                     type="text"
                     value={orderForm.address}
                     onChange={(e) => handleInputChange("address", e.target.value)}
-                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
+                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-black rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                     placeholder="მისამართი"
                     required
                   />
@@ -338,34 +338,34 @@ const CustomCakeOrderContent = () => {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-black font-medium mb-1">ქალაქი</label>
+                    <label className="block text-black md:text-[20px] text-[18px] font-medium mb-1">ქალაქი</label>
                     <input
                       type="text"
                       value={orderForm.city}
                       onChange={(e) => handleInputChange("city", e.target.value)}
-                      className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
+                      className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-black rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                       placeholder="ქალაქი"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-black font-medium mb-1">პოსტის კოდი</label>
+                    <label className="block text-black md:text-[20px] text-[18px] font-medium mb-1">პოსტის კოდი</label>
                     <input
                       type="text"
                       value={orderForm.zipCode}
                       onChange={(e) => handleInputChange("zipCode", e.target.value)}
-                      className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
+                      className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-black rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                       placeholder="პოსტის კოდი"
                     />
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-black font-medium mb-1">დამატებითი ინფორმაცია</label>
+                <div className=" mx-auto">
+                  <label className="block text-black md:text-[20px] text-[18px] font-medium mb-1">დამატებითი ინფორმაცია</label>
                   <textarea
                     value={orderForm.notes}
                     onChange={(e) => handleInputChange("notes", e.target.value)}
-                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
+                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-black rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
                     placeholder="დამატებითი ინფორმაცია (არასავალდებულო)"
                     rows={3}
                   />
@@ -375,32 +375,32 @@ const CustomCakeOrderContent = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-[#d90b6b] hover:bg-pink-700 text-white py-3 px-6 rounded-xl font-bold transition-all"
+                    className="w-full flex justify-center md:w-[300px] mx-auto  cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                   >
                     {isSubmitting ? "იგზავნება..." : "შეკვეთის გაგზავნა"}
                   </button>
                 ) : (
                   <div className="space-y-4">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                      <p className="text-sm text-blue-800">
+                    <div className="bg-white  rounded-lg p-3 mb-4">
+                      <p className="md:text-[20px] text-[18px] font-bold  text-[#d90b6b]">
                          ერთჯერადი კოდი გაიგზავნა! გთხოვთ შეამოწმოთ თქვენი ელ-ფოსტა და შეიყვანოთ 6-ნიშნა კოდი.
                       </p>
                     </div>
-                    <label className="block text-black font-medium mb-1">
+                    <label className="block text-center mb-3 text-black md:text-[20px] text-[18px] font-medium mb-1">
                       შეიყვანე კოდი ელფოსტიდან
                     </label>
                     <input
                       type="text"
                       value={otp}
                       onChange={(e) => setOtp(e.target.value)}
-                      className="w-full text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500"
+                      className="w-full md:w-[300px] mx-auto flex justify-center items-center text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500"
                       placeholder="6-ნიშნა კოდი"
                     />
-                    <div className="flex gap-3">
+                    <div className="flex flex-col  gap-3">
                       <button
                         onClick={handleVerifyOtp}
                         disabled={isSubmitting}
-                        className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-xl font-bold transition-all disabled:opacity-50"
+                        className="w-full md:w-[300px] mx-auto flex justify-center items-center  cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
                         {isSubmitting ? "დადასტურება..." : "დადასტურება"}
                       </button>
@@ -429,7 +429,7 @@ const CustomCakeOrderContent = () => {
                           }
                         }}
                         disabled={isSubmitting}
-                        className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-xl font-bold transition-all disabled:opacity-50"
+                        className="w-full md:w-[300px] mx-auto flex justify-center items-center md:text-[20px] text-[18px] text-[#d90b6b] border border-[#d90b6b] cursor-pointer border-2 bg-white  px-4 py-3   py-3 px-6 rounded-xl font-bold transition-all disabled:opacity-50"
                       >
                         ხელახლა გაგზავნა
                       </button>

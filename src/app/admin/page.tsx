@@ -8,7 +8,7 @@ import {
   ShoppingCart, 
   Users, 
   DollarSign, 
-  Eye,
+
   Edit,
   Trash2,
   Plus,
@@ -16,7 +16,7 @@ import {
   Phone,
   MapPin,
   Cake,
-  Star,
+ 
   Mail
 } from 'lucide-react';
 import { getCakes, getOrders, deleteCake, deleteOrder } from '@/lib/action';
@@ -166,7 +166,7 @@ const AdminPage = () => {
   const totalCustomers = new Set(orders.map(order => order.customerPhone)).size;
 
   return (
-    <div className="min-h-screen bg-color pt-20">
+    <div className="min-h-screen bg-color pt-10">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <motion.div
@@ -174,8 +174,8 @@ const AdminPage = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">ადმინ პანელი</h1>
-          <p className="text-gray-600 text-lg">თქვენი ტორტების ვებსაიტის მართვა</p>
+          <h1 className="md:text-[30px] text-[20px] font-bold text-black mb-2">ადმინ პანელი</h1>
+          <p className="text-black  text-[18px]">თქვენი ტორტების ვებსაიტის მართვა</p>
         </motion.div>
 
         {/* Navigation Tabs */}
@@ -190,7 +190,7 @@ const AdminPage = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex cursor-pointer items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                className={`flex cursor-pointer items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 md:text-[20px] text-[18px] ${
                   activeTab === tab.id
                     ? 'bg-[#d90b6b] text-white shadow-lg'
                     : 'text-gray-600 hover:text-[#d90b6b] hover:bg-pink-50'
@@ -321,8 +321,8 @@ const AdminPage = () => {
                           <span className="text-white font-bold text-xl">{order.customerName.charAt(0)}</span>
                         </div>
                         <div>
-                          <h3 className="text-xl font-bold text-gray-800">{order.customerName}</h3>
-                          <div className="flex items-center space-x-4 text-sm text-gray-600 mt-1">
+                          <h3 className="md:text-[18px] text-[16px] font-bold text-black">{order.customerName}</h3>
+                          <div className="flex items-center space-x-4 md:text-[18px] text-[16px] text-black mt-1">
                             <span className="flex items-center">
                               <Phone className="w-4 h-4 mr-2" />
                               {order.customerPhone}
@@ -335,11 +335,9 @@ const AdminPage = () => {
                         </div>
                       </div>
                                              <div className="text-right">
-                         <div className="text-3xl font-bold text-[#d90b6b] mb-2">₾{order.total}</div>
-                         <span className={`px-4 py-2 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                           {getStatusText(order.status)}
-                         </span>
-                         <div className="text-sm text-gray-500 mt-2">
+                         
+                        
+                         <div className="md:text-[18px] text-[16px] text-black mt-2">
                            {new Date(order.createdAt).toLocaleDateString('ka-GE', {
                              year: 'numeric',
                              month: 'long',
@@ -365,7 +363,7 @@ const AdminPage = () => {
                     {order.items && order.items.length > 0 && (
                       <div className="mb-6">
                         <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                          <Cake className="w-5 h-5 mr-2 text-[#d90b6b]" />
+                        
                           ტორტების შეკვეთა
                         </h4>
                         <div className="space-y-3">
@@ -377,12 +375,12 @@ const AdminPage = () => {
                                 </div>
                                 <div>
                                   <p className="font-semibold text-gray-800">{item.cake.name}</p>
-                                  <p className="text-sm text-gray-600">ფასი: ₾{item.cake.price}</p>
+                              
                                 </div>
                               </div>
                               <div className="text-right">
                                 <div className="text-lg font-bold text-[#d90b6b]">₾{(item.cake.price * item.quantity).toFixed(2)}</div>
-                                <div className="text-sm text-gray-600">რაოდენობა: {item.quantity}</div>
+                                <div className="md:text-[18px] text-[16px] text-black">რაოდენობა: {item.quantity}</div>
                               </div>
                             </div>
                           ))}
@@ -394,44 +392,44 @@ const AdminPage = () => {
                      {order.customCake && (
                        <div className="mb-6">
                          <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                           <Star className="w-5 h-5 mr-2 text-[#d90b6b]" />
+                          
                            ინდივიდუალური ტორტი
                          </h4>
-                         <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                         <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-black">
                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                              <div>
-                               <p className="text-sm font-medium text-gray-600">დიზაინი</p>
-                               <p className="font-semibold text-gray-800">{order.customCake.design}</p>
+                               <p className="md:text-[18px] text-[16px] font-medium text-black">დიზაინი</p>
+                               <p className="font-semibold text-black">{order.customCake.design}</p>
                              </div>
                              <div>
-                               <p className="text-sm font-medium text-gray-600">გემო</p>
-                               <p className="font-semibold text-gray-800">{order.customCake.flavor}</p>
+                               <p className="md:text-[18px] text-[16px] font-medium text-black">გემო</p>
+                               <p className="font-semibold text-black">{order.customCake.flavor}</p>
                              </div>
                              <div>
-                               <p className="text-sm font-medium text-gray-600">შიგთავსი</p>
-                               <p className="font-semibold text-gray-800">{order.customCake.filling || 'არ არის მითითებული'}</p>
+                               <p className="md:text-[18px] text-[16px] font-medium text-black">შიგთავსი</p>
+                               <p className="font-semibold text-black">{order.customCake.filling || 'არ არის მითითებული'}</p>
                              </div>
                              <div>
-                               <p className="text-sm font-medium text-gray-600">გლაზური</p>
-                               <p className="font-semibold text-gray-800">{order.customCake.glaze || 'არ არის მითითებული'}</p>
+                               <p className="md:text-[18px] text-[16px] font-medium text-black">გლაზური</p>
+                               <p className="font-semibold text-black">{order.customCake.glaze || 'არ არის მითითებული'}</p>
                              </div>
                              <div>
-                               <p className="text-sm font-medium text-gray-600">ფორმა</p>
-                               <p className="font-semibold text-gray-800">{order.customCake.shape || 'არ არის მითითებული'}</p>
+                               <p className="md:text-[18px] text-[16px] font-medium text-black">ფორმა</p>
+                               <p className="font-semibold text-black">{order.customCake.shape || 'არ არის მითითებული'}</p>
                              </div>
                              <div>
-                               <p className="text-sm font-medium text-gray-600">რაოდენობა</p>
-                               <p className="font-semibold text-gray-800">{order.customCake.quantity}</p>
+                               <p className="md:text-[18px] text-[16px] font-medium text-black">რაოდენობა</p>
+                               <p className="font-semibold text-black">{order.customCake.quantity}</p>
                              </div>
                            </div>
                            
                            {/* Decorations */}
                            {order.customCake.decorations && order.customCake.decorations.length > 0 && (
                              <div className="mt-4 pt-4 border-t border-purple-200">
-                               <p className="text-sm font-medium text-gray-600 mb-2">დეკორაციები</p>
+                               <p className="md:text-[18px] text-[16px] font-medium text-black mb-2">დეკორაციები</p>
                                <div className="flex flex-wrap gap-2">
                                  {order.customCake.decorations.map((decoration, index) => (
-                                   <span key={index} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                                   <span key={index} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full md:text-[18px] text-[16px]">
                                      {decoration}
                                    </span>
                                  ))}
@@ -442,7 +440,7 @@ const AdminPage = () => {
                            {/* Custom Text */}
                            {order.customCake.text && (
                              <div className="mt-4 pt-4 border-t border-purple-200">
-                               <p className="text-sm font-medium text-gray-600 mb-2">მორგებული ტექსტი</p>
+                               <p className="md:text-[18px] text-[16px] font-medium text-black mb-2">მორგებული ტექსტი</p>
                                                                 <p className="font-semibold text-gray-800 bg-white p-3 rounded-lg border border-purple-200">
                                    &ldquo;{order.customCake.text}&rdquo;
                                  </p>
@@ -453,8 +451,8 @@ const AdminPage = () => {
                            <div className="mt-4 pt-4 border-t border-purple-200">
                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                <div>
-                                 <p className="text-sm font-medium text-gray-600">მიწოდების თარიღი</p>
-                                 <p className="font-semibold text-gray-800">
+                                 <p className="md:text-[18px] text-[16px] font-medium text-black">მიწოდების თარიღი</p>
+                                 <p className="font-semibold text-black">
                                    {new Date(order.customCake.deliveryDate).toLocaleDateString('ka-GE', {
                                      year: 'numeric',
                                      month: 'long',
@@ -464,8 +462,8 @@ const AdminPage = () => {
                                </div>
                                {order.customCake.deliveryTime && (
                                  <div>
-                                   <p className="text-sm font-medium text-gray-600">მიწოდების დრო</p>
-                                   <p className="font-semibold text-gray-800">{order.customCake.deliveryTime}</p>
+                                   <p className="md:text-[18px] text-[16px] font-medium text-black">მიწოდების დრო</p>
+                                   <p className="font-semibold text-black">{order.customCake.deliveryTime}</p>
                                  </div>
                                )}
                              </div>
@@ -474,7 +472,7 @@ const AdminPage = () => {
                            {/* Reference Image */}
                            {order.customCake.imageUrl && (
                              <div className="mt-4 pt-4 border-t border-purple-200">
-                               <p className="text-sm font-medium text-gray-600 mb-2">მითითებული სურათი</p>
+                               <p className="md:text-[18px] text-[16px] font-medium text-black mb-2">მითითებული სურათი</p>
                                <div className="relative h-32 w-32 overflow-hidden rounded-lg border border-purple-200">
                                  <img
                                    src={order.customCake.imageUrl}
@@ -491,17 +489,14 @@ const AdminPage = () => {
                   
                     {/* Action Buttons */}
                     <div className="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
-                      <button className="px-4 py-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors flex items-center space-x-2">
-                        <Eye className="w-4 h-4" />
-                        <span>დეტალების ნახვა</span>
-                      </button>
-                      <button className="px-4 py-2 text-green-600 hover:text-green-900 hover:bg-green-50 rounded-lg transition-colors flex items-center space-x-2">
+                     
+                      <button className="px-4 py-2 text-green-600 hover:text-green-900 hover:bg-green-50 rounded-lg transition-colors flex items-center space-x-2 md:text-[18px] text-[16px]">
                         <Edit className="w-4 h-4" />
                         <span>რედაქტირება</span>
                       </button>
                       <button 
                         onClick={() => handleDeleteOrder(order.id)}
-                        className="px-4 py-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors flex items-center space-x-2"
+                        className="px-4 py-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors flex items-center space-x-2 md:text-[18px] text-[16px]"
                       >
                         <Trash2 className="w-4 h-4" />
                         <span>წაშლა</span>
@@ -523,8 +518,8 @@ const AdminPage = () => {
           >
             {/* Add New Cake Button */}
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-800">ტორტების მართვა</h2>
-              <button className="bg-[#d90b6b] hover:bg-pink-700 text-white px-6 py-3 rounded-xl font-medium flex items-center space-x-2 transition-colors">
+              <h2 className="md:text-[20px] text-[18px] font-bold text-black">ტორტების მართვა</h2>
+              <button className="bg-[#d90b6b] hover:bg-pink-700 text-white px-6 py-3 rounded-xl font-medium flex items-center space-x-2 transition-colors md:text-[18px] text-[16px]">
                 <Plus className="w-5 h-5" />
                 <span>ახალი ტორტი</span>
               </button>
@@ -550,12 +545,12 @@ const AdminPage = () => {
                     </div>
                   </div>
                   <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">{cake.name}</h3>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{cake.description}</p>
+                    <h3 className="md:text-[18px] text-[16px] font-semibold text-black mb-2">{cake.name}</h3>
+                    <p className="text-black md:text-[18px] text-[16px] mb-4 line-clamp-2">{cake.description}</p>
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold text-[#d90b6b]">₾{cake.price}</span>
                       <div className="flex space-x-2">
-                        <button className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors">
+                        <button className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors md:text-[18px] text-[16px]">
                           <Edit className="w-4 h-4" />
                         </button>
                         <button 

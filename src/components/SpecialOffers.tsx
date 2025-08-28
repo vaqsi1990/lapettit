@@ -199,7 +199,7 @@ const SpecialOffers = () => {
                                     {/* CTA Button */}
                                     <Link
                                         href={`/order/${offer.id}`}
-                                        className="w-full md:w-[50%] mx-auto md:text-[20px] text-[18px] bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold text-center transition-all duration-300 transform  shadow-lg  block"
+                                        className="w-full md:w-[70%] mx-auto md:text-[20px] text-[18px] bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold text-center transition-all duration-300 transform  shadow-lg  block"
                                     >
                                         შეუკვეთე ახლა
                                     </Link>

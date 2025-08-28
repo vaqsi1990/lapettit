@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, useTransform, AnimatePresence, useScroll } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, } from 'lucide-react';
+import { X,  } from 'lucide-react';
 import Link from 'next/link';
 import { getCakes} from '@/lib/action';
 import { mapCakeToGalleryImage, createCategories, updateCategoryCounts, type GalleryImage, type Category } from '@/lib/utils';
@@ -173,7 +173,7 @@ const Gallery = () => {
                     <p className="text-black text-[14px] md:text-[16px] mb-2 line-clamp-2 flex-1">
                       {image.descriptionGeorgian}
                     </p>
-                    <p className="text-[#d90b6b] text-[16px] md:text-[18px] font-bold mt-auto">
+                    <p className="text-[#d90b6b] text-[18px] md:text-[20px] font-bold mt-auto">
                       ₾{image.price}
                     </p>
                   </div>
@@ -191,8 +191,7 @@ const Gallery = () => {
           <motion.div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={closeLightbox} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
             <motion.div className="relative max-w-6xl max-h-full bg-white rounded-2xl overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()} initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }}>
               <button onClick={closeLightbox} className="absolute top-4 right-4 z-10 bg-black/20 backdrop-blur-sm text-white p-2 rounded-full hover:bg-black/40"><X className="w-5 h-5" /></button>
-              <button onClick={prevImage} className="absolute left-4 top-[60%] transform -translate-y-1/2 z-10 bg-black/20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-black/40"><ChevronLeft className="w-5 h-5" /></button>
-              <button onClick={nextImage} className="absolute right-4 top-[60%] transform -translate-y-1/2 z-10 bg-black/20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-black/40"><ChevronRight className="w-5 h-5" /></button>
+             
               <div className="flex flex-col lg:flex-row">
                 <div className="flex-1 relative">
                   <Image src={selectedImage.src} alt={selectedImage.alt} width={800} height={800} className="w-full h-auto object-cover" />

@@ -125,7 +125,7 @@ const ProductPage = () => {
                     >
                         {/* Category Badge */}
                         <div className="inline-block">
-                            <span className="bg-pink-100 text-[#d90b6b] px-4 py-2 rounded-full text-sm font-medium">
+                            <span className="bg-pink-100 text-[#d90b6b] md:text-[20px] text-[16px] px-4 py-2 rounded-full text-sm font-medium">
                                 {product.categoryGeorgian}
                             </span>
                         </div>
@@ -151,7 +151,7 @@ const ProductPage = () => {
                         {/* Quantity Selector */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <label className="text-black font-medium text-lg">რაოდენობა:</label>
+                                <label className="text-black font-medium md:text-[20px] text-[16px]">რაოდენობა:</label>
                                 <div className="flex items-center rounded-lg">
                                     <button
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
@@ -173,13 +173,13 @@ const ProductPage = () => {
 
                             {/* Total Price */}
                             <div className="flex items-center justify-between py-3 border-t border-gray-200">
-                                <span className="text-lg font-medium text-gray-700">სულ:</span>
+                                <span className="md:text-[20px] text-[16px] font-medium text-gray-700">სულ:</span>
                                 <span className="text-2xl font-bold text-[#d90b6b]">₾{(product.price * quantity).toFixed(2)}</span>
                             </div>
 
                             {/* Action Buttons */}
                             <div className="space-y-3">
-                                <Link href={`/order/${product.id}`} className="w-full cursor-pointer bg-[#d90b6b] hover:bg-pink-700 text-white py-4 px-6 rounded-xl font-semibold text-lg transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl">
+                                <Link href={`/order/${product.id}`} className="w-full cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                                    შეუკვეთე ახლა
                                 </Link>
 
@@ -230,7 +230,7 @@ const ProductPage = () => {
                                         <span className="text-[#d90b6b] font-bold text-xl">₾{relatedProduct.price}</span>
                                         <Link
                                             href={`/product/${relatedProduct.id}`}
-                                            className="bg-[#d90b6b] text-white px-4 py-2 rounded-lg font-medium hover:bg-pink-700 transition-colors text-sm"
+                                            className="bg-[#d90b6b] text-white px-4 py-2 rounded-lg font-bold hover:bg-pink-700 transition-colors md:text-[20px] text-[16px]"
                                         >
                                             ნახვა
                                         </Link>
