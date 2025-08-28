@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useToast } from '@/components/Toast';
 import { 
   Package, 
   ShoppingCart, 
@@ -70,7 +71,7 @@ const AdminPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
-
+  const { showToast } = useToast();
 
 
   useEffect(() => {
@@ -101,15 +102,15 @@ const AdminPage = () => {
       try {
         const result = await deleteCake(cakeId);
         if (result.success) {
+          showToast('success', 'ტორტი წარმატებით წაიშალა');
           // Remove the cake from the local state
           setCakes(cakes.filter(cake => cake.id !== cakeId));
-          alert('ტორტი წარმატებით წაიშალა');
         } else {
-          alert(`შეცდომა: ${result.error}`);
+          showToast('error', `შეცდომა: ${result.error}`);
         }
       } catch (error) {
         console.error('Error deleting cake:', error);
-        alert('ტორტის წაშლისას მოხდა შეცდომა');
+        showToast('error', 'ტორტის წაშლისას მოხდა შეცდომა');
       }
     }
   };
@@ -120,15 +121,15 @@ const AdminPage = () => {
       try {
         const result = await deleteOrder(orderId);
         if (result.success) {
+          showToast('success', 'შეკვეთა წარმატებით წაიშალა');
           // Remove the order from the local state
           setOrders(orders.filter(order => order.id !== orderId));
-          alert('შეკვეთა წარმატებით წაიშალა');
         } else {
-          alert(`შეცდომა: ${result.error}`);
+          showToast('error', `შეცდომა: ${result.error}`);
         }
       } catch (error) {
         console.error('Error deleting order:', error);
-        alert('შეკვეთის წაშლისას მოხდა შეცდომა');
+        showToast('error', 'შეკვეთის წაშლისას მოხდა შეცდომა');
       }
     }
   }

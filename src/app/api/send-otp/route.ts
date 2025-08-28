@@ -43,9 +43,9 @@ export async function POST(request: NextRequest) {
       subject: 'ერთჯერად კოდი შეკვეთისთვის',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #d90b6b; text-align: center;">OTP კოდი</h2>
+          <h2 style="color: #d90b6b; text-align: center;">ერთჯერადი კოდი</h2>
           <p>გამარჯობა ${customerName || 'ძვირფასო კლიენტო'}!</p>
-          <p>თქვენი OTP კოდი ტორტის შეკვეთის დასასრულებლად:</p>
+          <p>თქვენი ერთჯერადი კოდი ტორტის შეკვეთის დასასრულებლად:</p>
           <div style="background: #f8f9fa; padding: 20px; text-align: center; border-radius: 10px; margin: 20px 0;">
             <h1 style="color: #d90b6b; font-size: 32px; letter-spacing: 5px; margin: 0;">${otp}</h1>
           </div>

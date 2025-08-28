@@ -14,6 +14,8 @@ import {
 } from 'lucide-react';
 import { submitCustomCakeOrder, type CustomCakeFormData } from '@/lib/customCakeActions';
 import Link from 'next/link';
+import { useToast } from '@/components/Toast';
+import { useRouter } from 'next/navigation';
 
 interface CakeDesign {
   id: string;
@@ -34,6 +36,9 @@ interface CustomizationOption {
 }
 
 const Custom = () => {
+  const { showToast } = useToast();
+  const router = useRouter();
+  
   const [selectedDesign, setSelectedDesign] = useState<string>('');
   const [selectedFlavor, setSelectedFlavor] = useState<string>('');
   const [selectedFilling, setSelectedFilling] = useState<string>('');
@@ -235,36 +240,82 @@ const Custom = () => {
     setIsDragging(false);
   };
 
-  const handleSubmit = () => {
-    // Validate required fields
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Validation
     if (!selectedDesign) {
-      alert('გთხოვთ აირჩიოთ ტორტის დიზაინი');
+      showToast('error', 'გთხოვთ აირჩიოთ ტორტის დიზაინი');
       return;
     }
 
     if (!selectedDate) {
-      alert('გთხოვთ აირჩიოთ მიწოდების თარიღი');
+      showToast('error', 'გთხოვთ აირჩიოთ მიწოდების თარიღი');
       return;
     }
 
     if (!selectedTime) {
-      alert('გთხოვთ აირჩიოთ მიწოდების დრო');
+      showToast('error', 'გთხოვთ აირჩიოთ მიწოდების დრო');
       return;
     }
 
-    // Check if date is at least 24 hours in advance
+    // Check if delivery date is at least 24 hours from now
     const selectedDateTime = new Date(`${selectedDate}T${selectedTime}`);
     const now = new Date();
     const timeDifference = selectedDateTime.getTime() - now.getTime();
     const hoursDifference = timeDifference / (1000 * 3600);
 
     if (hoursDifference < 24) {
-      alert('მინიმალური შეკვეთის დრო არის 24 საათი წინასწარ');
+      showToast('warning', 'მინიმალური შეკვეთის დრო არის 24 საათი წინასწარ');
       return;
     }
 
-    // Show client information form popup instead of alert
-    setIsClientFormOpen(true);
+    // Check if all required fields are filled
+    if (!clientForm.firstName || !clientForm.lastName || !clientForm.phone || !clientForm.address || !clientForm.city) {
+      showToast('error', 'გთხოვთ შეავსოთ ყველა სავალდებულო ველი');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+
+      const customCakeData: CustomCakeFormData = {
+        design: selectedDesign,
+        flavor: selectedFlavor,
+        filling: selectedFilling,
+        glaze: selectedFrosting,
+        shape: selectedShape,
+        decorations: selectedDecorations,
+        text: customMessage,
+        quantity: quantity,
+        deliveryDate: selectedDate,
+        deliveryTime: selectedTime,
+        totalPrice: totalPrice,
+        customerName: clientForm.firstName,
+        lastName: clientForm.lastName,
+        customerPhone: clientForm.phone,
+        customerEmail: clientForm.email,
+        address: clientForm.address,
+        city: clientForm.city,
+        zipCode: clientForm.zipCode,
+        notes: clientForm.notes,
+        imageUrl: uploadedImage || undefined,
+      };
+
+      await submitCustomCakeOrder(customCakeData);
+      showToast('success', 'თქვენი ტორტის შეკვეთა წარმატებით გაიგზავნა!');
+      
+      // Small delay to show the success message
+      setTimeout(() => {
+        router.push(`/order/custom?design=${selectedDesign}&date=${selectedDate}&time=${selectedTime}&size=${selectedSize}&flavor=${selectedFlavor}&filling=${selectedFilling}&frosting=${selectedFrosting}&shape=${selectedShape}&decorations=${selectedDecorations.join(',')}&price=${totalPrice}`);
+      }, 1500);
+
+    } catch (error) {
+      console.error('Error submitting custom cake order:', error);
+      showToast('error', 'ტორტის შეკვეთის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClientFormSubmit = async (e: React.FormEvent) => {
@@ -272,7 +323,7 @@ const Custom = () => {
 
     // Validate required fields
     if (!clientForm.firstName || !clientForm.lastName || !clientForm.phone || !clientForm.address || !clientForm.city) {
-      alert('გთხოვთ შეავსოთ ყველა სავალდებულო ველი');
+      showToast('error', 'გთხოვთ შეავსოთ ყველა სავალდებულო ველი');
       return;
     }
 
@@ -302,7 +353,7 @@ const Custom = () => {
     try {
       setIsSubmitting(true);
       await submitCustomCakeOrder(customCakeData);
-      alert('თქვენი ტორტის შეკვეთა წარმატებით გაიგზავნა!');
+      showToast('success', 'თქვენი ტორტის შეკვეთა წარმატებით გაიგზავნა!');
       setIsClientFormOpen(false);
       setClientForm({
         firstName: '',
@@ -330,7 +381,7 @@ const Custom = () => {
       setSelectedDecorations([]);
     } catch (error) {
       console.error('Error submitting custom cake order:', error);
-      alert('ტორტის შეკვეთის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
+      showToast('error', 'ტორტის შეკვეთის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
     } finally {
       setIsSubmitting(false);
     }

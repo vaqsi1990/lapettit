@@ -5,10 +5,12 @@ import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useToast } from '@/components/Toast';
 
 const CustomCakeOrderContent = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { showToast } = useToast();
   
   // Get custom cake details from URL params
   const design = searchParams.get('design');
@@ -48,7 +50,7 @@ const CustomCakeOrderContent = () => {
     e.preventDefault();
 
     if (!orderForm.customerEmail) {
-      alert('გთხოვთ შეიყვანოთ ელ-ფოსტა OTP-ის მისაღებად');
+      showToast('error', 'გთხოვთ შეიყვანოთ ელ-ფოსტა OTP-ის მისაღებად');
       return;
     }
 
@@ -81,14 +83,14 @@ const CustomCakeOrderContent = () => {
           localStorage.setItem('backup_otp_timestamp', Date.now().toString());
         }
         
-        alert('OTP კოდი გაიგზავნა თქვენს ელ-ფოსტაზე! გთხოვთ დაელოდოთ 2-3 წამი კოდის მისაღებამდე.');
+        showToast('success', 'ერთჯერადი კოდი გაიგზავნა თქვენს ელ-ფოსტაზე! გთხოვთ დაელოდოთ 2-3 წამი კოდის მისაღებამდე.');
         await new Promise(resolve => setTimeout(resolve, 2000));
       } else {
-        alert('OTP-ის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან.');
+        showToast('error', 'ერთჯერადი კოდის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან.');
       }
     } catch (error) {
       console.error('Error sending OTP:', error);
-      alert('OTP-ის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
+      showToast('error', 'ერთჯერადი კოდის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
     } finally {
       setIsSubmitting(false);
     }
@@ -96,12 +98,12 @@ const CustomCakeOrderContent = () => {
 
   const handleVerifyOtp = async () => {
     if (!otp || otp.length !== 6) {
-      alert('გთხოვთ შეიყვანოთ 6-ნიშნა კოდი');
+      showToast('error', 'გთხოვთ შეიყვანოთ 6-ნიშნა კოდი');
       return;
     }
 
     if (isSubmitting) {
-      alert('გთხოვთ დაელოდოთ, ვერიფიკაცია მიმდინარეობს...');
+      showToast('warning', 'გთხოვთ დაელოდოთ, ვერიფიკაცია მიმდინარეობს...');
       return;
     }
 
@@ -162,18 +164,18 @@ const CustomCakeOrderContent = () => {
         });
 
         if (orderResponse.ok) {
-          alert('თქვენი კასტომ ტორტის შეკვეთა წარმატებით გაიგზავნა!');
+          showToast('success', 'თქვენი კასტომ ტორტის შეკვეთა წარმატებით გაიგზავნა!');
           router.push('/');
         } else {
-          alert('შეკვეთის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან.');
+          showToast('error', 'შეკვეთის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან.');
         }
       } else {
-        alert('არასწორი OTP კოდი. სცადეთ თავიდან.');
+        showToast('error', 'არასწორი ერთჯერადი კოდი. სცადეთ თავიდან.');
         setOtp('');
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      alert('OTP-ის დადასტურება ვერ მოხერხდა. სცადეთ მოგვიანებით.');
+      showToast('error', 'ერთჯერადი კოდის დადასტურება ვერ მოხერხდა. სცადეთ მოგვიანებით.');
     } finally {
       setIsSubmitting(false);
     }
@@ -319,7 +321,7 @@ const CustomCakeOrderContent = () => {
                     placeholder="ელ-ფოსტა"
                     required
                   />
-                  <p className="text-sm text-gray-500 mt-1">OTP კოდი გაიგზავნება ამ ელ-ფოსტაზე</p>
+                  <p className="text-sm text-gray-500 mt-1">ერთჯერადი კოდი გაიგზავნება ამ ელ-ფოსტაზე</p>
                 </div>
 
                 <div>
@@ -381,7 +383,7 @@ const CustomCakeOrderContent = () => {
                   <div className="space-y-4">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                       <p className="text-sm text-blue-800">
-                        ✅ OTP კოდი გაიგზავნა! გთხოვთ შეამოწმოთ თქვენი ელ-ფოსტა და შეიყვანოთ 6-ნიშნა კოდი.
+                         ერთჯერადი კოდი გაიგზავნა! გთხოვთ შეამოწმოთ თქვენი ელ-ფოსტა და შეიყვანოთ 6-ნიშნა კოდი.
                       </p>
                     </div>
                     <label className="block text-black font-medium mb-1">
@@ -415,13 +417,13 @@ const CustomCakeOrderContent = () => {
                               }),
                             });
                             if (response.ok) {
-                              alert('ახალი OTP კოდი გაიგზავნა!');
+                              showToast('success', 'ახალი ერთჯერადი კოდი გაიგზავნა!');
                               setOtp('');
                             } else {
-                              alert('OTP-ის ხელახლა გაგზავნა ვერ მოხერხდა.');
+                              showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
                             }
                           } catch (error) {
-                            alert('OTP-ის ხელახლა გაგზავნა ვერ მოხერხდა.');
+                            showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
                           } finally {
                             setIsSubmitting(false);
                           }

@@ -8,11 +8,13 @@ import { mapCakeToGalleryImage, type GalleryImage } from '@/lib/utils';
 import { submitOrder, type OrderFormData } from '@/lib/orderActions';
 import { Plus, Minus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useToast } from '@/components/Toast';
 
 const OrderPage = () => {
   const params = useParams();
   const router = useRouter();
   const cakeId = parseInt(params.cakeId as string);
+  const { showToast } = useToast();
 
   const [cake, setCake] = useState<GalleryImage | null>(null);
   const [loading, setLoading] = useState(true);
@@ -35,17 +37,17 @@ const OrderPage = () => {
 
   const handleVerifyOtp = async () => {
     if (!otp || otp.length !== 6) {
-      alert('გთხოვთ შეიყვანოთ 6-ნიშნა კოდი');
+      showToast('error', 'გთხოვთ შეიყვანოთ 6-ნიშნა კოდი');
       return;
     }
 
     if (!cake) {
-      alert('ტორტის ინფორმაცია ვერ მოიძებნა');
+      showToast('error', 'ტორტის ინფორმაცია ვერ მოიძებნა');
       return;
     }
 
     if (isSubmitting) {
-      alert('გთხოვთ დაელოდოთ, ვერიფიკაცია მიმდინარეობს...');
+      showToast('warning', 'გთხოვთ დაელოდოთ, ვერიფიკაცია მიმდინარეობს...');
       return;
     }
 
@@ -98,23 +100,23 @@ const OrderPage = () => {
           });
           
           if (receiptResponse.ok) {
-            alert('თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითარი გაიგზავნა თქვენს ელ-ფოსტაზე.');
+            showToast('success', 'თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითარი გაიგზავნა თქვენს ელ-ფოსტაზე.');
           } else {
-            alert('თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითრის გამოიგზავნაა.');
+            showToast('success', 'თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითრის გამოიგზავნაა.');
           }
         } catch (error) {
           console.error('Error sending receipt:', error);
-          alert('თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითრის გაგზავნა ვერ მოხერხდა.');
+          showToast('success', 'თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითრის გაგზავნა ვერ მოხერხდა.');
         }
         
         router.push('/');
       } else {
-        alert('არასწორი OTP კოდი. სცადეთ თავიდან.');
+        showToast('error', 'არასწორი ერთჯერადი კოდი. სცადეთ თავიდან.');
         setOtp('');
       }
     } catch (error) {
       console.error('Error verifying OTP:', error);
-      alert('OTP-ის დადასტურება ვერ მოხერხდა. სცადეთ მოგვიანებით.');
+      showToast('error', 'OTP-ის დადასტურება ვერ მოხერხდა. სცადეთ მოგვიანებით.');
     } finally {
       setIsSubmitting(false);
     }
@@ -160,7 +162,7 @@ const OrderPage = () => {
 
     // Check if email is provided for OTP
     if (!orderForm.customerEmail) {
-      alert('გთხოვთ შეიყვანოთ ელ-ფოსტა OTP-ის მისაღებად');
+      showToast('warning', 'გთხოვთ შეიყვანოთ ელ-ფოსტა OTP-ის მისაღებად');
       return;
     }
 
@@ -189,15 +191,15 @@ const OrderPage = () => {
            localStorage.setItem('backup_otp_timestamp', Date.now().toString());
          }
          
-         alert('OTP კოდი გაიგზავნა თქვენს ელ-ფოსტაზე! გთხოვთ დაელოდოთ 2-3 წამი კოდის მისაღებამდე.');
+         showToast('success', 'ერთჯერადი  კოდი გაიგზავნა თქვენს ელ-ფოსტაზე! გთხოვთ დაელოდოთ 2-3 წამი კოდის მისაღებამდე.');
          // Small delay to ensure OTP is properly stored
          await new Promise(resolve => setTimeout(resolve, 2000));
        } else {
-         alert('OTP-ის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან.');
+         showToast('error', 'ერთჯერადი კოდის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან.');
        }
     } catch (error) {
       console.error('Error sending OTP:', error);
-      alert('OTP-ის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
+      showToast('error', 'ერთჯერადი კოდის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
     } finally {
       setIsSubmitting(false);
     }
@@ -351,7 +353,7 @@ const OrderPage = () => {
                     placeholder="ელ-ფოსტა"
                     required
                   />
-                  <p className="text-sm text-gray-500 mt-1">OTP კოდი გაიგზავნება ამ ელ-ფოსტაზე</p>
+                  <p className="text-sm text-gray-500 mt-1">ერთჯერადი კოდი გაიგზავნება ამ ელ-ფოსტაზე</p>
                 </div>
 
                 <div>
@@ -413,7 +415,7 @@ const OrderPage = () => {
                    <div className="space-y-4">
                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                        <p className="text-sm text-blue-800">
-                         ✅ OTP კოდი გაიგზავნა! გთხოვთ შეამოწმოთ თქვენი ელ-ფოსტა და შეიყვანოთ 6-ნიშნა კოდი.
+                          ერთჯერადი კოდი გაიგზავნა! გთხოვთ შეამოწმოთ თქვენი ელ-ფოსტა და შეიყვანოთ 6-ნიშნა კოდი.
                        </p>
                      </div>
                      <label className="block text-black font-medium mb-1">
@@ -447,13 +449,13 @@ const OrderPage = () => {
                                }),
                              });
                              if (response.ok) {
-                               alert('ახალი OTP კოდი გაიგზავნა!');
+                               showToast('success', 'ახალი ერთჯერადი კოდი გაიგზავნა!');
                                setOtp('');
                              } else {
-                               alert('OTP-ის ხელახლა გაგზავნა ვერ მოხერხდა.');
+                               showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
                              }
                            } catch (error) {
-                             alert('OTP-ის ხელახლა გაგზავნა ვერ მოხერხდა.');
+                             showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
                            } finally {
                              setIsSubmitting(false);
                            }

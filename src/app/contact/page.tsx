@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useToast } from '@/components/Toast';
 import { 
   Phone, 
   Mail, 
@@ -24,6 +25,7 @@ const Contact = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { showToast } = useToast();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -43,7 +45,7 @@ const Contact = () => {
     console.log('Contact form submitted:', formData);
     
     // Show success message
-    alert('თქვენი შეტყობინება წარმატებით გაიგზავნა! ჩვენ მალე დაგიკავშირდებით.');
+    showToast('success', 'თქვენი შეტყობინება წარმატებით გაიგზავნა! ჩვენ მალე დაგიკავშირდებით.');
     
     // Reset form
     setFormData({

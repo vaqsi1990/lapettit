@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { sendOrderConfirmation } from '@/lib/emailService';
+import { sendOrderConfirmation, sendAdminNotification } from '@/lib/emailService';
 
 const prisma = new PrismaClient();
 
@@ -80,7 +80,8 @@ export async function POST(request: NextRequest) {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
-          })
+          }),
+          notes: notes
         };
 
         await sendOrderConfirmation(emailData, false);
@@ -88,6 +89,32 @@ export async function POST(request: NextRequest) {
         console.error('Error sending confirmation email:', emailError);
         // Don't fail the order if email fails
       }
+    }
+
+    // Send admin notification email
+    try {
+      const adminEmailData = {
+        orderId: order.id,
+        customerName: order.customerName,
+        customerEmail: customerEmail || '',
+        customerPhone: order.customerPhone,
+        address: order.address,
+        cakeName: cake.name,
+        quantity: quantity,
+        totalPrice: finalTotal,
+        orderDate: order.createdAt.toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        }),
+        notes: notes
+      };
+
+      await sendAdminNotification(adminEmailData, false);
+    } catch (adminEmailError) {
+      console.error('Error sending admin notification email:', adminEmailError);
+      // Don't fail the order if admin email fails
     }
 
     return NextResponse.json({
