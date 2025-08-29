@@ -45,6 +45,7 @@ export async function POST(request: NextRequest) {
       data: {
         customerName: `${customerName} ${body.lastName || ''}`.trim(),
         customerPhone,
+        customerEmail: customerEmail || null,
         address: `${address}, ${city || ''}, ${zipCode || ''}`.trim().replace(/^,\s*/, ''),
         total: totalPrice || 0,
         status: 'PENDING'
