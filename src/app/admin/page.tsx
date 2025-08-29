@@ -660,7 +660,7 @@ const AdminPage = () => {
                 <h2 className="text-2xl font-bold text-gray-800">კლიენტების სია</h2>
                 <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                   {(() => {
-                    const customerMap = new Map<string, any>();
+                    const customerMap = new Map<string, boolean>();
                     orders.forEach((order: Order) => {
                       const key = `${order.customerName}-${order.customerPhone}`;
                       if (!customerMap.has(key)) {
