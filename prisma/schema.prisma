@@ -48,6 +48,7 @@ model Order {
   id            Int          @id @default(autoincrement())
   customerName  String
   customerPhone String
+  customerEmail String
   address       String
 
   items         OrderItem[]

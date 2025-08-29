@@ -575,33 +575,275 @@ const AdminPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-6"
           >
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">კლიენტების სია</h2>
-              <div className="space-y-4">
-                {Array.from(new Set(orders.map(order => order.customerPhone))).map((phone, index) => {
-                  const customerOrders = orders.filter(order => order.customerPhone === phone);
-                  const customer = customerOrders[0];
-                  const totalSpent = customerOrders.reduce((sum, order) => sum + order.total, 0);
-                  
-                  return (
-                    <div key={phone} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-[#d90b6b] rounded-full flex items-center justify-center">
-                          <span className="text-white font-bold">{customer.customerName.charAt(0)}</span>
-                        </div>
-                        <div>
-                          <p className="font-semibold text-gray-800">{customer.customerName}</p>
-                          <p className="text-sm text-gray-600">{phone}</p>
-                          <p className="text-xs text-gray-500">{customer.address}</p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold text-[#d90b6b]">₾{totalSpent.toFixed(2)}</p>
-                        <p className="text-sm text-gray-600">{customerOrders.length} შეკვეთა</p>
-                      </div>
+            {/* Customer Analytics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                { 
+                  title: 'სულ კლიენტები', 
+                  value: new Set(orders.map(order => `${order.customerName}-${order.customerPhone}`)).size.toString(), 
+                  icon: Users, 
+                  color: 'bg-blue-500' 
+                },
+                { 
+                  title: 'ელ-ფოსტით', 
+                  value: orders.filter(order => order.customerEmail).reduce((acc, order) => {
+                    const key = `${order.customerName}-${order.customerPhone}`;
+                    if (!acc.has(key)) acc.add(key);
+                    return acc;
+                  }, new Set()).size.toString(), 
+                  icon: Mail, 
+                  color: 'bg-green-500' 
+                },
+                { 
+                  title: 'საშუალო შეკვეთა', 
+                  value: `₾${(orders.reduce((sum, order) => sum + order.total, 0) / orders.length || 0).toFixed(2)}`, 
+                  icon: ShoppingCart, 
+                  color: 'bg-yellow-500' 
+                },
+                { 
+                  title: 'საშუალო კლიენტის ღირებულება', 
+                  value: `₾${(orders.reduce((sum, order) => sum + order.total, 0) / new Set(orders.map(order => `${order.customerName}-${order.customerPhone}`)).size || 0).toFixed(2)}`, 
+                  icon: DollarSign, 
+                  color: 'bg-purple-500' 
+                }
+              ].map((stat, index) => (
+                <motion.div
+                  key={stat.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-gray-600 text-sm font-medium">{stat.title}</p>
+                      <p className="text-3xl font-bold text-gray-800 mt-2">{stat.value}</p>
                     </div>
-                  );
-                })}
+                    <div className={`${stat.color} p-3 rounded-xl`}>
+                      <stat.icon className="w-8 h-8 text-white" />
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Customer Search and Filter */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="ძიება კლიენტის სახელით, ტელეფონით ან ელ-ფოსტით..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-10 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+                  />
+                </div>
+                <select
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                  className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+                >
+                  <option value="all">ყველა კლიენტი</option>
+                  <option value="with_email">ელ-ფოსტით</option>
+                  <option value="without_email">ელ-ფოსტის გარეშე</option>
+                  <option value="recent">ბოლო 30 დღე</option>
+                  <option value="vip">VIP კლიენტები</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Simple Customers List - Only Customer Information */}
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">კლიენტების სია</h2>
+                <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                  {(() => {
+                    const customerMap = new Map<string, any>();
+                    orders.forEach((order: Order) => {
+                      const key = `${order.customerName}-${order.customerPhone}`;
+                      if (!customerMap.has(key)) {
+                        customerMap.set(key, true);
+                      }
+                    });
+                    return `${customerMap.size} უნიკალური კლიენტი`;
+                  })()}
+                </div>
+              </div>
+              
+              {/* Customer Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">კლიენტი</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">კონტაქტი</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">მისამართი</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">სტატისტიკა</th>
+                      <th className="text-left py-3 px-4 font-semibold text-gray-700">მოქმედებები</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(() => {
+                      // Create unique customers with aggregated data
+                      const customerMap = new Map<string, {
+                        customerName: string;
+                        customerPhone: string;
+                        customerEmail?: string;
+                        address: string;
+                        orders: Order[];
+                        totalSpent: number;
+                        firstOrder: Date;
+                        lastOrder: Date;
+                      }>();
+                      
+                      orders.forEach((order: Order) => {
+                        const key = `${order.customerName}-${order.customerPhone}`;
+                        if (!customerMap.has(key)) {
+                          customerMap.set(key, {
+                            customerName: order.customerName,
+                            customerPhone: order.customerPhone,
+                            customerEmail: order.customerEmail,
+                            address: order.address,
+                            orders: [],
+                            totalSpent: 0,
+                            firstOrder: order.createdAt,
+                            lastOrder: order.createdAt
+                          });
+                        }
+                        
+                        const customer = customerMap.get(key)!;
+                        customer.orders.push(order);
+                        customer.totalSpent += order.total;
+                        
+                        if (new Date(order.createdAt) < new Date(customer.firstOrder)) {
+                          customer.firstOrder = order.createdAt;
+                        }
+                        if (new Date(order.createdAt) > new Date(customer.lastOrder)) {
+                          customer.lastOrder = order.createdAt;
+                        }
+                      });
+
+                      // Convert to array and apply filters
+                      let customers = Array.from(customerMap.values());
+                      
+                      // Apply search filter
+                      if (searchTerm) {
+                        customers = customers.filter(customer => 
+                          customer.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          customer.customerPhone.includes(searchTerm) ||
+                          (customer.customerEmail && customer.customerEmail.toLowerCase().includes(searchTerm.toLowerCase()))
+                        );
+                      }
+
+                      // Apply status filter
+                      if (filterStatus === 'with_email') {
+                        customers = customers.filter(customer => customer.customerEmail);
+                      } else if (filterStatus === 'without_email') {
+                        customers = customers.filter(customer => !customer.customerEmail);
+                      } else if (filterStatus === 'recent') {
+                        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+                        customers = customers.filter(customer => new Date(customer.lastOrder) > thirtyDaysAgo);
+                      } else if (filterStatus === 'vip') {
+                        customers = customers.filter(customer => customer.totalSpent > 100);
+                      }
+
+                      // Sort by name alphabetically
+                      customers.sort((a, b) => a.customerName.localeCompare(b.customerName));
+
+                      return customers.map((customer, index) => (
+                        <motion.tr
+                          key={`${customer.customerName}-${customer.customerPhone}`}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                        >
+                          {/* Customer Name & Avatar */}
+                          <td className="py-4 px-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-12 h-12 bg-[#d90b6b] rounded-full flex items-center justify-center">
+                                <span className="text-white font-bold text-lg">{customer.customerName.charAt(0)}</span>
+                              </div>
+                              <div>
+                                <p className="font-semibold text-gray-800 text-lg">{customer.customerName}</p>
+                                <p className="text-sm text-gray-500">ID: {customer.customerPhone.slice(-4)}</p>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Contact Information */}
+                          <td className="py-4 px-4">
+                            <div className="space-y-1">
+                              <div className="flex items-center space-x-2">
+                                <Phone className="w-4 h-4 text-gray-400" />
+                                <span className="text-gray-700">{customer.customerPhone}</span>
+                              </div>
+                              {customer.customerEmail ? (
+                                <div className="flex items-center space-x-2">
+                                  <Mail className="w-4 h-4 text-green-500" />
+                                  <span className="text-gray-700 text-sm">{customer.customerEmail}</span>
+                                </div>
+                              ) : (
+                                <div className="flex items-center space-x-2">
+                                  <Mail className="w-4 h-4 text-red-400" />
+                                  <span className="text-gray-500 text-sm">ელ-ფოსტა არ არის</span>
+                                </div>
+                              )}
+                            </div>
+                          </td>
+
+                          {/* Address */}
+                          <td className="py-4 px-4">
+                            <div className="flex items-start space-x-2">
+                              <MapPin className="w-4 h-4 text-gray-400 mt-1" />
+                              <span className="text-gray-700 text-sm max-w-xs">{customer.address}</span>
+                            </div>
+                          </td>
+
+                          {/* Statistics */}
+                          <td className="py-4 px-4">
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600">შეკვეთები:</span>
+                                <span className="font-semibold text-gray-800">{customer.orders.length}</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600">სულ:</span>
+                                <span className="font-bold text-[#d90b6b]">₾{customer.totalSpent.toFixed(2)}</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm text-gray-600">ბოლო:</span>
+                                <span className="text-xs text-gray-500">
+                                  {new Date(customer.lastOrder).toLocaleDateString('ka-GE', {
+                                    month: 'short',
+                                    day: 'numeric'
+                                  })}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="py-4 px-4">
+                            <div className="flex space-x-2">
+                              <button className="p-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors">
+                                <Edit className="w-4 h-4" />
+                              </button>
+                              <button className="p-2 text-green-600 hover:text-green-900 hover:bg-green-50 rounded-lg transition-colors">
+                                <Mail className="w-4 h-4" />
+                              </button>
+                              <button className="p-2 text-purple-600 hover:text-purple-900 hover:bg-purple-50 rounded-lg transition-colors">
+                                <Users className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </td>
+                        </motion.tr>
+                      ));
+                    })()}
+                  </tbody>
+                </table>
               </div>
             </div>
           </motion.div>

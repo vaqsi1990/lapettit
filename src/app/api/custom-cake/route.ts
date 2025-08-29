@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       deliveryTime,
       imageUrl,
       customerName,
-      lastName,
+     
       customerPhone,
       customerEmail,
       address,

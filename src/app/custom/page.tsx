@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion} from 'framer-motion';
 import {
   Cake,
   Plus,
   Minus,
   ShoppingCart,
-  Save,
+  
   Upload,
   Check,
   X
@@ -54,10 +54,8 @@ const Custom = () => {
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [totalPrice, setTotalPrice] = useState(0);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [isClientFormOpen, setIsClientFormOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Client form state
@@ -277,9 +275,7 @@ const Custom = () => {
     }
 
     try {
-      setIsSubmitting(true);
-
-      const customCakeData: CustomCakeFormData = {
+      await submitCustomCakeOrder({
         design: selectedDesign,
         flavor: selectedFlavor,
         filling: selectedFilling,
@@ -300,9 +296,7 @@ const Custom = () => {
         zipCode: clientForm.zipCode,
         notes: clientForm.notes,
         imageUrl: uploadedImage || undefined,
-      };
-
-      await submitCustomCakeOrder(customCakeData);
+      });
       showToast('success', 'თქვენი ტორტის შეკვეთა წარმატებით გაიგზავნა!');
       
       // Small delay to show the success message
@@ -313,8 +307,6 @@ const Custom = () => {
     } catch (error) {
       console.error('Error submitting custom cake order:', error);
       showToast('error', 'ტორტის შეკვეთის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -327,34 +319,30 @@ const Custom = () => {
       return;
     }
 
-    const customCakeData: CustomCakeFormData = {
-      design: selectedDesign,
-      flavor: selectedFlavor,
-      filling: selectedFilling,
-      glaze: selectedFrosting,
-      shape: selectedShape,
-      decorations: selectedDecorations,
-      text: customMessage,
-      quantity: quantity,
-      deliveryDate: selectedDate,
-      deliveryTime: selectedTime,
-      totalPrice: totalPrice,
-      customerName: clientForm.firstName,
-      lastName: clientForm.lastName,
-      customerPhone: clientForm.phone,
-      customerEmail: clientForm.email,
-      address: clientForm.address,
-      city: clientForm.city,
-      zipCode: clientForm.zipCode,
-      notes: clientForm.notes,
-      imageUrl: uploadedImage || undefined,
-    };
-
     try {
-      setIsSubmitting(true);
-      await submitCustomCakeOrder(customCakeData);
+      await submitCustomCakeOrder({
+        design: selectedDesign,
+        flavor: selectedFlavor,
+        filling: selectedFilling,
+        glaze: selectedFrosting,
+        shape: selectedShape,
+        decorations: selectedDecorations,
+        text: customMessage,
+        quantity: quantity,
+        deliveryDate: selectedDate,
+        deliveryTime: selectedTime,
+        totalPrice: totalPrice,
+        customerName: clientForm.firstName,
+        lastName: clientForm.lastName,
+        customerPhone: clientForm.phone,
+        customerEmail: clientForm.email,
+        address: clientForm.address,
+        city: clientForm.city,
+        zipCode: clientForm.zipCode,
+        notes: clientForm.notes,
+        imageUrl: uploadedImage || undefined,
+      });
       showToast('success', 'თქვენი ტორტის შეკვეთა წარმატებით გაიგზავნა!');
-      setIsClientFormOpen(false);
       setClientForm({
         firstName: '',
         lastName: '',
@@ -382,8 +370,6 @@ const Custom = () => {
     } catch (error) {
       console.error('Error submitting custom cake order:', error);
       showToast('error', 'ტორტის შეკვეთის გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 

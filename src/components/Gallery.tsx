@@ -79,17 +79,9 @@ const Gallery = () => {
 
   const closeLightbox = () => setSelectedImage(null);
 
-  const nextImage = () => {
-    const nextIndex = (currentImageIndex + 1) % galleryImages.length;
-    setCurrentImageIndex(nextIndex);
-    setSelectedImage(galleryImages[nextIndex]);
-  };
 
-  const prevImage = () => {
-    const prevIndex = currentImageIndex === 0 ? galleryImages.length - 1 : currentImageIndex - 1;
-    setCurrentImageIndex(prevIndex);
-    setSelectedImage(galleryImages[prevIndex]);
-  };
+
+
 
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);

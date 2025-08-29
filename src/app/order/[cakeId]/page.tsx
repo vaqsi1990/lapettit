@@ -455,6 +455,7 @@ const OrderPage = () => {
                               showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
                             }
                           } catch (error) {
+                            console.log(error);
                             showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
                           } finally {
                             setIsSubmitting(false);

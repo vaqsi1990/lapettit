@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { useState,  createContext, useContext, ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
 
@@ -120,23 +120,23 @@ export const ToastProvider = ({ children }: ToastProviderProps) => {
 
 // Utility functions for easy toast usage
 export const toast = {
-  success: (message: string, duration?: number) => {
+  success: (message: string) => {
     if (typeof window !== 'undefined') {
       // This will be handled by the ToastProvider context
       console.log('Toast success:', message);
     }
   },
-  error: (message: string, duration?: number) => {
+  error: (message: string) => {
     if (typeof window !== 'undefined') {
       console.log('Toast error:', message);
     }
   },
-  warning: (message: string, duration?: number) => {
+  warning: (message: string) => {
     if (typeof window !== 'undefined') {
       console.log('Toast warning:', message);
     }
   },
-  info: (message: string, duration?: number) => {
+  info: (message: string) => {
     if (typeof window !== 'undefined') {
       console.log('Toast info:', message);
     }
