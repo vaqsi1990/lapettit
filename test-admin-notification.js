@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer');
 const testConfig = {
   emailUser: process.env.EMAIL_USER || 'your-email@gmail.com',
   emailPassword: process.env.EMAIL_PASSWORD || 'your-app-password',
-  adminEmail: 'vaqsii23@gmail.com'
+  adminEmail: 'Lappetit2019@gmail.com'
 };
 
 // Create test transporter

@@ -538,7 +538,7 @@ export async function sendOrderConfirmation(orderData: RegularOrderData | Custom
 // Send admin notification email
 export async function sendAdminNotification(orderData: RegularOrderData | CustomCakeOrderData, isCustomCake: boolean = false) {
   try {
-    const adminEmail = 'vaqsii23@gmail.com';
+    const adminEmail = 'Lappetit2019@gmail.com';
     
     let emailContent;
     if (isCustomCake && 'design' in orderData) {
