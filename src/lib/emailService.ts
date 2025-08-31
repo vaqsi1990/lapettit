@@ -232,14 +232,14 @@ export const emailTemplates = {
     orderDate: string;
     notes?: string;
   }) => ({
-    subject: `🎂 NEW CAKE ORDER #${orderData.orderId} - ${orderData.customerName}`,
+    subject: `ახალი ტორტის შეკვეთა #${orderData.orderId} - ${orderData.customerName}`,
     html: `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>New Cake Order</title>
+        <title>ახალი ტორტის შეკვეთა</title>
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 700px; margin: 0 auto; padding: 20px; }
@@ -257,55 +257,141 @@ export const emailTemplates = {
       <body>
         <div class="container">
           <div class="header">
-            <h1>🎂 NEW CAKE ORDER RECEIVED!</h1>
-            <p>Order #${orderData.orderId}</p>
+            <h1>ახალი ტორტის შეკვეთა მიღებულია!</h1>
+            <p>შეკვეთა #${orderData.orderId}</p>
           </div>
           
           <div class="content">
             <div class="urgent">
-              <h2>⚠️ ACTION REQUIRED</h2>
-              <p>A new cake order has been placed and requires your attention.</p>
+              <h2>ყურადღება საჭიროა</h2>
+              <p>ახალი ტორტის შეკვეთა განთავსებულია და თქვენი ყურადღება საჭიროებს.</p>
             </div>
             
             <div class="order-details">
-              <h3>📋 ORDER INFORMATION</h3>
-              <p><strong>Order ID:</strong> #${orderData.orderId}</p>
-              <p><strong>Order Date:</strong> ${orderData.orderDate}</p>
-              <p><strong>Status:</strong> <span class="status">PENDING</span></p>
+              <h3>შეკვეთის ინფორმაცია</h3>
+              <p><strong>შეკვეთის ნომერი:</strong> #${orderData.orderId}</p>
+              <p><strong>შეკვეთის თარიღი:</strong> ${orderData.orderDate}</p>
+              <p><strong>სტატუსი:</strong> <span class="status">მიმდინარე</span></p>
             </div>
             
             <div class="cake-info">
-              <h3>🍰 CAKE DETAILS</h3>
-              <p><strong>Cake Name:</strong> ${orderData.cakeName}</p>
-              <p><strong>Quantity:</strong> ${orderData.quantity}</p>
-              ${orderData.notes ? `<p><strong>Special Notes:</strong> ${orderData.notes}</p>` : ''}
+              <h3>ტორტის დეტალები</h3>
+              <p><strong>ტორტის სახელი:</strong> ${orderData.cakeName}</p>
+              <p><strong>რაოდენობა:</strong> ${orderData.quantity}</p>
+              ${orderData.notes ? `<p><strong>სპეციალური შენიშვნები:</strong> ${orderData.notes}</p>` : ''}
             </div>
             
             <div class="customer-info">
-              <h3>👤 CUSTOMER INFORMATION</h3>
-              <p><strong>Name:</strong> ${orderData.customerName}</p>
-              <p><strong>Phone:</strong> ${orderData.customerPhone}</p>
-              <p><strong>Email:</strong> ${orderData.customerEmail || 'Not provided'}</p>
-              <p><strong>Address:</strong> ${orderData.address}</p>
+              <h3>კლიენტის ინფორმაცია</h3>
+              <p><strong>სახელი:</strong> ${orderData.customerName}</p>
+              <p><strong>ტელეფონი:</strong> ${orderData.customerPhone}</p>
+              <p><strong>ელ-ფოსტა:</strong> ${orderData.customerEmail || 'არ არის მითითებული'}</p>
+              <p><strong>მისამართი:</strong> ${orderData.address}</p>
             </div>
             
             <div class="total">
-              <strong>TOTAL AMOUNT: ₾${orderData.totalPrice.toFixed(2)}</strong>
+              <strong>საერთო თანხა: ₾${orderData.totalPrice.toFixed(2)}</strong>
             </div>
             
             <div class="order-details">
-              <h3>📱 NEXT STEPS</h3>
+              <h3>შემდეგი ნაბიჯები</h3>
               <ol>
-                <li>Review the order details above</li>
-                <li>Contact the customer to confirm the order</li>
-                <li>Update order status in the admin panel</li>
-                <li>Begin preparing the cake</li>
+                <li>გადახედეთ ზემოთ მოცემული შეკვეთის დეტალები</li>
+                <li>დაუკავშირდით კლიენტს შეკვეთის დასადასტურებლად</li>
+                <li>განაახლეთ შეკვეთის სტატუსი ადმინ პანელში</li>
+                <li>დაიწყეთ ტორტის მომზადება</li>
               </ol>
             </div>
             
             <div class="footer" style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
-              <p>This is an automated notification from your cake ordering system.</p>
-              <p>Order received at: ${new Date().toLocaleString()}</p>
+              <p>ეს არის ავტომატური შეტყობინება თქვენი ტორტის შეკვეთის სისტემიდან.</p>
+              <p>შეკვეთა მიღებულია: ${new Date().toLocaleString()}</p>
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `
+  }),
+
+  // Admin notification for contact form submissions
+  adminContactNotification: (contactData: {
+    customerName: string;
+    customerEmail: string;
+    customerPhone?: string;
+    subject: string;
+    message: string;
+    contactDate: string;
+  }) => ({
+    subject: `ახალი კონტაქტის ფორმა - ${contactData.subject}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ახალი კონტაქტის ფორმა</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 700px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #d90b6b, #ff6b9d); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+          .contact-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #d90b6b; }
+          .message-content { background: #fff5f7; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #ffd6e7; }
+          .customer-info { background: #f0f8ff; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #b3d9ff; }
+          .urgent { background: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 8px; margin: 20px 0; }
+          .highlight { color: #d90b6b; font-weight: bold; }
+          .status { display: inline-block; background: #17a2b8; color: white; padding: 8px 16px; border-radius: 20px; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>ახალი კონტაქტის ფორმა</h1>
+            <p>თემა: ${contactData.subject}</p>
+          </div>
+          
+          <div class="content">
+            <div class="urgent">
+              <h2>ყურადღება საჭიროა</h2>
+              <p>ახალი კონტაქტის ფორმა მიღებულია და თქვენი ყურადღება საჭიროებს.</p>
+            </div>
+            
+            <div class="contact-details">
+              <h3>შეტყობინების ინფორმაცია</h3>
+              <p><strong>თემა:</strong> ${contactData.subject}</p>
+              <p><strong>თარიღი:</strong> ${contactData.contactDate}</p>
+              <p><strong>სტატუსი:</strong> <span class="status">ახალი</span></p>
+            </div>
+            
+            <div class="message-content">
+              <h3>შეტყობინების შინაარსი</h3>
+              <p><strong>შეტყობინება:</strong></p>
+              <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-top: 10px;">
+                ${contactData.message.replace(/\n/g, '<br>')}
+              </div>
+            </div>
+            
+            <div class="customer-info">
+              <h3>კლიენტის ინფორმაცია</h3>
+              <p><strong>სახელი:</strong> ${contactData.customerName}</p>
+              <p><strong>ელ-ფოსტა:</strong> ${contactData.customerEmail}</p>
+              ${contactData.customerPhone ? `<p><strong>ტელეფონი:</strong> ${contactData.customerPhone}</p>` : ''}
+            </div>
+            
+            <div class="contact-details">
+              <h3>შემდეგი ნაბიჯები</h3>
+              <ol>
+                <li>გადახედეთ ზემოთ მოცემული შეტყობინების შინაარსი</li>
+                <li>უპასუხეთ კლიენტს ელ-ფოსტით ან ტელეფონით</li>
+                <li>განაახლეთ კონტაქტის სტატუსი თქვენს სისტემაში</li>
+                <li>დაიცავით საჭიროების შემთხვევაში</li>
+              </ol>
+            </div>
+            
+            <div class="footer" style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
+              <p>ეს არის ავტომატური შეტყობინება თქვენი კონტაქტის ფორმის სისტემიდან.</p>
+              <p>შეტყობინება მიღებულია: ${new Date().toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -336,14 +422,14 @@ export const emailTemplates = {
     notes?: string;
     imageUrl?: string;
   }) => ({
-    subject: `🎨 NEW CUSTOM CAKE ORDER #${orderData.orderId} - ${orderData.customerName}`,
+    subject: `ახალი მორგებული ტორტის შეკვეთა #${orderData.orderId} - ${orderData.customerName}`,
     html: `
       <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>New Custom Cake Order</title>
+        <title>ახალი მორგებული ტორტის შეკვეთა</title>
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 700px; margin: 0 auto; padding: 20px; }
@@ -365,86 +451,86 @@ export const emailTemplates = {
       <body>
         <div class="container">
           <div class="header">
-            <h1>🎨 NEW CUSTOM CAKE ORDER RECEIVED!</h1>
-            <p>Order #${orderData.orderId}</p>
+            <h1>ახალი მორგებული ტორტის შეკვეთა მიღებულია!</h1>
+            <p>შეკვეთა #${orderData.orderId}</p>
           </div>
           
           <div class="content">
             <div class="urgent">
-              <h2>⚠️ ACTION REQUIRED</h2>
-              <p>A new custom cake order has been placed and requires your immediate attention.</p>
+              <h2>ყურადღება საჭიროა</h2>
+              <p>ახალი მორგებული ტორტის შეკვეთა განთავსებულია და თქვენი მყისიერი ყურადღება საჭიროებს.</p>
             </div>
             
             <div class="order-details">
-              <h3>📋 ORDER INFORMATION</h3>
-              <p><strong>Order ID:</strong> #${orderData.orderId}</p>
-              <p><strong>Order Date:</strong> ${orderData.orderDate}</p>
-              <p><strong>Status:</strong> <span class="status">PENDING</span></p>
+              <h3>შეკვეთის ინფორმაცია</h3>
+              <p><strong>შეკვეთის ნომერი:</strong> #${orderData.orderId}</p>
+              <p><strong>შეკვეთის თარიღი:</strong> ${orderData.orderDate}</p>
+              <p><strong>სტატუსი:</strong> <span class="status">მიმდინარე</span></p>
             </div>
             
             <div class="cake-info">
-              <h3>🍰 CUSTOM CAKE SPECIFICATIONS</h3>
-              <p><strong>Design:</strong> ${orderData.design}</p>
-              <p><strong>Flavor:</strong> ${orderData.flavor}</p>
-              <p><strong>Filling:</strong> ${orderData.filling || 'Not specified'}</p>
-              <p><strong>Glaze:</strong> ${orderData.glaze || 'Not specified'}</p>
-              <p><strong>Shape:</strong> ${orderData.shape || 'Not specified'}</p>
-              <p><strong>Quantity:</strong> ${orderData.quantity}</p>
-              ${orderData.text ? `<p><strong>Special Text:</strong> "${orderData.text}"</p>` : ''}
-              ${orderData.notes ? `<p><strong>Additional Notes:</strong> ${orderData.notes}</p>` : ''}
+              <h3>მორგებული ტორტის სპეციფიკაციები</h3>
+              <p><strong>დიზაინი:</strong> ${orderData.design}</p>
+              <p><strong>გემო:</strong> ${orderData.flavor}</p>
+              <p><strong>შევსება:</strong> ${orderData.filling || 'არ არის მითითებული'}</p>
+              <p><strong>გლაზური:</strong> ${orderData.glaze || 'არ არის მითითებული'}</p>
+              <p><strong>ფორმა:</strong> ${orderData.shape || 'არ არის მითითებული'}</p>
+              <p><strong>რაოდენობა:</strong> ${orderData.quantity}</p>
+              ${orderData.text ? `<p><strong>სპეციალური ტექსტი:</strong> "${orderData.text}"</p>` : ''}
+              ${orderData.notes ? `<p><strong>დამატებითი შენიშვნები:</strong> ${orderData.notes}</p>` : ''}
             </div>
             
             ${orderData.decorations.length > 0 ? `
             <div class="custom-details">
-              <h3>✨ DECORATIONS</h3>
+              <h3>დეკორაციები</h3>
               <p>${orderData.decorations.map(dec => `<span class="decoration-tag">${dec}</span>`).join(' ')}</p>
             </div>
             ` : ''}
             
             <div class="custom-details">
-              <h3>📅 DELIVERY INFORMATION</h3>
-              <p><strong>Delivery Date:</strong> ${new Date(orderData.deliveryDate).toLocaleDateString('en-US', { 
+              <h3>მიწოდების ინფორმაცია</h3>
+              <p><strong>მიწოდების თარიღი:</strong> ${new Date(orderData.deliveryDate).toLocaleDateString('ka-GE', { 
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric' 
               })}</p>
-              ${orderData.deliveryTime ? `<p><strong>Delivery Time:</strong> ${orderData.deliveryTime}</p>` : ''}
+              ${orderData.deliveryTime ? `<p><strong>მიწოდების დრო:</strong> ${orderData.deliveryTime}</p>` : ''}
             </div>
             
             ${orderData.imageUrl ? `
             <div class="image-preview">
-              <h3>🖼️ REFERENCE IMAGE</h3>
+              <h3>რეფერენსის სურათი</h3>
               <img src="${orderData.imageUrl}" alt="Reference Image" />
             </div>
             ` : ''}
             
             <div class="customer-info">
-              <h3>👤 CUSTOMER INFORMATION</h3>
-              <p><strong>Name:</strong> ${orderData.customerName}</p>
-              <p><strong>Phone:</strong> ${orderData.customerPhone}</p>
-              <p><strong>Email:</strong> ${orderData.customerEmail || 'Not provided'}</p>
-              <p><strong>Address:</strong> ${orderData.address}</p>
+              <h3>კლიენტის ინფორმაცია</h3>
+              <p><strong>სახელი:</strong> ${orderData.customerName}</p>
+              <p><strong>ტელეფონი:</strong> ${orderData.customerPhone}</p>
+              <p><strong>ელ-ფოსტა:</strong> ${orderData.customerEmail || 'არ არის მითითებული'}</p>
+              <p><strong>მისამართი:</strong> ${orderData.address}</p>
             </div>
             
             <div class="total">
-              <strong>TOTAL AMOUNT: ₾${orderData.totalPrice.toFixed(2)}</strong>
+              <strong>საერთო თანხა: ₾${orderData.totalPrice.toFixed(2)}</strong>
             </div>
             
             <div class="order-details">
-              <h3>📱 NEXT STEPS</h3>
+              <h3>შემდეგი ნაბიჯები</h3>
               <ol>
-                <li>Review the custom cake specifications above</li>
-                <li>Contact the customer to discuss design details</li>
-                <li>Confirm the design is feasible and timeline</li>
-                <li>Update order status in the admin panel</li>
-                <li>Begin the custom cake creation process</li>
+                <li>გადახედეთ ზემოთ მოცემული მორგებული ტორტის სპეციფიკაციები</li>
+                <li>დაუკავშირდით კლიენტს დიზაინის დეტალების გასარკვევად</li>
+                <li>დაადასტურეთ რომ დიზაინი შესაძლებელია და დრო</li>
+                <li>განაახლეთ შეკვეთის სტატუსი ადმინ პანელში</li>
+                <li>დაიწყეთ მორგებული ტორტის შექმნის პროცესი</li>
               </ol>
             </div>
             
             <div class="footer" style="text-align: center; margin-top: 30px; color: #666; font-size: 14px;">
-              <p>This is an automated notification from your custom cake ordering system.</p>
-              <p>Order received at: ${new Date().toLocaleString()}</p>
+              <p>ეს არის ავტომატური შეტყობინება თქვენი მორგებული ტორტის შეკვეთის სისტემიდან.</p>
+              <p>შეკვეთა მიღებულია: ${new Date().toLocaleString()}</p>
             </div>
           </div>
         </div>
@@ -536,12 +622,42 @@ export async function sendOrderConfirmation(orderData: RegularOrderData | Custom
 }
 
 // Send admin notification email
-export async function sendAdminNotification(orderData: RegularOrderData | CustomCakeOrderData, isCustomCake: boolean = false) {
+export async function sendAdminNotification(orderData: RegularOrderData | CustomCakeOrderData | any, isCustomCake: boolean = false) {
   try {
     const adminEmail = 'Lappetit2019@gmail.com';
     
     let emailContent;
-    if (isCustomCake && 'design' in orderData) {
+    
+    // Check if this is a contact form submission
+    if (orderData.notes && orderData.notes.includes('Contact Form - Subject:')) {
+      const notesParts = orderData.notes.split('\n\n');
+      if (notesParts.length >= 2) {
+        const subjectLine = notesParts[0];
+        const messageLine = notesParts[1];
+        const subject = subjectLine.replace('Contact Form - Subject: ', '');
+        const message = messageLine.replace('Message: ', '');
+        
+        const contactData = {
+          customerName: orderData.customerName,
+          customerEmail: orderData.customerEmail,
+          customerPhone: orderData.customerPhone,
+          subject: subject,
+          message: message,
+          contactDate: orderData.orderDate
+        };
+        emailContent = emailTemplates.adminContactNotification(contactData);
+      } else {
+        // Fallback for contact form
+        emailContent = emailTemplates.adminContactNotification({
+          customerName: orderData.customerName,
+          customerEmail: orderData.customerEmail,
+          customerPhone: orderData.customerPhone,
+          subject: 'Contact Form Message',
+          message: orderData.notes,
+          contactDate: orderData.orderDate
+        });
+      }
+    } else if (isCustomCake && 'design' in orderData) {
       emailContent = emailTemplates.adminCustomCakeNotification(orderData as CustomCakeOrderData);
     } else if ('cakeName' in orderData) {
       emailContent = emailTemplates.adminOrderNotification(orderData as RegularOrderData);

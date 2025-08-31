@@ -38,25 +38,40 @@ const Contact = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Here you would typically send the data to your backend
-    console.log('Contact form submitted:', formData);
-    
-    // Show success message
-    showToast('success', 'თქვენი შეტყობინება წარმატებით გაიგზავნა! ჩვენ მალე დაგიკავშირდებით.');
-    
-    // Reset form
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      subject: '',
-      message: ''
-    });
-    
-    setIsSubmitting(false);
+    try {
+      // Send form data to API
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Show success message
+        showToast('success', 'თქვენი შეტყობინება წარმატებით გაიგზავნა! ჩვენ მალე დაგიკავშირდებით.');
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          subject: '',
+          message: ''
+        });
+      } else {
+        // Show error message
+        showToast('error', `შეცდომა: ${result.error || 'შეტყობინების გაგზავნა ვერ მოხერხდა'}`);
+      }
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      showToast('error', 'შეტყობინების გაგზავნა ვერ მოხერხდა. სცადეთ მოგვიანებით.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
