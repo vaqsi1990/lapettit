@@ -20,9 +20,9 @@ import {
   Mail
 } from 'lucide-react';
 import { getCakes, getOrders, deleteCake, deleteOrder } from '@/lib/action';
-// @ts-ignore
+
 import AddCakeForm from '@/components/AddCakeForm';
-// @ts-ignore
+
 import EditCakeForm from '@/components/EditCakeForm';
 
 interface Cake {
@@ -31,7 +31,7 @@ interface Cake {
   description: string | null;
   price: number;
   imageUrl: string | null;
- 
+  gallery: string[];
   category: string;
   servings: number | null;
   weightKg: number | null;
