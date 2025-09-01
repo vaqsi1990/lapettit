@@ -20,12 +20,11 @@ model Cake {
   description   String?
   price         Float
   imageUrl      String?        // მთავარი სურათი
-  gallery       String[]       // დამატებითი სურათები (სხვადასხვა კუთხე/დიზაინი)
   category      CakeCategory
   servings      Int?           // რამდენი ადამიანს ჰყოფნის (მაგ: 8, 12, 16)
   weightKg      Float?         // წონა კილოგრამებში
   flavors       String[]       // გემოები: ["შოკოლადი", "ვანილი", "წითელი ხავერდი"]
-  allergens     String[]       // ალერგენები: ["კაკალი", "რძე", "გლუტენი"]
+  fillings      String[]       // შიგთავსი: ["კრემი", "ჯემი", "შოკოლადი"]
   isCustomizable Boolean       @default(false) // პერსონალიზაცია შეიძლება?
   available     Boolean        @default(true)  // არის თუ არა გაყიდვაში
   createdAt     DateTime       @default(now())

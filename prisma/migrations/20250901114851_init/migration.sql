@@ -9,7 +9,14 @@ CREATE TABLE "public"."Cake" (
     "price" DOUBLE PRECISION NOT NULL,
     "imageUrl" TEXT,
     "category" "public"."CakeCategory" NOT NULL,
+    "servings" INTEGER,
+    "weightKg" DOUBLE PRECISION,
+    "flavors" TEXT[],
+    "allergens" TEXT[],
+    "isCustomizable" BOOLEAN NOT NULL DEFAULT false,
+    "available" BOOLEAN NOT NULL DEFAULT true,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Cake_pkey" PRIMARY KEY ("id")
 );

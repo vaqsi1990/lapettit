@@ -20,6 +20,10 @@ import {
   Mail
 } from 'lucide-react';
 import { getCakes, getOrders, deleteCake, deleteOrder } from '@/lib/action';
+// @ts-ignore
+import AddCakeForm from '@/components/AddCakeForm';
+// @ts-ignore
+import EditCakeForm from '@/components/EditCakeForm';
 
 interface Cake {
   id: number;
@@ -27,7 +31,14 @@ interface Cake {
   description: string | null;
   price: number;
   imageUrl: string | null;
+ 
   category: string;
+  servings: number | null;
+  weightKg: number | null;
+  flavors: string[];
+  fillings: string[];
+  isCustomizable: boolean;
+  available: boolean;
   createdAt: Date;
 }
 
@@ -71,6 +82,7 @@ const AdminPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [editingCake, setEditingCake] = useState<Cake | null>(null);
   const { showToast } = useToast();
 
 
@@ -112,6 +124,37 @@ const AdminPage = () => {
         console.error('Error deleting cake:', error);
         showToast('error', 'ტორტის წაშლისას მოხდა შეცდომა');
       }
+    }
+  };
+
+  // Handle cake editing
+  const handleEditCake = (cake: Cake) => {
+    setEditingCake(cake);
+  };
+
+  const handleUpdateCake = async (updatedCake: Cake) => {
+    try {
+      const response = await fetch(`/api/cake/${updatedCake.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedCake),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        showToast('success', 'ტორტი წარმატებით განახლდა!');
+        // Update the cake in the local state
+        setCakes(cakes.map(cake => cake.id === updatedCake.id ? updatedCake : cake));
+        setEditingCake(null);
+      } else {
+        showToast('error', `შეცდომა: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error updating cake:', error);
+      showToast('error', 'ტორტის განახლებისას მოხდა შეცდომა');
     }
   };
 
@@ -185,6 +228,7 @@ const AdminPage = () => {
        
               { id: 'orders', label: 'შეკვეთები', icon: ShoppingCart },
               { id: 'cakes', label: 'ტორტები', icon: Cake },
+              { id: 'add-cake', label: 'ახალი ტორტი', icon: Plus },
               { id: 'customers', label: 'კლიენტები', icon: Users }
             ].map((tab) => (
               <button
@@ -543,6 +587,7 @@ const AdminPage = () => {
                     <div className="absolute top-3 right-3 bg-black/50 text-white px-2 py-1 rounded-lg text-xs">
                       {cake.category}
                     </div>
+
                   </div>
                   <div className="p-6">
                     <h3 className="md:text-[18px] text-[16px] font-semibold text-black mb-2">{cake.name}</h3>
@@ -550,7 +595,10 @@ const AdminPage = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-2xl font-bold text-[#d90b6b]">₾{cake.price}</span>
                       <div className="flex space-x-2">
-                        <button className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors md:text-[18px] text-[16px]">
+                        <button 
+                          onClick={() => handleEditCake(cake)}
+                          className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors md:text-[18px] text-[16px]"
+                        >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button 
@@ -564,6 +612,58 @@ const AdminPage = () => {
                   </div>
                 </motion.div>
               ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Edit Cake Modal */}
+        {editingCake && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-gray-800">ტორტის რედაქტირება</h2>
+                  <button
+                    onClick={() => setEditingCake(null)}
+                    className="text-gray-500 hover:text-gray-700 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
+                <EditCakeForm 
+                  cake={editingCake} 
+                  onUpdate={handleUpdateCake}
+                  onCancel={() => setEditingCake(null)}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add Cake Tab */}
+        {activeTab === 'add-cake' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            <div className="bg-white rounded-2xl shadow-lg p-8">
+              <h2 className="md:text-[24px] text-[20px] font-bold text-black mb-6">ახალი ტორტის დამატება</h2>
+              <AddCakeForm onCakeAdded={() => {
+                // Refresh cakes list
+                const fetchCakes = async () => {
+                  try {
+                    const cakesResult = await getCakes();
+                    if (cakesResult.success && cakesResult.data) {
+                      setCakes(cakesResult.data);
+                    }
+                  } catch (error) {
+                    console.error('Error fetching cakes:', error);
+                  }
+                };
+                fetchCakes();
+                setActiveTab('cakes');
+              }} />
             </div>
           </motion.div>
         )}

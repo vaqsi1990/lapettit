@@ -16,6 +16,7 @@
     "@prisma/client": "^6.14.0",
     "@react-three/drei": "^10.7.3",
     "@react-three/fiber": "^9.3.0",
+    "@uploadthing/react": "^7.3.3",
     "framer-motion": "^12.23.12",
     "gasp": "^0.0.2",
     "gsap": "^3.13.0",
@@ -28,6 +29,7 @@
     "react-hook-form": "^7.62.0",
     "swiper": "^11.2.10",
     "three": "^0.179.1",
+    "uploadthing": "^7.7.4",
     "zod": "^4.1.3"
   },
   "devDependencies": {
