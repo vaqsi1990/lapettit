@@ -20,6 +20,7 @@ model Cake {
   description   String?
   price         Float
   imageUrl      String?        // მთავარი სურათი
+  gallery       String[]       // დამატებითი სურათები (სხვადასხვა კუთხე/დიზაინი)
   category      CakeCategory
   servings      Int?           // რამდენი ადამიანს ჰყოფნის (მაგ: 8, 12, 16)
   weightKg      Float?         // წონა კილოგრამებში
