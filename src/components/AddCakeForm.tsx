@@ -340,10 +340,10 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
           სურათი *
         </label>
-        <ImageUpload
-          value={formData.gallery}
-          onChange={handleGalleryChange}
-        />     
+                 <ImageUpload
+           value={formData.gallery}
+           onChange={handleGalleryChange}
+         />     
       </div>
 
       {/* Options */}

@@ -49,7 +49,7 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
     fillings: [...cake.fillings],
     isCustomizable: cake.isCustomizable,
     available: cake.available,
-    gallery: cake.gallery || [cake.imageUrl].filter(Boolean) // Initialize with existing gallery or image
+    gallery: cake.imageUrl ? [cake.imageUrl] : [] // Initialize with existing image
   });
 
   const [flavorInput, setFlavorInput] = useState('');
@@ -333,7 +333,7 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
         </div>
       </div>
 
-             {/* Image Upload */}
+             {/* Image URL */}
        <div>
          <label className="block text-sm font-medium text-gray-700 mb-2">
            სურათი *

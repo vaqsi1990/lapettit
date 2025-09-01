@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       isCustomizable,
       available,
       imageUrl,
-   
+      gallery
     } = body;
 
     // Validate required fields
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         isCustomizable: isCustomizable !== undefined ? isCustomizable : true,
         available: available !== undefined ? available : true,
         imageUrl: imageUrl,
-    
+        gallery: gallery || []
       }
     });
 

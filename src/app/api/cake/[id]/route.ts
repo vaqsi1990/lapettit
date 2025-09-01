@@ -30,7 +30,8 @@ export async function PUT(
       fillings,
       isCustomizable,
       available,
-      imageUrl
+      imageUrl,
+      gallery
     } = body;
 
     // Validate required fields
@@ -75,7 +76,8 @@ export async function PUT(
         fillings: fillings || [],
         isCustomizable: isCustomizable !== undefined ? isCustomizable : true,
         available: available !== undefined ? available : true,
-        imageUrl: imageUrl
+        imageUrl: imageUrl,
+        gallery: gallery || []
       }
     });
 

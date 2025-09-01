@@ -16,7 +16,7 @@ const cakes = [
     description: "Rich chocolate cake with colorful sprinkles and birthday candles",
     price: 45.99,
     imageUrl: "/catalog/1.jpg",
-
+    gallery: ["/catalog/1.jpg", "/catalog/2.jpg"],
     category: CakeCategory.BIRTHDAY,
     servings: 8,
     weightKg: 1.5,
@@ -30,7 +30,7 @@ const cakes = [
     description: "Light vanilla layers with rainbow frosting and edible glitter",
     price: 52.99,
     imageUrl: "/catalog/2.jpg",
-
+    gallery: ["/catalog/2.jpg", "/catalog/3.jpg"],
     category: CakeCategory.BIRTHDAY,
     servings: 10,
     weightKg: 1.8,
@@ -44,7 +44,7 @@ const cakes = [
     description: "Fresh strawberry cake with cream cheese frosting and fresh berries",
     price: 48.99,
     imageUrl: "/catalog/3.jpg",
-
+    gallery: ["/catalog/3.jpg", "/catalog/1.jpg"],
     category: CakeCategory.WEDDING,
     servings: 8,
     weightKg: 1.6,
@@ -60,7 +60,7 @@ const cakes = [
     description: "Classic white wedding cake with delicate floral decorations",
     price: 299.99,
     imageUrl: "/hero/1.png",
- 
+    gallery: ["/hero/1.png", "/hero/2.png"],
     category: CakeCategory.ANNIVERSARY,
     servings: 50,
     weightKg: 8.0,
@@ -74,7 +74,7 @@ const cakes = [
     description: "Multi-tier wedding cake with gold accents and fresh flowers",
     price: 399.99,
     imageUrl: "/hero/2.png",
-
+    gallery: ["/hero/2.png", "/hero/3.png"],
     category: CakeCategory.CUSTOM,
     servings: 80,
     weightKg: 12.0,
@@ -88,7 +88,7 @@ const cakes = [
     description: "Contemporary naked cake with fresh fruit and minimal decoration",
     price: 249.99,
     imageUrl: "/hero/3.png",
-
+    gallery: ["/hero/3.png", "/hero/1.png"],
     category: CakeCategory.CUSTOM,
     servings: 40,
     weightKg: 6.0,
@@ -104,7 +104,7 @@ const cakes = [
     description: "Elegant cake with gold leaf and romantic decorations",
     price: 89.99,
     imageUrl: "/hero/22ef396d-3842-44a0-be8d-6f1ab7b1aec2.png",
-
+    gallery: ["/hero/22ef396d-3842-44a0-be8d-6f1ab7b1aec2.png", "/hero/528840499_1341682604631620_4000600754266452299_n.jpg"],
     category: CakeCategory.Desserts,
     servings: 12,
     weightKg: 2.5,
@@ -118,7 +118,7 @@ const cakes = [
     description: "Silver-themed cake perfect for 25th anniversary",
     price: 79.99,
     imageUrl: "/hero/528840499_1341682604631620_4000600754266452299_n.jpg",
-
+    gallery: ["/hero/528840499_1341682604631620_4000600754266452299_n.jpg", "/hero/530248860_1343671131099434_2511349373577876023_n.jpg"],
     category: CakeCategory.Desserts,
     servings: 10,
     weightKg: 2.0,
@@ -134,7 +134,7 @@ const cakes = [
     description: "Custom cake with your personal message and design",
     price: 65.99,
     imageUrl: "/hero/530248860_1343671131099434_2511349373577876023_n.jpg",
-
+    gallery: ["/hero/530248860_1343671131099434_2511349373577876023_n.jpg", "/hero/534472152_1350659393733941_4241408366837870335_n.jpg"],
     category: CakeCategory.CUSTOM,
     servings: 8,
     weightKg: 1.8,
@@ -148,7 +148,7 @@ const cakes = [
     description: "Cake with edible photo print and custom decorations",
     price: 75.99,
     imageUrl: "/hero/534472152_1350659393733941_4241408366837870335_n.jpg",
-
+    gallery: ["/hero/534472152_1350659393733941_4241408366837870335_n.jpg", "/hero/1.png"],
     category: CakeCategory.CUSTOM,
     servings: 10,
     weightKg: 2.2,
