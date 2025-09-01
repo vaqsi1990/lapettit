@@ -18,20 +18,20 @@ export async function PUT(
     const cakeId = parseInt(params.id);
     const body = await request.json();
     
-         const {
-       name,
-       description,
-       price,
-       category,
-       servings,
-       weightKg,
-       flavors,
-       fillings,
-       isCustomizable,
-       available,
-       imageUrl,
-     
-     } = body;
+    const {
+      name,
+      description,
+      price,
+      category,
+      servings,
+      weightKg,
+      flavors,
+      fillings,
+      isCustomizable,
+      available,
+      imageUrl,
+  
+    } = body;
 
     // Validate required fields
     if (!name || !description || !price || !category || !imageUrl) {
@@ -61,24 +61,24 @@ export async function PUT(
       );
     }
 
-         // Update the cake
-     const updatedCake = await prisma.cake.update({
-       where: { id: cakeId },
-       data: {
-         name,
-         description,
-         price: parseFloat(price),
-         category,
-         servings: servings ? parseInt(servings) : null,
-         weightKg: weightKg ? parseFloat(weightKg) : null,
-         flavors: flavors || [],
-         fillings: fillings || [],
-         isCustomizable: isCustomizable !== undefined ? isCustomizable : true,
-         available: available !== undefined ? available : true,
-         imageUrl: imageUrl,
-       
-       }
-     });
+    // Update the cake
+    const updatedCake = await prisma.cake.update({
+      where: { id: cakeId },
+      data: {
+        name,
+        description,
+        price: parseFloat(price),
+        category,
+        servings: servings ? parseInt(servings) : null,
+        weightKg: weightKg ? parseFloat(weightKg) : null,
+        flavors: flavors || [],
+        fillings: fillings || [],
+        isCustomizable: isCustomizable !== undefined ? isCustomizable : true,
+        available: available !== undefined ? available : true,
+        imageUrl: imageUrl,
+     
+      }
+    });
 
     return NextResponse.json({
       success: true,
