@@ -592,6 +592,13 @@ type CustomCakeOrderData = {
   orderDate: string;
 };
 
+type ContactFormData = {
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  notes: string;
+};
+
 export async function sendOrderConfirmation(orderData: RegularOrderData | CustomCakeOrderData, isCustomCake: boolean = false) {
   try {
     if (!orderData.customerEmail) {
@@ -622,14 +629,14 @@ export async function sendOrderConfirmation(orderData: RegularOrderData | Custom
 }
 
 // Send admin notification email
-export async function sendAdminNotification(orderData: RegularOrderData | CustomCakeOrderData | any, isCustomCake: boolean = false) {
+export async function sendAdminNotification(orderData: RegularOrderData | CustomCakeOrderData | ContactFormData, isCustomCake: boolean = false) {
   try {
     const adminEmail = 'Lappetit2019@gmail.com';
     
     let emailContent;
     
     // Check if this is a contact form submission
-    if (orderData.notes && orderData.notes.includes('Contact Form - Subject:')) {
+    if ('notes' in orderData && orderData.notes && orderData.notes.includes('Contact Form - Subject:')) {
       const notesParts = orderData.notes.split('\n\n');
       if (notesParts.length >= 2) {
         const subjectLine = notesParts[0];
@@ -643,7 +650,7 @@ export async function sendAdminNotification(orderData: RegularOrderData | Custom
           customerPhone: orderData.customerPhone,
           subject: subject,
           message: message,
-          contactDate: orderData.orderDate
+          contactDate: 'orderDate' in orderData ? (orderData.orderDate as string) : new Date().toISOString()
         };
         emailContent = emailTemplates.adminContactNotification(contactData);
       } else {
@@ -654,7 +661,7 @@ export async function sendAdminNotification(orderData: RegularOrderData | Custom
           customerPhone: orderData.customerPhone,
           subject: 'Contact Form Message',
           message: orderData.notes,
-          contactDate: orderData.orderDate
+          contactDate: 'orderDate' in orderData ? (orderData.orderDate as string) : new Date().toISOString()
         });
       }
     } else if (isCustomCake && 'design' in orderData) {
