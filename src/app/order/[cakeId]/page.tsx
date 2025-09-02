@@ -84,31 +84,7 @@ const OrderPage = () => {
 
         await submitOrder(orderData);
 
-        // Send receipt email
-        try {
-          const receiptResponse = await fetch('/api/send-receipt', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: orderForm.customerEmail,
-              customerName: orderForm.customerName,
-              orderData: orderData,
-              cake: cake
-            }),
-          });
-
-          if (receiptResponse.ok) {
-            showToast('success', 'თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითარი გაიგზავნა თქვენს ელ-ფოსტაზე.');
-          } else {
-            showToast('success', 'თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითრის გამოიგზავნაა.');
-          }
-        } catch (error) {
-          console.error('Error sending receipt:', error);
-          showToast('success', 'თქვენი შეკვეთა წარმატებით გაიგზავნა! ქვითრის გაგზავნა ვერ მოხერხდა.');
-        }
-
+        showToast('success', 'თქვენი შეკვეთა წარმატებით გაიგზავნა! ადმინი განიხილავს თქვენს შეკვეთას და დაგიკავშირდებათ.');
         router.push('/');
       } else {
         showToast('error', 'არასწორი ერთჯერადი კოდი. სცადეთ თავიდან.');

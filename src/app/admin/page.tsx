@@ -175,11 +175,85 @@ const AdminPage = () => {
         showToast('error', 'შეკვეთის წაშლისას მოხდა შეცდომა');
       }
     }
-  }
+  };
+
+  // Handle order approval
+  const handleApproveOrder = async (orderId: number) => {
+    if (window.confirm('ნამდვილად გსურთ ამ შეკვეთის დადასტურება? კლიენტს გაიგზავნება დადასტურების მეილი.')) {
+      try {
+        const response = await fetch('/api/orders', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderId: orderId,
+            status: 'APPROVED',
+            action: 'approve'
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showToast('success', 'შეკვეთა წარმატებით დადასტურდა! კლიენტს გაიგზავნა მეილი.');
+          // Update the order in the local state
+          setOrders(orders.map(order => 
+            order.id === orderId 
+              ? { ...order, status: 'APPROVED' }
+              : order
+          ));
+        } else {
+          showToast('error', `შეცდომა: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Error approving order:', error);
+        showToast('error', 'შეკვეთის დადასტურებისას მოხდა შეცდომა');
+      }
+    }
+  };
+
+  // Handle order rejection
+  const handleRejectOrder = async (orderId: number) => {
+    if (window.confirm('ნამდვილად გსურთ ამ შეკვეთის უარყოფა?')) {
+      try {
+        const response = await fetch('/api/orders', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderId: orderId,
+            status: 'REJECTED',
+            action: 'reject'
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          showToast('success', 'შეკვეთა უარყოფილია');
+          // Update the order in the local state
+          setOrders(orders.map(order => 
+            order.id === orderId 
+              ? { ...order, status: 'REJECTED' }
+              : order
+          ));
+        } else {
+          showToast('error', `შეცდომა: ${result.error}`);
+        }
+      } catch (error) {
+        console.error('Error rejecting order:', error);
+        showToast('error', 'შეკვეთის უარყოფისას მოხდა შეცდომა');
+      }
+    }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'PENDING': return 'bg-yellow-100 text-yellow-800';
+      case 'APPROVED': return 'bg-green-100 text-green-800';
+      case 'REJECTED': return 'bg-red-100 text-red-800';
       case 'IN_PROGRESS': return 'bg-blue-100 text-blue-800';
       case 'DELIVERED': return 'bg-green-100 text-green-800';
       case 'CANCELLED': return 'bg-red-100 text-red-800';
@@ -190,6 +264,8 @@ const AdminPage = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'PENDING': return 'მიმდინარე';
+      case 'APPROVED': return 'დადასტურებული';
+      case 'REJECTED': return 'უარყოფილი';
       case 'IN_PROGRESS': return 'მზადდება';
       case 'DELIVERED': return 'მიწოდებული';
       case 'CANCELLED': return 'გაუქმებული';
@@ -203,6 +279,8 @@ const AdminPage = () => {
     const matchesFilter = filterStatus === 'all' || order.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
+
+  const pendingOrdersCount = orders.filter(order => order.status === 'PENDING').length;
 
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
   const pendingOrders = orders.filter(order => order.status === 'PENDING').length;
@@ -323,7 +401,7 @@ const AdminPage = () => {
           >
             {/* Search and Filter */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <input
@@ -340,11 +418,18 @@ const AdminPage = () => {
                   className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
                 >
                   <option value="all">ყველა სტატუსი</option>
-                  <option value="PENDING">მიმდინარე</option>
+                  <option value="PENDING">მიმდინარე ({pendingOrdersCount})</option>
+                  <option value="APPROVED">დადასტურებული</option>
+                  <option value="REJECTED">უარყოფილი</option>
                   <option value="IN_PROGRESS">მზადდება</option>
                   <option value="DELIVERED">მიწოდებული</option>
                   <option value="CANCELLED">გაუქმებული</option>
                 </select>
+                {pendingOrdersCount > 0 && (
+                  <div className="bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg font-medium">
+                    {pendingOrdersCount} შეკვეთა ელოდება დადასტურებას
+                  </div>
+                )}
               </div>
             </div>
 
@@ -390,11 +475,17 @@ const AdminPage = () => {
                              minute: '2-digit'
                            })}
                          </div>
+                         {/* Status Badge */}
+                         <div className="flex items-center justify-end mt-2">
+                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                             {getStatusText(order.status)}
+                           </span>
+                         </div>
                          {/* Email Status Indicator */}
                          <div className="flex items-center justify-end mt-2 space-x-2">
                            <Mail className="w-4 h-4 text-gray-400" />
                            <span className="text-xs text-gray-500">
-                             {order.customerEmail ? 'Email confirmation sent' : 'No email provided'}
+                             {order.customerEmail ? 'ელ-ფოსტა მითითებულია' : 'ელ-ფოსტა არ არის'}
                            </span>
                          </div>
                        </div>
@@ -533,11 +624,30 @@ const AdminPage = () => {
                   
                     {/* Action Buttons */}
                     <div className="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
-                     
-                      <button className="px-4 py-2 text-green-600 hover:text-green-900 hover:bg-green-50 rounded-lg transition-colors flex items-center space-x-2 md:text-[18px] text-[16px]">
-                        <Edit className="w-4 h-4" />
-                        <span>რედაქტირება</span>
-                      </button>
+                      {order.status === 'PENDING' && (
+                        <>
+                          <button 
+                            onClick={() => handleApproveOrder(order.id)}
+                            className="px-4 py-2 text-green-600 hover:text-green-900 hover:bg-green-50 rounded-lg transition-colors flex items-center space-x-2 md:text-[18px] text-[16px]"
+                          >
+                            <Edit className="w-4 h-4" />
+                            <span>დადასტურება</span>
+                          </button>
+                          <button 
+                            onClick={() => handleRejectOrder(order.id)}
+                            className="px-4 py-2 text-orange-600 hover:text-orange-900 hover:bg-orange-50 rounded-lg transition-colors flex items-center space-x-2 md:text-[18px] text-[16px]"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            <span>უარყოფა</span>
+                          </button>
+                        </>
+                      )}
+                      {order.status !== 'PENDING' && (
+                        <button className="px-4 py-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors flex items-center space-x-2 md:text-[18px] text-[16px]">
+                          <Edit className="w-4 h-4" />
+                          <span>რედაქტირება</span>
+                        </button>
+                      )}
                       <button 
                         onClick={() => handleDeleteOrder(order.id)}
                         className="px-4 py-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors flex items-center space-x-2 md:text-[18px] text-[16px]"

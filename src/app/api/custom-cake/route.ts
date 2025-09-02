@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { sendOrderConfirmation, sendAdminNotification } from '@/lib/emailService';
+import { sendAdminNotification } from '@/lib/emailService';
 
 const prisma = new PrismaClient();
 
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       deliveryTime,
       imageUrl,
       customerName,
-     
+      lastName,
       customerPhone,
       customerEmail,
       address,
@@ -80,42 +80,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Send confirmation email if customer email is provided
-    if (customerEmail) {
-      try {
-        const emailData = {
-          orderId: order.id,
-          customerName: order.customerName,
-          customerEmail: customerEmail,
-          customerPhone: order.customerPhone,
-          address: order.address,
-          design: design,
-          flavor: flavor,
-          filling: filling,
-          glaze: glaze,
-          shape: shape,
-          decorations: decorations || [],
-          text: text,
-          quantity: quantity,
-          deliveryDate: deliveryDate,
-          deliveryTime: deliveryTime,
-          totalPrice: totalPrice || 0,
-          orderDate: order.createdAt.toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })
-        };
-
-        await sendOrderConfirmation(emailData, true);
-      } catch (emailError) {
-        console.error('Error sending confirmation email:', emailError);
-        // Don't fail the order if email fails
-      }
-    }
-
-    // Send admin notification email
+    // Send admin notification email only
     try {
       const adminEmailData = {
         orderId: order.id,
@@ -139,9 +104,7 @@ export async function POST(request: NextRequest) {
           year: 'numeric',
           month: 'long',
           day: 'numeric'
-        }),
-        notes: notes,
-        imageUrl: imageUrl
+        })
       };
 
       await sendAdminNotification(adminEmailData, true);
@@ -152,10 +115,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Custom cake order created successfully',
+      message: 'Custom cake order created successfully and pending admin approval',
       orderId: order.id,
       customCakeId: customCake.id,
-      emailSent: !!customerEmail
+      total: totalPrice || 0
     });
 
   } catch (error) {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { sendOrderConfirmation, sendAdminNotification } from '@/lib/emailService';
+import { sendAdminNotification } from '@/lib/emailService';
 
 const prisma = new PrismaClient();
 
@@ -48,6 +48,7 @@ export async function POST(request: NextRequest) {
       data: {
         customerName: `${customerName} ${body.lastName || ''}`.trim(),
         customerPhone,
+        customerEmail: customerEmail || null,
         address: `${address}, ${city || ''}, ${zipCode || ''}`.trim().replace(/^,\s*/, ''),
         total: finalTotal,
         status: 'PENDING'
@@ -63,35 +64,7 @@ export async function POST(request: NextRequest) {
       }
     });
 
-    // Send confirmation email if customer email is provided
-    if (customerEmail) {
-      try {
-        const emailData = {
-          orderId: order.id,
-          customerName: order.customerName,
-          customerEmail: customerEmail,
-          customerPhone: order.customerPhone,
-          address: order.address,
-          cakeName: cake.name,
-          quantity: quantity,
-          totalPrice: finalTotal,
-          orderDate: order.createdAt.toLocaleDateString('en-US', {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          }),
-          notes: notes
-        };
-
-        await sendOrderConfirmation(emailData, false);
-      } catch (emailError) {
-        console.error('Error sending confirmation email:', emailError);
-        // Don't fail the order if email fails
-      }
-    }
-
-    // Send admin notification email
+    // Send admin notification email only
     try {
       const adminEmailData = {
         orderId: order.id,
@@ -119,11 +92,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Order created successfully',
+      message: 'Order created successfully and pending admin approval',
       orderId: order.id,
       orderItemId: orderItem.id,
-      total: finalTotal,
-      emailSent: !!customerEmail
+      total: finalTotal
     });
 
   } catch (error) {
