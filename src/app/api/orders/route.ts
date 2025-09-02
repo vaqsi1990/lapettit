@@ -98,10 +98,10 @@ export async function PUT(request: NextRequest) {
             filling: order.customCake.filling,
             glaze: order.customCake.glaze,
             shape: order.customCake.shape,
-            decorations: order.customCake.decorations,
+            decorations: order.customCake.decorations || [],
             text: order.customCake.text,
             quantity: order.customCake.quantity,
-            deliveryDate: order.customCake.deliveryDate,
+            deliveryDate: order.customCake.deliveryDate.toISOString().split('T')[0],
             deliveryTime: order.customCake.deliveryTime,
             totalPrice: order.total,
             orderDate: order.createdAt.toLocaleDateString('en-US', {
