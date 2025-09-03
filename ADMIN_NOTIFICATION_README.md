@@ -1,193 +1,160 @@
-# Admin Notification System for La Pettit
+# Admin Notification System
 
 ## Overview
+The admin notification system has been updated to send notifications to multiple admin email addresses when new orders or contact form submissions are received. Additionally, a customer notification system has been implemented to inform customers when their orders are approved or rejected.
 
-This system automatically sends detailed email notifications to **vaqsii23@gmail.com** whenever someone places a cake order or custom cake order on your website. The notifications include comprehensive order details to help you manage orders efficiently.
+## Changes Made
 
-## Features
+### 1. Admin Email Addresses
+- **Admin Email**: `Lappetit2019@gmail.com` (notifications sent twice for redundancy)
 
-### 🎂 Regular Cake Order Notifications
-- **Order Information**: Order ID, date, status
-- **Cake Details**: Cake name, quantity, special notes
-- **Customer Information**: Name, phone, email, address
-- **Financial Details**: Total amount
-- **Action Items**: Clear next steps for order processing
+### 2. Updated Email Service (`src/lib/emailService.ts`)
+- Modified `sendAdminNotification()` function to send emails to both addresses
+- Uses `Promise.allSettled()` to handle multiple email sends concurrently
+- Provides detailed logging of success/failure for each email address
+- Enhanced email templates with clearer instructions about admin page access
 
-### 🎨 Custom Cake Order Notifications
-- **Order Information**: Order ID, date, status
-- **Custom Specifications**: Design, flavor, filling, glaze, shape
-- **Decorations**: List of requested decorations
-- **Special Requests**: Custom text, additional notes
-- **Delivery Information**: Date and time
-- **Reference Images**: If customer uploaded an image
-- **Customer Information**: Complete contact details
-- **Financial Details**: Total amount
-- **Action Items**: Specific steps for custom cake creation
+### 3. Enhanced Email Templates
+- Added prominent notification about needing to access the admin page
+- Updated "Next Steps" sections to include admin page access instructions
+- Improved visual styling for urgent notifications
 
-## How It Works
+### 4. Customer Notification System
+- **Order Approval Emails**: Customers receive confirmation emails when their orders are approved
+- **Order Rejection Emails**: Customers receive rejection emails when their orders are rejected
+- **Professional Templates**: Both approval and rejection emails use professional, branded templates
+- **Contact Information**: Rejection emails include contact information for alternative options
+- **Real-time Toast Notifications**: On-screen toast notifications appear immediately when orders are rejected
+- **Status Polling**: Automatic polling checks order status every 10 seconds after submission
+- **Rejection UI**: Detailed rejection message replaces waiting screen when orders are rejected
 
-### 1. Automatic Triggering
-- **Regular Orders**: When someone places an order through `/api/order`
-- **Custom Orders**: When someone submits a custom cake request through `/api/custom-cake`
+## What Triggers Notifications
 
-### 2. Dual Email System
-- **Customer Confirmation**: Customer receives order confirmation email
-- **Admin Notification**: You receive detailed notification at vaqsii23@gmail.com
+### Regular Cake Orders (`/api/order`)
+- When a customer places a regular cake order
+- Admin email receives notification twice for redundancy
 
-### 3. Real-time Delivery
-- Emails are sent immediately when orders are placed
-- No manual intervention required
-- System continues working even if emails fail
+### Custom Cake Orders (`/api/custom-cake`)
+- When a customer places a custom cake order
+- Admin email receives notification twice for redundancy
 
-## Email Templates
+### Contact Form Submissions (`/api/contact`)
+- When someone submits the contact form
+- Admin email receives notification twice for redundancy
 
-### Admin Notification Features
-- **Professional Design**: Branded with your website colors
-- **Clear Structure**: Organized sections for easy reading
-- **Action-Oriented**: Includes specific next steps
-- **Mobile Responsive**: Works on all devices
-- **Visual Elements**: Icons and styling for better readability
+## Email Content Includes
 
-### Email Content Sections
-1. **Header**: Clear indication of new order
-2. **Action Required**: Urgent notification section
-3. **Order Details**: Basic order information
-4. **Product Specifications**: Cake or custom cake details
-5. **Customer Information**: Contact and delivery details
-6. **Financial Summary**: Total amount
-7. **Next Steps**: Action items for order processing
-8. **Footer**: System information and timestamp
+### For Regular Orders:
+- Order ID and date
+- Customer information (name, phone, email, address)
+- Cake details (name, quantity)
+- Total price
+- Special notes (if any)
+- Clear instructions to access admin page
 
-## Setup Instructions
+### For Custom Orders:
+- All regular order information plus:
+- Custom specifications (design, flavor, filling, glaze, shape)
+- Decorations list
+- Delivery date and time
+- Reference image (if provided)
+- Special text (if any)
 
-### 1. Environment Configuration
-Create a `.env.local` file in your project root:
+### For Contact Forms:
+- Customer name, email, phone
+- Subject and message content
+- Submission date
 
-```env
-# Email Configuration (Gmail)
-EMAIL_USER="your-email@gmail.com"
-EMAIL_PASSWORD="your-app-password"
+## Real-time Toast Notification System
 
-# Contact Information
-CONTACT_EMAIL="info@lapettit.com"
+### How It Works
+- **Automatic Polling**: After order submission, the system automatically checks order status every 10 seconds
+- **Toast Notifications**: When an order is rejected, customers immediately see a toast notification
+- **UI Updates**: The waiting message is replaced with a detailed rejection message
+- **Contact Information**: Rejection UI includes store contact details for follow-up
 
-# Base URL
-BASE_URL="http://localhost:3000"
+### Toast Message
+When an order is rejected, customers see:
+```
+"თქვენი შეკვეთა ვერ იქნა მიღებული. მაღაზიიდან მალე დაგიკავშირდებათ დეტალების გასარკვევად."
 ```
 
-### 2. Gmail App Password Setup
-1. Enable 2-Factor Authentication on your Google Account
-2. Go to Google Account > Security > App passwords
-3. Generate a new app password for "Mail"
-4. Use this password in your `EMAIL_PASSWORD` variable
+### Rejection UI Features
+- **Visual Indicators**: Red icon and styling to clearly indicate rejection
+- **Step-by-step Information**: Explains what happens next
+- **Contact Details**: Provides phone and email for customer support
+- **Action Buttons**: Options to return to main page or create new order
 
-### 3. Testing the System
-Run the test script to verify everything works:
+### API Endpoints
+- **Customer Orders API**: `/api/orders/customer?email={email}` - Retrieves orders by customer email
+- **Order Status Update**: `/api/orders` (PUT) - Updates order status and triggers notifications
+
+## Testing
+
+### Test Scripts
+Two test scripts are available:
+
+1. **Admin Notification Test** (`test-admin-notification.js`):
+   - Tests admin email notifications
+   - Verifies email delivery to both addresses
+
+2. **Order Rejection Toast Test** (`test-order-rejection-toast.js`):
+   - Tests order creation and rejection
+   - Verifies customer orders API functionality
+   - Tests both regular and custom cake orders
 
 ```bash
-# Set environment variables
-source .env.local
+# Make sure your environment variables are set
+export EMAIL_USER="your-email@gmail.com"
+export EMAIL_PASSWORD="your-app-password"
 
-# Run test
+# Run the admin notification test
 node test-admin-notification.js
+
+# Run the order rejection toast test
+node test-order-rejection-toast.js
 ```
 
-## File Structure
+The tests will:
+- **Admin Notification Test**:
+  - Send a test notification to both admin email addresses
+  - Report success/failure for each address
+  - Provide a summary of results
 
+- **Order Rejection Toast Test**:
+  - Create test orders (regular and custom cake)
+  - Reject the orders via admin API
+  - Test the customer orders API
+  - Verify the complete rejection flow
+
+## Environment Variables Required
+
+Make sure these are set in your `.env.local` file:
 ```
-src/
-├── lib/
-│   └── emailService.ts          # Email service with admin notification templates
-├── app/api/
-│   ├── order/route.ts           # Regular order API with admin notifications
-│   └── custom-cake/route.ts     # Custom cake API with admin notifications
-└── components/                   # Order forms and UI components
-
-test-admin-notification.js        # Test script for verification
-ADMIN_NOTIFICATION_README.md      # This documentation
-EMAIL_SETUP.md                    # General email setup guide
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-app-password
 ```
 
-## Technical Details
+## Admin Page Access
 
-### Email Service Functions
-- `sendAdminNotification()`: Sends admin notifications
-- `sendOrderConfirmation()`: Sends customer confirmations
-- `sendEmail()`: Core email sending function
+The admin page is located at `/admin` and requires authentication. When admins receive notifications, they should:
 
-### API Integration
-- **Order API**: Automatically sends admin notification for regular orders
-- **Custom Cake API**: Automatically sends admin notification for custom orders
-- **Error Handling**: Order processing continues even if emails fail
+1. Click the admin page link or navigate to `/admin`
+2. Review the new order/contact submission
+3. Take appropriate action (approve, contact customer, etc.)
 
-### Email Templates
-- **HTML-based**: Professional, responsive design
-- **CSS Styling**: Inline styles for email client compatibility
-- **Dynamic Content**: Order details populated automatically
-- **Brand Consistency**: Matches your website design
+## Error Handling
 
-## Monitoring and Troubleshooting
+- If one email address fails, the other will still receive the notification
+- Detailed error logging is provided in the console
+- The system continues to function even if email notifications fail
+- Order creation is not affected by email notification failures
 
-### Success Indicators
-- ✅ Order confirmation emails sent to customers
-- ✅ Admin notification emails sent to vaqsii23@gmail.com
-- ✅ Console logs show successful email delivery
+## Future Enhancements
 
-### Common Issues
-1. **Emails not sending**: Check environment variables and Gmail app password
-2. **Spam folder**: Check if notifications are going to spam
-3. **Order processing fails**: Check database connection and API logs
-
-### Debug Information
-- All email activities are logged to console
-- Check terminal/console for success/failure messages
-- Email IDs are logged when successful
-
-## Security Features
-
-- **App Passwords**: Uses Gmail app passwords instead of main password
-- **Environment Variables**: Sensitive data stored in .env.local (not committed)
-- **Error Handling**: System continues working even if emails fail
-- **Input Validation**: All order data is validated before processing
-
-## Customization Options
-
-### Email Content
-- Modify templates in `src/lib/emailService.ts`
-- Add/remove fields as needed
-- Customize styling and branding
-
-### Notification Recipients
-- Change admin email address in `sendAdminNotification()` function
-- Add multiple recipients if needed
-- Set up different notifications for different order types
-
-### Email Timing
-- Currently sends immediately when orders are placed
-- Can be modified to send at specific times
-- Batch notifications possible with additional development
-
-## Support and Maintenance
-
-### Regular Checks
-- Monitor email delivery success rates
-- Check console logs for any errors
-- Verify admin notifications are received
-
-### Updates
-- Keep Gmail app passwords current
-- Monitor for any email service changes
-- Update templates as business needs change
-
-## Benefits
-
-1. **Immediate Awareness**: Know about orders as soon as they're placed
-2. **Complete Information**: All order details in one email
-3. **Professional Communication**: Branded, professional notifications
-4. **Efficient Processing**: Clear action items for order management
-5. **Customer Satisfaction**: Automatic customer confirmations
-6. **Business Growth**: Better order management leads to improved service
-
----
-
-**Note**: This system is designed to work automatically. Once set up, you'll receive detailed notifications for every order without any manual intervention. Make sure to check your email regularly to stay on top of new orders!
+Potential improvements could include:
+- Email preferences for different types of notifications
+- SMS notifications for urgent orders
+- Slack/Discord integration
+- Notification frequency controls
+- Custom notification templates per admin

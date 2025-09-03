@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { sendOrderConfirmation, sendAdminNotification } from '@/lib/emailService';
+import { sendOrderConfirmation, sendOrderRejection, sendAdminNotification } from '@/lib/emailService';
 
 const prisma = new PrismaClient();
 
@@ -140,6 +140,68 @@ export async function PUT(request: NextRequest) {
         }
       } catch (emailError) {
         console.error('Error sending confirmation email:', emailError);
+        // Don't fail the status update if email fails
+      }
+    }
+
+    // If order is rejected and customer has email, send rejection notification
+    if (status === 'REJECTED' && order.customerEmail && action === 'reject') {
+      try {
+        if (order.customCake) {
+          // Custom cake order rejection
+          const emailData = {
+            orderId: order.id,
+            customerName: order.customerName,
+            customerEmail: order.customerEmail,
+            customerPhone: order.customerPhone,
+            address: order.address,
+            design: order.customCake.design,
+            flavor: order.customCake.flavor,
+            filling: order.customCake.filling,
+            glaze: order.customCake.glaze,
+            shape: order.customCake.shape,
+            decorations: order.customCake.decorations || [],
+            text: order.customCake.text,
+            quantity: order.customCake.quantity,
+            deliveryDate: order.customCake.deliveryDate.toISOString().split('T')[0],
+            deliveryTime: order.customCake.deliveryTime,
+            totalPrice: order.total,
+            orderDate: order.createdAt.toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })
+          };
+
+          await sendOrderRejection(emailData, true);
+        } else {
+          // Regular cake order rejection
+          const cake = order.items[0]?.cake;
+          if (cake) {
+            const emailData = {
+              orderId: order.id,
+              customerName: order.customerName,
+              customerEmail: order.customerEmail,
+              customerPhone: order.customerPhone,
+              address: order.address,
+              cakeName: cake.name,
+              quantity: order.items[0].quantity,
+              totalPrice: order.total,
+              orderDate: order.createdAt.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              }),
+              notes: ''
+            };
+
+            await sendOrderRejection(emailData, false);
+          }
+        }
+      } catch (emailError) {
+        console.error('Error sending rejection email:', emailError);
         // Don't fail the status update if email fails
       }
     }

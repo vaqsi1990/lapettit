@@ -140,7 +140,7 @@ const Gallery = () => {
         </motion.div>
 
         {/* Gallery Grid */}
-        <div className="columns-1 sm:columns-2 md:columns-3 gap-6 space-y-6">
+        <div className="columns-1 sm:columns-2 md:columns-4 gap-6 space-y-6">
           <AnimatePresence mode="wait">
             {filteredImages.map((image, index) => (
               <motion.div

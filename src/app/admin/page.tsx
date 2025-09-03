@@ -215,7 +215,7 @@ const AdminPage = () => {
 
   // Handle order rejection
   const handleRejectOrder = async (orderId: number) => {
-    if (window.confirm('ნამდვილად გსურთ ამ შეკვეთის უარყოფა?')) {
+    if (window.confirm('ნამდვილად გსურთ ამ შეკვეთის უარყოფა? კლიენტს გაიგზავნება უარყოფის მეილი.')) {
       try {
         const response = await fetch('/api/orders', {
           method: 'PUT',
@@ -232,7 +232,7 @@ const AdminPage = () => {
         const result = await response.json();
 
         if (result.success) {
-          showToast('success', 'შეკვეთა უარყოფილია');
+          showToast('success', 'შეკვეთა უარყოფილია! კლიენტს გაიგზავნა უარყოფის მეილი.');
           // Update the order in the local state
           setOrders(orders.map(order => 
             order.id === orderId 

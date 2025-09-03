@@ -34,6 +34,10 @@ const OrderPage = () => {
 
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
+  const [orderSubmitted, setOrderSubmitted] = useState(false);
+  const [orderId, setOrderId] = useState<number | null>(null);
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+  const [orderRejected, setOrderRejected] = useState(false);
 
   const handleVerifyOtp = async () => {
     if (!otp || otp.length !== 6) {
@@ -82,10 +86,19 @@ const OrderPage = () => {
           totalPrice: cake.price * quantity
         };
 
-        await submitOrder(orderData);
-
-        showToast('success', 'თქვენი შეკვეთა წარმატებით გაიგზავნა! ადმინი განიხილავს თქვენს შეკვეთას და დაგიკავშირდებათ.');
-        router.push('/');
+        const orderResult = await submitOrder(orderData);
+        
+        if (orderResult.success && orderResult.orderId) {
+          const newOrderId = orderResult.orderId;
+          setOrderId(newOrderId);
+          showToast('success', 'თქვენი შეკვეთა წარმატებით გაიგზავნა! ადმინი განიხილავს თქვენს შეკვეთას და დაგიკავშირდებათ.');
+          setOrderSubmitted(true);
+          
+          // Start polling for order status with the new order ID
+          startOrderStatusPolling(newOrderId);
+        } else {
+          showToast('error', 'შეკვეთის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან.');
+        }
       } else {
         showToast('error', 'არასწორი ერთჯერადი კოდი. სცადეთ თავიდან.');
         setOtp('');
@@ -97,6 +110,73 @@ const OrderPage = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Start polling for order status
+  const startOrderStatusPolling = (currentOrderId: number) => {
+    if (!orderForm.customerEmail) return;
+
+    const interval = setInterval(async () => {
+      try {
+        console.log('Polling order status for email:', orderForm.customerEmail, 'orderId:', currentOrderId);
+        const response = await fetch(`/api/orders/customer?email=${encodeURIComponent(orderForm.customerEmail)}`);
+        if (response.ok) {
+          const result = await response.json();
+          console.log('Polling result:', result);
+          if (result.success && result.data.length > 0) {
+            const latestOrder = result.data[0];
+            console.log('Latest order:', latestOrder);
+            console.log('Checking if order is rejected:', latestOrder.id === currentOrderId, latestOrder.status === 'REJECTED');
+            
+            // Check if this is our order and if it's been rejected or approved
+            if (latestOrder.id === currentOrderId) {
+              if (latestOrder.status === 'REJECTED') {
+                console.log('Order rejected! Showing toast and redirecting');
+                showToast('error', 'თქვენი შეკვეთა ვერ იქნა მიღებული. მაღაზიიდან მალე დაგიკავშირდებათ დეტალების გასარკვევად.');
+                
+                // Stop polling
+                if (pollingInterval) {
+                  clearInterval(pollingInterval);
+                  setPollingInterval(null);
+                }
+                
+                // Redirect to main page after 3 seconds
+                setTimeout(() => {
+                  router.push('/');
+                }, 3000);
+              } else if (latestOrder.status === 'APPROVED') {
+                console.log('Order approved! Showing toast and redirecting');
+                showToast('success', 'თქვენი შეკვეთა დადასტურებულია! მაღაზიიდან მალე დაგიკავშირდებათ.');
+                
+                // Stop polling
+                if (pollingInterval) {
+                  clearInterval(pollingInterval);
+                  setPollingInterval(null);
+                }
+                
+                // Redirect to main page after 3 seconds
+                setTimeout(() => {
+                  router.push('/');
+                }, 3000);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error polling order status:', error);
+      }
+    }, 5000); // Check every 5 seconds for better responsiveness
+
+    setPollingInterval(interval);
+  };
+
+  // Stop polling when component unmounts
+  useEffect(() => {
+    return () => {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+      }
+    };
+  }, [pollingInterval]);
 
   // Fetch cake details
   useEffect(() => {
@@ -247,21 +327,23 @@ const OrderPage = () => {
                   <div className="flex items-center justify-between mb-4">
                     <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">რაოდენობა:</label>
                     <div className="flex items-center rounded-lg">
-                      <button
-                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="p-2 md:p-3 cursor-pointer bg-pink-100 rounded-full transition-colors"
-                      >
-                        <Minus className="w-5 h-5 text-pink-600 md:w-6 md:h-6" />
-                      </button>
+                                             <button
+                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                         disabled={orderSubmitted}
+                         className="p-2 md:p-3 cursor-pointer bg-pink-100 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                       >
+                         <Minus className="w-5 h-5 text-pink-600 md:w-6 md:h-6" />
+                       </button>
                       <span className="text-base md:text-lg lg:text-xl font-bold text-black min-w-[2.5rem] md:min-w-[3rem] text-center">
                         {quantity}
                       </span>
-                      <button
-                        onClick={() => setQuantity(quantity + 1)}
-                        className="p-2 md:p-3 cursor-pointer rounded-full bg-pink-100 transition-colors"
-                      >
-                        <Plus className="w-5 h-5 text-pink-600 md:w-6 md:h-6" />
-                      </button>
+                                             <button
+                         onClick={() => setQuantity(quantity + 1)}
+                         disabled={orderSubmitted}
+                         className="p-2 md:p-3 cursor-pointer rounded-full bg-pink-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                       >
+                         <Plus className="w-5 h-5 text-pink-600 md:w-6 md:h-6" />
+                       </button>
                     </div>
                   </div>
 
@@ -285,170 +367,338 @@ const OrderPage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">სახელი *</label>
-                    <input
-                      type="text"
-                      value={orderForm.customerName}
-                      onChange={(e) => handleInputChange("customerName", e.target.value)}
-                      className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
-                      placeholder="სახელი"
-                      required
-                    />
+                                         <input
+                       type="text"
+                       value={orderForm.customerName}
+                       onChange={(e) => handleInputChange("customerName", e.target.value)}
+                       disabled={orderSubmitted}
+                       className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                       placeholder="სახელი"
+                       required
+                     />
                   </div>
 
                   <div>
                     <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">გვარი</label>
-                    <input
-                      type="text"
-                      value={orderForm.lastName}
-                      onChange={(e) => handleInputChange("lastName", e.target.value)}
-                      className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
-                      placeholder="გვარი"
-                    />
+                                         <input
+                       type="text"
+                       value={orderForm.lastName}
+                       onChange={(e) => handleInputChange("lastName", e.target.value)}
+                       disabled={orderSubmitted}
+                       className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                       placeholder="გვარი"
+                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">ტელეფონი *</label>
-                  <input
-                    type="tel"
-                    value={orderForm.customerPhone}
-                    onChange={(e) => handleInputChange("customerPhone", e.target.value)}
-                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
-                    placeholder="ტელეფონი"
-                    required
-                  />
+                                     <input
+                     type="tel"
+                     value={orderForm.customerPhone}
+                     onChange={(e) => handleInputChange("customerPhone", e.target.value)}
+                     disabled={orderSubmitted}
+                     className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                     placeholder="ტელეფონი"
+                     required
+                   />
                 </div>
 
                 <div>
                   <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">ელ-ფოსტა *</label>
-                  <input
-                    type="email"
-                    value={orderForm.customerEmail}
-                    onChange={(e) => handleInputChange("customerEmail", e.target.value)}
-                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
-                    placeholder="ელ-ფოსტა"
-                    required
-                  />
+                                     <input
+                     type="email"
+                     value={orderForm.customerEmail}
+                     onChange={(e) => handleInputChange("customerEmail", e.target.value)}
+                     disabled={orderSubmitted}
+                     className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                     placeholder="ელ-ფოსტა"
+                     required
+                   />
                   <p className="text-sm text-black mt-1">ერთჯერადი კოდი გაიგზავნება ამ ელ-ფოსტაზე</p>
                 </div>
 
                 <div>
                   <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">მისამართი *</label>
-                  <input
-                    type="text"
-                    value={orderForm.address}
-                    onChange={(e) => handleInputChange("address", e.target.value)}
-                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
-                    placeholder="მისამართი"
-                    required
-                  />
+                                     <input
+                     type="text"
+                     value={orderForm.address}
+                     onChange={(e) => handleInputChange("address", e.target.value)}
+                     disabled={orderSubmitted}
+                     className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                     placeholder="მისამართი"
+                     required
+                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">ქალაქი</label>
-                    <input
-                      type="text"
-                      value={orderForm.city}
-                      onChange={(e) => handleInputChange("city", e.target.value)}
-                      className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
-                      placeholder="ქალაქი"
-                    />
+                                         <input
+                       type="text"
+                       value={orderForm.city}
+                       onChange={(e) => handleInputChange("city", e.target.value)}
+                       disabled={orderSubmitted}
+                       className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                       placeholder="ქალაქი"
+                     />
                   </div>
 
                   <div>
                     <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">პოსტის კოდი</label>
-                    <input
-                      type="text"
-                      value={orderForm.zipCode}
-                      onChange={(e) => handleInputChange("zipCode", e.target.value)}
-                      className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
-                      placeholder="პოსტის კოდი"
-                    />
+                                         <input
+                       type="text"
+                       value={orderForm.zipCode}
+                       onChange={(e) => handleInputChange("zipCode", e.target.value)}
+                       disabled={orderSubmitted}
+                       className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                       placeholder="პოსტის კოდი"
+                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">დამატებითი ინფორმაცია</label>
-                  <textarea
-                    value={orderForm.notes}
-                    onChange={(e) => handleInputChange("notes", e.target.value)}
-                    className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors"
-                    placeholder="დამატებითი ინფორმაცია (არასავალდებულო)"
-                    rows={3}
-                  />
+                                     <textarea
+                     value={orderForm.notes}
+                     onChange={(e) => handleInputChange("notes", e.target.value)}
+                     disabled={orderSubmitted}
+                     className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                     placeholder="დამატებითი ინფორმაცია (არასავალდებულო)"
+                     rows={3}
+                   />
                 </div>
 
-                {!otpSent ? (
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full flex justify-center md:w-[300px] mx-auto  cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                  >
-                    {isSubmitting ? "იგზავნება..." : "შეკვეთის გაგზავნა"}
-                  </button>
-                ) : (
-                  <div className="space-y-4">
-                    <div className="bg-white  rounded-lg p-3 mb-4">
-                      <p className="md:text-[20px] text-[18px] font-bold  text-[#d90b6b]">
-                        ერთჯერადი კოდი გაიგზავნა! გთხოვთ შეამოწმოთ თქვენი ელ-ფოსტა და შეიყვანოთ 6-ნიშნა კოდი.
-                      </p>
-                    </div>
-                    <label className="block text-center mb-3 text-black md:text-[20px] text-[18px] font-medium mb-1">
-                      შეიყვანე კოდი ელფოსტიდან
-                    </label>
-                    <input
-                      type="text"
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      className="w-full md:w-[300px] mx-auto flex justify-center items-center text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500"
-                      placeholder="6-ნიშნა კოდი"
-                    />
-                    <div className="flex flex-col  gap-3">
-                      <button
-                        onClick={handleVerifyOtp}
-                        disabled={isSubmitting}
-                        className="w-full md:w-[300px] mx-auto flex justify-center items-center  cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                      >
-                        {isSubmitting ? "დადასტურება..." : "დადასტურება"}
-                      </button>
-                      <button
-                        onClick={async () => {
-                          try {
-                            setIsSubmitting(true);
-                            const response = await fetch('/api/send-otp', {
-                              method: 'POST',
-                              headers: { 'Content-Type': 'application/json' },
-                              body: JSON.stringify({
-                                email: orderForm.customerEmail,
-                                customerName: orderForm.customerName
-                              }),
-                            });
-                            if (response.ok) {
-                              showToast('success', 'ახალი ერთჯერადი კოდი გაიგზავნა!');
-                              setOtp('');
-                            } else {
-                              showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
-                            }
-                          } catch (error) {
-                            console.log(error);
-                            showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
-                          } finally {
-                            setIsSubmitting(false);
-                          }
-                        }}
-                        disabled={isSubmitting}
-                        className="w-full md:w-[300px] mx-auto flex justify-center items-center md:text-[20px] text-[18px] text-[#d90b6b] border border-[#d90b6b] cursor-pointer border-2 bg-white  px-4 py-3   py-3 px-6 rounded-xl font-bold transition-all disabled:opacity-50"
-                      >
-                        ხელახლა გაგზავნა
-                      </button>
-                    </div>
-                  </div>
-                )}
+                                 {!otpSent ? (
+                   <button
+                     type="submit"
+                     disabled={isSubmitting || orderSubmitted}
+                     className="w-full flex justify-center md:w-[300px] mx-auto  cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                   >
+                     {isSubmitting ? "იგზავნება..." : orderSubmitted ? "შეკვეთა გაიგზავნა" : "შეკვეთის გაგზავნა"}
+                   </button>
+                 ) : (
+                   <div className="space-y-4">
+                     <div className="bg-white  rounded-lg p-3 mb-4">
+                       <p className="md:text-[20px] text-[18px] font-bold  text-[#d90b6b]">
+                         ერთჯერადი კოდი გაიგზავნა! გთხოვთ შეამოწმოთ თქვენი ელ-ფოსტა და შეიყვანოთ 6-ნიშნა კოდი.
+                       </p>
+                     </div>
+                     <label className="block text-center mb-3 text-black md:text-[20px] text-[18px] font-medium mb-1">
+                       შეიყვანე კოდი ელფოსტიდან
+                     </label>
+                     <input
+                       type="text"
+                       value={otp}
+                       onChange={(e) => setOtp(e.target.value)}
+                       disabled={orderSubmitted}
+                       className="w-full md:w-[300px] mx-auto flex justify-center items-center text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                       placeholder={orderSubmitted ? "შეკვეთა უკვე გაიგზავნა" : "6-ნიშნა კოდი"}
+                     />
+                     <div className="flex flex-col  gap-3">
+                       <button
+                         onClick={handleVerifyOtp}
+                         disabled={isSubmitting || orderSubmitted}
+                         className="w-full md:w-[300px] mx-auto flex justify-center items-center  cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                       >
+                         {isSubmitting ? "დადასტურება..." : orderSubmitted ? "შეკვეთა გაიგზავნა" : "დადასტურება"}
+                       </button>
+                       <button
+                         onClick={async () => {
+                           try {
+                             setIsSubmitting(true);
+                             const response = await fetch('/api/send-otp', {
+                               method: 'POST',
+                               headers: { 'Content-Type': 'application/json' },
+                               body: JSON.stringify({
+                                 email: orderForm.customerEmail,
+                                 customerName: orderForm.customerName
+                               }),
+                             });
+                             if (response.ok) {
+                               showToast('success', 'ახალი ერთჯერადი კოდი გაიგზავნა!');
+                               setOtp('');
+                             } else {
+                               showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
+                             }
+                           } catch (error) {
+                             console.log(error);
+                             showToast('error', 'ერთჯერადი კოდის ხელახლა გაგზავნა ვერ მოხერხდა.');
+                           } finally {
+                             setIsSubmitting(false);
+                           }
+                         }}
+                         disabled={isSubmitting || orderSubmitted}
+                         className="w-full md:w-[300px] mx-auto flex justify-center items-center md:text-[20px] text-[18px] text-[#d90b6b] border border-[#d90b6b] cursor-pointer border-2 bg-white  px-4 py-3   py-3 px-6 rounded-xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                       >
+                         ხელახლა გაგზავნა
+                       </button>
+                     </div>
+                   </div>
+                 )}
 
               </form>
             </motion.div>
           </div>
+
+          {/* Order Submitted Waiting Message */}
+          {orderSubmitted && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-8 bg-white rounded-2xl shadow-xl p-8 text-center"
+            >
+              <div className="max-w-2xl mx-auto">
+                <div className="mb-6">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-black mb-2">შეკვეთა წარმატებით გაიგზავნა!</h2>
+                  <p className="text-black text-lg mb-6">
+                    თქვენი შეკვეთა მიღებულია და ადმინი განიხილავს მას
+                  </p>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                  <h3 className="text-lg font-semibold text-blue-800 mb-3">რა მოხდება შემდეგ?</h3>
+                  <div className="space-y-3 text-left">
+                    <div className="flex items-start">
+                      <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5">1</div>
+                      <p className="text-blue-700">ადმინი გადახედავს თქვენს შეკვეთას</p>
+                    </div>
+                    <div className="flex items-start">
+                      <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5">2</div>
+                      <p className="text-blue-700">თქვენ დაგიკავშირდებათ დეტალების გასარკვევად</p>
+                    </div>
+                    <div className="flex items-start">
+                      <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5">3</div>
+                      <p className="text-blue-700">შეკვეთა დაიწყება მას შემდეგ, რაც დადასტურდება</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+                  <h3 className="text-lg font-semibold text-yellow-800 mb-2">მაღაზიიდან მალე დაგიკავშირდებათ</h3>
+                  <p className="text-yellow-700">
+                    ჩვენი გუნდი მალე დაგიკავშირდებათ თქვენს ტელეფონზე ან ელ-ფოსტაზე დეტალების გასარკვევად
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link 
+                    href="/" 
+                    className="bg-[#d90b6b] text-white px-8 py-3 rounded-lg hover:bg-pink-600 transition-colors font-semibold"
+                  >
+                    დაბრუნდი მთავარ გვერდზე
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      setOrderSubmitted(false);
+                      setOtpSent(false);
+                      setOtp('');
+                      setOrderForm({
+                        customerName: '',
+                        lastName: '',
+                        customerPhone: '',
+                        customerEmail: '',
+                        address: '',
+                        city: '',
+                        zipCode: '',
+                        notes: ''
+                      });
+                    }}
+                    className="border-2 border-[#d90b6b] text-[#d90b6b] px-8 py-3 rounded-lg hover:bg-[#d90b6b] hover:text-white transition-colors font-semibold"
+                  >
+                    ახალი შეკვეთა
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Order Rejected Message */}
+          {orderRejected && (
+            <motion.div
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mt-8 bg-white rounded-2xl shadow-xl p-8 text-center"
+            >
+              <div className="max-w-2xl mx-auto">
+                <div className="mb-6">
+                  <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-black mb-2">შეკვეთა ვერ იქნა მიღებული</h2>
+                  <p className="text-black text-lg mb-6">
+                    სამწუხაროდ, თქვენი შეკვეთა ვერ დაეთანხმა ტექნიკური მიზეზების გამო
+                  </p>
+                </div>
+
+                <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+                  <h3 className="text-lg font-semibold text-red-800 mb-3">რა მოხდება შემდეგ?</h3>
+                  <div className="space-y-3 text-left">
+                    <div className="flex items-start">
+                      <div className="w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5">1</div>
+                      <p className="text-red-700">მაღაზიიდან მალე დაგიკავშირდებათ</p>
+                    </div>
+                    <div className="flex items-start">
+                      <div className="w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5">2</div>
+                      <p className="text-red-700">დეტალები განიხილება და ალტერნატიული ვარიანტები შემოგთავაზებთ</p>
+                    </div>
+                    <div className="flex items-start">
+                      <div className="w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 mt-0.5">3</div>
+                      <p className="text-red-700">თუ გსურთ, შეგიძლიათ ახალი შეკვეთა გააკეთოთ</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                  <h3 className="text-lg font-semibold text-blue-800 mb-2">დაგვიკავშირდით</h3>
+                  <p className="text-blue-700">
+                    თუ გაქვთ კითხვები ან გსურთ ალტერნატიული ვარიანტების განხილვა, გთხოვთ დაგვიკავშირდით:
+                  </p>
+                  <div className="mt-3 text-sm text-blue-600">
+                    <p><strong>ტელეფონი:</strong> +995 555 123 456</p>
+                    <p><strong>ელ-ფოსტა:</strong> Lappetit2019@gmail.com</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Link 
+                    href="/" 
+                    className="bg-[#d90b6b] text-white px-8 py-3 rounded-lg hover:bg-pink-600 transition-colors font-semibold"
+                  >
+                    დაბრუნდი მთავარ გვერდზე
+                  </Link>
+                  <button 
+                    onClick={() => {
+                      setOrderId(null);
+                      setOrderRejected(false);
+                      setOtpSent(false);
+                      setOtp('');
+                      setOrderForm({
+                        customerName: '',
+                        lastName: '',
+                        customerPhone: '',
+                        customerEmail: '',
+                        address: '',
+                        city: '',
+                        zipCode: '',
+                        notes: ''
+                      });
+                    }}
+                    className="border-2 border-[#d90b6b] text-[#d90b6b] px-8 py-3 rounded-lg hover:bg-[#d90b6b] hover:text-white transition-colors font-semibold"
+                  >
+                    ახალი შეკვეთა
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
     </div>

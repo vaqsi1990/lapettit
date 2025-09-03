@@ -265,6 +265,7 @@ export const emailTemplates = {
             <div class="urgent">
               <h2>ყურადღება საჭიროა</h2>
               <p>ახალი ტორტის შეკვეთა განთავსებულია და თქვენი ყურადღება საჭიროებს.</p>
+              <p><strong>გთხოვთ შედით ადმინის გვერდზე შეკვეთის დასადასტურებლად!</strong></p>
             </div>
             
             <div class="order-details">
@@ -297,6 +298,7 @@ export const emailTemplates = {
               <h3>შემდეგი ნაბიჯები</h3>
               <ol>
                 <li>გადახედეთ ზემოთ მოცემული შეკვეთის დეტალები</li>
+                <li>შედით ადმინის გვერდზე შეკვეთის დასადასტურებლად</li>
                 <li>დაუკავშირდით კლიენტს შეკვეთის დასადასტურებლად</li>
                 <li>განაახლეთ შეკვეთის სტატუსი ადმინ პანელში</li>
                 <li>დაიწყეთ ტორტის მომზადება</li>
@@ -459,6 +461,7 @@ export const emailTemplates = {
             <div class="urgent">
               <h2>ყურადღება საჭიროა</h2>
               <p>ახალი მორგებული ტორტის შეკვეთა განთავსებულია და თქვენი მყისიერი ყურადღება საჭიროებს.</p>
+              <p><strong>გთხოვთ შედით ადმინის გვერდზე შეკვეთის დასადასტურებლად!</strong></p>
             </div>
             
             <div class="order-details">
@@ -521,6 +524,7 @@ export const emailTemplates = {
               <h3>შემდეგი ნაბიჯები</h3>
               <ol>
                 <li>გადახედეთ ზემოთ მოცემული მორგებული ტორტის სპეციფიკაციები</li>
+                <li>შედით ადმინის გვერდზე შეკვეთის დასადასტურებლად</li>
                 <li>დაუკავშირდით კლიენტს დიზაინის დეტალების გასარკვევად</li>
                 <li>დაადასტურეთ რომ დიზაინი შესაძლებელია და დრო</li>
                 <li>განაახლეთ შეკვეთის სტატუსი ადმინ პანელში</li>
@@ -532,6 +536,154 @@ export const emailTemplates = {
               <p>ეს არის ავტომატური შეტყობინება თქვენი მორგებული ტორტის შეკვეთის სისტემიდან.</p>
               <p>შეკვეთა მიღებულია: ${new Date().toLocaleString()}</p>
             </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `
+  }),
+
+  // Regular cake order rejection
+  regularOrderRejection: (orderData: {
+    orderId: number;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    address: string;
+    cakeName: string;
+    quantity: number;
+    totalPrice: number;
+    orderDate: string;
+  }) => ({
+    subject: `შეკვეთის უარყოფა #${orderData.orderId} - La Petite`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>შეკვეთის უარყოფა</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #d90b6b, #ff6b9d); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+          .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #d90b6b; }
+          .contact-info { background: #e8f4fd; padding: 15px; border-radius: 8px; margin: 20px 0; }
+          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+          .highlight { color: #d90b6b; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>La Petite - შეკვეთის უარყოფა</h1>
+          </div>
+          
+          <div class="content">
+            <h2>გამარჯობა ${orderData.customerName}!</h2>
+            
+            <p>სამწუხაროდ, თქვენი ტორტის შეკვეთა ვერ დაეთანხმა ტექნიკური მიზეზების გამო.</p>
+            
+            <div class="order-details">
+              <h3>შეკვეთის დეტალები:</h3>
+              <p><strong>შეკვეთის ნომერი:</strong> #${orderData.orderId}</p>
+              <p><strong>ტორტი:</strong> ${orderData.cakeName}</p>
+              <p><strong>რაოდენობა:</strong> ${orderData.quantity}</p>
+              <p><strong>ფასი:</strong> ₾${orderData.totalPrice}</p>
+              <p><strong>შეკვეთის თარიღი:</strong> ${orderData.orderDate}</p>
+            </div>
+            
+            <div class="contact-info">
+              <h3>დაგვიკავშირდით</h3>
+              <p>თუ გაქვთ კითხვები ან გსურთ ალტერნატიული ვარიანტების განხილვა, გთხოვთ დაგვიკავშირდით:</p>
+              <p><strong>ტელეფონი:</strong> +995 555 123 456</p>
+              <p><strong>ელ-ფოსტა:</strong> Lappetit2019@gmail.com</p>
+            </div>
+            
+            <p>მადლობა, რომ აირჩიეთ La Petite!</p>
+          </div>
+          
+          <div class="footer">
+            <p>&copy; 2024 La Petite. ყველა უფლება დაცულია.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `
+  }),
+
+  // Custom cake order rejection
+  customCakeRejection: (orderData: {
+    orderId: number;
+    customerName: string;
+    customerEmail: string;
+    customerPhone: string;
+    address: string;
+    design: string;
+    flavor: string;
+    filling?: string | null;
+    glaze?: string | null;
+    shape?: string | null;
+    decorations: string[];
+    text?: string | null;
+    quantity: number;
+    deliveryDate: string;
+    deliveryTime?: string | null;
+    totalPrice: number;
+    orderDate: string;
+  }) => ({
+    subject: `მორგებული ტორტის შეკვეთის უარყოფა #${orderData.orderId} - La Petite`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>მორგებული ტორტის შეკვეთის უარყოფა</title>
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #d90b6b, #ff6b9d); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+          .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #d90b6b; }
+          .contact-info { background: #e8f4fd; padding: 15px; border-radius: 8px; margin: 20px 0; }
+          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+          .highlight { color: #d90b6b; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>La Petite - მორგებული ტორტის შეკვეთის უარყოფა</h1>
+          </div>
+          
+          <div class="content">
+            <h2>გამარჯობა ${orderData.customerName}!</h2>
+            
+            <p>სამწუხაროდ, თქვენი მორგებული ტორტის შეკვეთა ვერ დაეთანხმა ტექნიკური მიზეზების გამო.</p>
+            
+            <div class="order-details">
+              <h3>შეკვეთის დეტალები:</h3>
+              <p><strong>შეკვეთის ნომერი:</strong> #${orderData.orderId}</p>
+              <p><strong>დიზაინი:</strong> ${orderData.design}</p>
+              <p><strong>გემო:</strong> ${orderData.flavor}</p>
+              <p><strong>ფასი:</strong> ₾${orderData.totalPrice}</p>
+              <p><strong>შეკვეთის თარიღი:</strong> ${orderData.orderDate}</p>
+            </div>
+            
+            <div class="contact-info">
+              <h3>დაგვიკავშირდით</h3>
+              <p>თუ გაქვთ კითხვები ან გსურთ ალტერნატიული ვარიანტების განხილვა, გთხოვთ დაგვიკავშირდით:</p>
+              <p><strong>ტელეფონი:</strong> +995 555 123 456</p>
+              <p><strong>ელ-ფოსტა:</strong> Lappetit2019@gmail.com</p>
+            </div>
+            
+            <p>მადლობა, რომ აირჩიეთ La Petite!</p>
+          </div>
+          
+          <div class="footer">
+            <p>&copy; 2024 La Petite. ყველა უფლება დაცულია.</p>
           </div>
         </div>
       </body>
@@ -599,6 +751,35 @@ type ContactFormData = {
   notes: string;
 };
 
+export async function sendOrderRejection(orderData: RegularOrderData | CustomCakeOrderData, isCustomCake: boolean = false) {
+  try {
+    if (!orderData.customerEmail) {
+      console.log('No customer email provided, skipping rejection email');
+      return { success: false, error: 'No customer email provided' };
+    }
+
+    let emailContent;
+    if (isCustomCake && 'design' in orderData) {
+      emailContent = emailTemplates.customCakeRejection(orderData as CustomCakeOrderData);
+    } else if ('cakeName' in orderData) {
+      emailContent = emailTemplates.regularOrderRejection(orderData as RegularOrderData);
+    } else {
+      return { success: false, error: 'Invalid order data type' };
+    }
+
+    const result = await sendEmail(
+      orderData.customerEmail,
+      emailContent.subject,
+      emailContent.html
+    );
+
+    return result;
+  } catch (error) {
+    console.error('Error sending order rejection email:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+}
+
 export async function sendOrderConfirmation(orderData: RegularOrderData | CustomCakeOrderData, isCustomCake: boolean = false) {
   try {
     if (!orderData.customerEmail) {
@@ -631,7 +812,7 @@ export async function sendOrderConfirmation(orderData: RegularOrderData | Custom
 // Send admin notification email
 export async function sendAdminNotification(orderData: RegularOrderData | CustomCakeOrderData | ContactFormData, isCustomCake: boolean = false) {
   try {
-    const adminEmail = 'Lappetit2019@gmail.com';
+    const adminEmails = ['Lappetit2019@gmail.com', 'Lappetit2019@gmail.com'];
     
     let emailContent;
     
@@ -672,13 +853,25 @@ export async function sendAdminNotification(orderData: RegularOrderData | Custom
       return { success: false, error: 'Invalid order data type' };
     }
 
-    const result = await sendEmail(
-      adminEmail,
-      emailContent.subject,
-      emailContent.html
+    // Send email to all admin addresses
+    const emailPromises = adminEmails.map(email => 
+      sendEmail(email, emailContent.subject, emailContent.html)
     );
 
-    return result;
+    const results = await Promise.allSettled(emailPromises);
+    
+    // Check if at least one email was sent successfully
+    const successfulResults = results.filter(result => 
+      result.status === 'fulfilled' && result.value.success
+    );
+
+    if (successfulResults.length > 0) {
+      console.log(`Successfully sent admin notifications to ${successfulResults.length} out of ${adminEmails.length} addresses`);
+      return { success: true, messageId: 'Admin notifications sent' };
+    } else {
+      console.error('Failed to send admin notifications to any address');
+      return { success: false, error: 'Failed to send admin notifications' };
+    }
   } catch (error) {
     console.error('Error sending admin notification email:', error);
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
