@@ -62,6 +62,7 @@ interface Order {
       creamPrice: number | null;
       hasMarzipan: boolean;
       hasCream: boolean;
+      isCustomizable: boolean;
     };
   }[];
 }
@@ -236,6 +237,40 @@ const AdminPage = () => {
         console.error('Error rejecting order:', error);
         showToast('error', 'შეკვეთის უარყოფისას მოხდა შეცდომა');
       }
+    }
+  };
+
+  // Handle order status update
+  const handleUpdateOrderStatus = async (orderId: number, newStatus: string) => {
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId: orderId,
+          status: newStatus,
+          action: 'update'
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        showToast('success', 'შეკვეთის სტატუსი წარმატებით განახლდა!');
+        // Update the order in the local state
+        setOrders(orders.map(order => 
+          order.id === orderId 
+            ? { ...order, status: newStatus }
+            : order
+        ));
+      } else {
+        showToast('error', `შეცდომა: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      showToast('error', 'შეკვეთის სტატუსის განახლებისას მოხდა შეცდომა');
     }
   };
 
@@ -503,12 +538,15 @@ const AdminPage = () => {
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-lg font-bold text-[#d90b6b]">₾{item.cake.marzipanPrice || item.cake.creamPrice || 0}</div>
+                                <div className="text-lg font-bold text-[#d90b6b]">₾{order.total.toFixed(2)}</div>
                                 <div className="md:text-[18px] text-[16px] text-black">რაოდენობა: {item.quantity}</div>
                                 <div className="text-sm text-gray-500">
                                   {item.cake.pieces && `${item.cake.pieces} ნაჭერი`}
                                   {item.cake.hasMarzipan && ' • მარცეპანი'}
                                   {item.cake.hasCream && ' • კრემი'}
+                                </div>
+                                <div className="text-sm text-pink-600 mt-1">
+                                  {item.cake.isCustomizable ? 'შიგთავსი არჩეულია' : 'სტანდარტული ტორტი'}
                                 </div>
                               </div>
                             </div>
@@ -540,9 +578,21 @@ const AdminPage = () => {
                         </>
                       )}
                       {order.status !== 'PENDING' && (
-                        <button className="px-4 py-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors flex items-center space-x-2 md:text-[18px] text-[16px]">
+                        <button 
+                          onClick={() => {
+                            const newStatus = order.status === 'APPROVED' ? 'IN_PROGRESS' : 
+                                            order.status === 'IN_PROGRESS' ? 'DELIVERED' : 
+                                            order.status;
+                            handleUpdateOrderStatus(order.id, newStatus);
+                          }}
+                          className="px-4 py-2 text-blue-600 hover:text-blue-900 hover:bg-blue-50 rounded-lg transition-colors flex items-center space-x-2 md:text-[18px] text-[16px]"
+                        >
                           <Edit className="w-4 h-4" />
-                          <span>რედაქტირება</span>
+                          <span>
+                            {order.status === 'APPROVED' ? 'მზადდება' : 
+                             order.status === 'IN_PROGRESS' ? 'მიწოდებული' : 
+                             'რედაქტირება'}
+                          </span>
                         </button>
                       )}
                       <button 
