@@ -67,12 +67,13 @@ export async function PUT(
       where: { id: cakeId },
       data: {
         name,
-        description,
-        price: parseFloat(price),
+      
+        
+      
         category,
-        servings: servings ? parseInt(servings) : null,
-        weightKg: weightKg ? parseFloat(weightKg) : null,
-        flavors: flavors || [],
+    
+     
+       
         fillings: fillings || [],
         isCustomizable: isCustomizable !== undefined ? isCustomizable : true,
         available: available !== undefined ? available : true,
