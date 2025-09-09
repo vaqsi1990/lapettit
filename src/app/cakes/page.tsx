@@ -54,8 +54,7 @@ const CakesPage = () => {
     
     if (searchQuery) {
       filtered = filtered.filter(cake => 
-        cake.titleGeorgian.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        cake.descriptionGeorgian.toLowerCase().includes(searchQuery.toLowerCase())
+        cake.titleGeorgian.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
     
@@ -223,7 +222,7 @@ const CakesPage = () => {
                           <div className="flex items-center space-x-1">
                             {renderStars(4.5)}
                           </div>
-                          <p className="md:text-[16px] text-[14px] font-bold text-pink-600">₾{cake.price}</p>
+                       
                         </div>
                       </div>
                     ))}
@@ -274,9 +273,7 @@ const CakesPage = () => {
                         {cake.titleGeorgian}
                       </h3>
                       <div className="mt-auto">
-                        <p className="md:text-[18px] text-[16px] font-bold text-black mb-4">
-                          ₾{cake.price}
-                        </p>
+                       
                         <Link href={`/product/${cake.id}`} className="text-center cursor-pointer md:text-[20px] text-[18px] w-full bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                         დაათვალიერეთ
                         </Link>
