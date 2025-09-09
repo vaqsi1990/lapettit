@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Store customization data in memory with expiration (in production, use Redis or database)
-const customizationStore = new Map<string, { data: any; expires: number }>();
+interface CustomizationData {
+  cakeId: number;
+  price: number;
+  pieces: number;
+  topping: string;
+  filling: string;
+  createdAt: Date;
+}
+
+const customizationStore = new Map<string, { data: CustomizationData; expires: number }>();
 
 // Clean up expired entries every 5 minutes
 setInterval(() => {
