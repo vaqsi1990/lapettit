@@ -24,8 +24,7 @@ export async function GET(request: NextRequest) {
           include: {
             cake: true
           }
-        },
-        customCake: true
+        }
       },
       orderBy: {
         createdAt: 'desc'
