@@ -28,18 +28,18 @@ import EditCakeForm from '@/components/EditCakeForm';
 interface Cake {
   id: number;
   name: string;
-  description: string | null;
-  price: number;
   imageUrl: string | null;
-  gallery: string[];
   category: string;
-  servings: number | null;
-  weightKg: number | null;
-  flavors: string[];
+  pieces: number | null;
+  marzipanPrice: number | null;
+  creamPrice: number | null;
+  hasMarzipan: boolean;
+  hasCream: boolean;
   fillings: string[];
   isCustomizable: boolean;
   available: boolean;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 interface Order {
@@ -57,7 +57,11 @@ interface Order {
     cake: {
       id: number;
       name: string;
-      price: number;
+      pieces: number | null;
+      marzipanPrice: number | null;
+      creamPrice: number | null;
+      hasMarzipan: boolean;
+      hasCream: boolean;
     };
   }[];
 }
@@ -499,8 +503,13 @@ const AdminPage = () => {
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-lg font-bold text-[#d90b6b]">₾{(item.cake.price * item.quantity).toFixed(2)}</div>
+                                <div className="text-lg font-bold text-[#d90b6b]">₾{item.cake.marzipanPrice || item.cake.creamPrice || 0}</div>
                                 <div className="md:text-[18px] text-[16px] text-black">რაოდენობა: {item.quantity}</div>
+                                <div className="text-sm text-gray-500">
+                                  {item.cake.pieces && `${item.cake.pieces} ნაჭერი`}
+                                  {item.cake.hasMarzipan && ' • მარცეპანი'}
+                                  {item.cake.hasCream && ' • კრემი'}
+                                </div>
                               </div>
                             </div>
                           ))}
@@ -589,22 +598,34 @@ const AdminPage = () => {
                   </div>
                   <div className="p-6">
                     <h3 className="md:text-[18px] text-[16px] font-semibold text-black mb-2">{cake.name}</h3>
-                    <p className="text-black md:text-[18px] text-[16px] mb-4 line-clamp-2">{cake.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-[#d90b6b]">₾{cake.price}</span>
-                      <div className="flex space-x-2">
-                        <button 
-                          onClick={() => handleEditCake(cake)}
-                          className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors md:text-[18px] text-[16px]"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDeleteCake(cake.id)}
-                          className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                    <div className="space-y-2">
+                      <div className="text-sm text-gray-600">
+                        {cake.pieces && <span>{cake.pieces} ნაჭერი</span>}
+                        {cake.hasMarzipan && <span className="ml-2">• მარცეპანი</span>}
+                        {cake.hasCream && <span className="ml-2">• კრემი</span>}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {cake.marzipanPrice && <span>მარცეპანი: ₾{cake.marzipanPrice}</span>}
+                        {cake.creamPrice && <span className="ml-2">კრემი: ₾{cake.creamPrice}</span>}
+                      </div>
+                      <div className="flex justify-between items-center mt-4">
+                        <div className="text-xs text-gray-400">
+                          {cake.isCustomizable ? 'შესაძლებელია კასტომიზაცია' : 'სტანდარტული ტორტი'}
+                        </div>
+                        <div className="flex space-x-2">
+                          <button 
+                            onClick={() => handleEditCake(cake)}
+                            className="text-blue-600 hover:text-blue-900 p-2 hover:bg-blue-50 rounded-lg transition-colors md:text-[18px] text-[16px]"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleDeleteCake(cake.id)}
+                            className="text-red-600 hover:text-red-900 p-2 hover:bg-red-50 rounded-lg transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

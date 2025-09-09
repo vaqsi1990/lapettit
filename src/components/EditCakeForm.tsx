@@ -16,18 +16,18 @@ const CakeCategory = {
 interface Cake {
   id: number;
   name: string;
-  description: string | null;
-  price: number;
   imageUrl: string | null;
-  gallery: string[];
   category: string;
-  servings: number | null;
-  weightKg: number | null;
-  flavors: string[];
+  pieces: number | null;
+  marzipanPrice: number | null;
+  creamPrice: number | null;
+  hasMarzipan: boolean;
+  hasCream: boolean;
   fillings: string[];
   isCustomizable: boolean;
   available: boolean;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 interface EditCakeFormProps {
@@ -39,20 +39,19 @@ interface EditCakeFormProps {
 const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel }) => {
   const [formData, setFormData] = useState({
     name: cake.name,
-    description: cake.description || '',
-    price: cake.price.toString(),
     imageUrl: cake.imageUrl || '',
     category: cake.category,
-    servings: cake.servings?.toString() || '',
-    weightKg: cake.weightKg?.toString() || '',
-    flavors: [...cake.flavors],
+    pieces: cake.pieces?.toString() || '',
+    marzipanPrice: cake.marzipanPrice?.toString() || '',
+    creamPrice: cake.creamPrice?.toString() || '',
+    hasMarzipan: cake.hasMarzipan,
+    hasCream: cake.hasCream,
     fillings: [...cake.fillings],
     isCustomizable: cake.isCustomizable,
     available: cake.available,
     gallery: cake.imageUrl ? [cake.imageUrl] : [] // Initialize with existing image
   });
 
-  const [flavorInput, setFlavorInput] = useState('');
   const [fillingInput, setFillingInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showToast } = useToast();
@@ -74,22 +73,6 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
     }
   };
 
-  const addFlavor = () => {
-    if (flavorInput.trim() && !formData.flavors.includes(flavorInput.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        flavors: [...prev.flavors, flavorInput.trim()]
-      }));
-      setFlavorInput('');
-    }
-  };
-
-  const removeFlavor = (flavor: string) => {
-    setFormData(prev => ({
-      ...prev,
-      flavors: prev.flavors.filter(f => f !== flavor)
-    }));
-  };
 
   const addFilling = () => {
     if (fillingInput.trim() && !formData.fillings.includes(fillingInput.trim())) {
@@ -124,14 +107,13 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
              const updatedCake: Cake = {
          ...cake,
          name: formData.name,
-         description: formData.description,
-         price: parseFloat(formData.price),
          imageUrl: formData.imageUrl,
-         gallery: formData.gallery,
          category: formData.category,
-         servings: formData.servings ? parseInt(formData.servings) : null,
-         weightKg: formData.weightKg ? parseFloat(formData.weightKg) : null,
-         flavors: formData.flavors,
+         pieces: formData.pieces ? parseInt(formData.pieces) : null,
+         marzipanPrice: formData.marzipanPrice ? parseFloat(formData.marzipanPrice) : null,
+         creamPrice: formData.creamPrice ? parseFloat(formData.creamPrice) : null,
+         hasMarzipan: formData.hasMarzipan,
+         hasCream: formData.hasCream,
          fillings: formData.fillings,
          isCustomizable: formData.isCustomizable,
          available: formData.available
@@ -167,38 +149,21 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            ფასი (₾) *
+            ნაჭრების რაოდენობა
           </label>
           <input
             type="number"
-            name="price"
-            value={formData.price}
+            name="pieces"
+            value={formData.pieces}
             onChange={handleInputChange}
-            required
-            step="0.01"
-            min="0"
+            min="1"
             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-            placeholder="მაგ: 45.99"
+            placeholder="მაგ: 8"
           />
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          აღწერა *
-        </label>
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleInputChange}
-          required
-          rows={3}
-          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-          placeholder="ტორტის დეტალური აღწერა..."
-        />
-      </div>
-
-      {/* Category and Details */}
+      {/* Category and Pricing */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -221,74 +186,63 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            რაოდენობა (ადამიანი)
+            მარცეპანის ფასი (₾)
           </label>
           <input
             type="number"
-            name="servings"
-            value={formData.servings}
+            name="marzipanPrice"
+            value={formData.marzipanPrice}
             onChange={handleInputChange}
-            min="1"
+            step="0.01"
+            min="0"
             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-            placeholder="მაგ: 8"
+            placeholder="მაგ: 45.99"
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            წონა (კგ)
+            კრემის ფასი (₾)
           </label>
           <input
             type="number"
-            name="weightKg"
-            value={formData.weightKg}
+            name="creamPrice"
+            value={formData.creamPrice}
             onChange={handleInputChange}
-            step="0.1"
+            step="0.01"
             min="0"
             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-            placeholder="მაგ: 1.5"
+            placeholder="მაგ: 35.99"
           />
         </div>
       </div>
 
-      {/* Flavors */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          გემოები
-        </label>
-        <div className="flex gap-2 mb-3">
+      {/* Topping Options */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex items-center space-x-3">
           <input
-            type="text"
-            value={flavorInput}
-            onChange={(e) => setFlavorInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFlavor())}
-            className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-            placeholder="დაამატეთ გემო (მაგ: შოკოლადი)"
+            type="checkbox"
+            name="hasMarzipan"
+            checked={formData.hasMarzipan}
+            onChange={handleInputChange}
+            className="w-5 h-5 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
           />
-          <button
-            type="button"
-            onClick={addFlavor}
-            className="px-6 py-3 bg-pink-500 text-white rounded-xl hover:bg-pink-600 transition-colors"
-          >
-            დამატება
-          </button>
+          <label className="text-sm font-medium text-gray-700">
+            მარცეპანი
+          </label>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {formData.flavors.map((flavor, index) => (
-            <span
-              key={index}
-              className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm flex items-center gap-2"
-            >
-              {flavor}
-              <button
-                type="button"
-                onClick={() => removeFlavor(flavor)}
-                className="text-pink-600 hover:text-pink-800"
-              >
-                ×
-              </button>
-            </span>
-          ))}
+
+        <div className="flex items-center space-x-3">
+          <input
+            type="checkbox"
+            name="hasCream"
+            checked={formData.hasCream}
+            onChange={handleInputChange}
+            className="w-5 h-5 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+          />
+          <label className="text-sm font-medium text-gray-700">
+            კრემი
+          </label>
         </div>
       </div>
 
