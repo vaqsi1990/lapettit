@@ -4,7 +4,7 @@ import { sendOrderRejection } from '@/lib/emailService';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { orderData, isCustomCake } = body;
+    const { orderData } = body;
 
     if (!orderData || !orderData.customerEmail) {
       return NextResponse.json(
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Send rejection email
-    const result = await sendOrderRejection(orderData, isCustomCake);
+    const result = await sendOrderRejection(orderData);
 
     if (result.success) {
       return NextResponse.json({
