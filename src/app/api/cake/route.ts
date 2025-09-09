@@ -18,9 +18,7 @@ export async function POST(request: NextRequest) {
       description,
       price,
       category,
-      servings,
-      weightKg,
-      flavors,
+   
       fillings,
       isCustomizable,
       available,
@@ -48,12 +46,12 @@ export async function POST(request: NextRequest) {
     const cake = await prisma.cake.create({
       data: {
         name,
-        description,
-        price: parseFloat(price),
+       
+    
         category,
-        servings: servings ? parseInt(servings) : null,
-        weightKg: weightKg ? parseFloat(weightKg) : null,
-        flavors: flavors || [],
+        
+        
+        
         fillings: fillings || [],
         isCustomizable: isCustomizable !== undefined ? isCustomizable : true,
         available: available !== undefined ? available : true,
