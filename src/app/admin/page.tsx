@@ -60,20 +60,6 @@ interface Order {
       price: number;
     };
   }[];
-  customCake?: {
-    id: number;
-    design: string;
-    flavor: string;
-    filling?: string;
-    glaze?: string;
-    shape?: string;
-    decorations: string[];
-    text?: string;
-    quantity: number;
-    deliveryDate: Date;
-    deliveryTime?: string;
-    imageUrl?: string;
-  } | null;
 }
 
 const AdminPage = () => {
@@ -381,8 +367,7 @@ const AdminPage = () => {
                          {getStatusText(order.status)}
                        </span>
                        <p className="text-xs text-gray-500 mt-1">
-                         {order.customCake ? `${order.customCake.design} ტორტი` : 
-                          order.items.map(item => `${item.cake.name} (${item.quantity})`).join(', ')}
+                         {order.items.map(item => `${item.cake.name} (${item.quantity})`).join(', ')}
                        </p>
                      </div>
                   </div>
@@ -523,103 +508,6 @@ const AdminPage = () => {
                       </div>
                     )}
 
-                                         {/* Custom Cake */}
-                     {order.customCake && (
-                       <div className="mb-6">
-                         <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                          
-                           ინდივიდუალური ტორტი
-                         </h4>
-                         <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-black">
-                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                             <div>
-                               <p className="md:text-[18px] text-[16px] font-medium text-black">დიზაინი</p>
-                               <p className="font-semibold text-black">{order.customCake.design}</p>
-                             </div>
-                             <div>
-                               <p className="md:text-[18px] text-[16px] font-medium text-black">გემო</p>
-                               <p className="font-semibold text-black">{order.customCake.flavor}</p>
-                             </div>
-                             <div>
-                               <p className="md:text-[18px] text-[16px] font-medium text-black">შიგთავსი</p>
-                               <p className="font-semibold text-black">{order.customCake.filling || 'არ არის მითითებული'}</p>
-                             </div>
-                             <div>
-                               <p className="md:text-[18px] text-[16px] font-medium text-black">გლაზური</p>
-                               <p className="font-semibold text-black">{order.customCake.glaze || 'არ არის მითითებული'}</p>
-                             </div>
-                             <div>
-                               <p className="md:text-[18px] text-[16px] font-medium text-black">ფორმა</p>
-                               <p className="font-semibold text-black">{order.customCake.shape || 'არ არის მითითებული'}</p>
-                             </div>
-                             <div>
-                               <p className="md:text-[18px] text-[16px] font-medium text-black">რაოდენობა</p>
-                               <p className="font-semibold text-black">{order.customCake.quantity}</p>
-                             </div>
-                           </div>
-                           
-                           {/* Decorations */}
-                           {order.customCake.decorations && order.customCake.decorations.length > 0 && (
-                             <div className="mt-4 pt-4 border-t border-purple-200">
-                               <p className="md:text-[18px] text-[16px] font-medium text-black mb-2">დეკორაციები</p>
-                               <div className="flex flex-wrap gap-2">
-                                 {order.customCake.decorations.map((decoration, index) => (
-                                   <span key={index} className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full md:text-[18px] text-[16px]">
-                                     {decoration}
-                                   </span>
-                                 ))}
-                               </div>
-                             </div>
-                           )}
-                           
-                           {/* Custom Text */}
-                           {order.customCake.text && (
-                             <div className="mt-4 pt-4 border-t border-purple-200">
-                               <p className="md:text-[18px] text-[16px] font-medium text-black mb-2">მორგებული ტექსტი</p>
-                                                                <p className="font-semibold text-gray-800 bg-white p-3 rounded-lg border border-purple-200">
-                                   &ldquo;{order.customCake.text}&rdquo;
-                                 </p>
-                             </div>
-                           )}
-                           
-                           {/* Delivery Details */}
-                           <div className="mt-4 pt-4 border-t border-purple-200">
-                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                               <div>
-                                 <p className="md:text-[18px] text-[16px] font-medium text-black">მიწოდების თარიღი</p>
-                                 <p className="font-semibold text-black">
-                                   {new Date(order.customCake.deliveryDate).toLocaleDateString('ka-GE', {
-                                     year: 'numeric',
-                                     month: 'long',
-                                     day: 'numeric'
-                                   })}
-                                 </p>
-                               </div>
-                               {order.customCake.deliveryTime && (
-                                 <div>
-                                   <p className="md:text-[18px] text-[16px] font-medium text-black">მიწოდების დრო</p>
-                                   <p className="font-semibold text-black">{order.customCake.deliveryTime}</p>
-                                 </div>
-                               )}
-                             </div>
-                           </div>
-                           
-                           {/* Reference Image */}
-                           {order.customCake.imageUrl && (
-                             <div className="mt-4 pt-4 border-t border-purple-200">
-                               <p className="md:text-[18px] text-[16px] font-medium text-black mb-2">მითითებული სურათი</p>
-                               <div className="relative h-32 w-32 overflow-hidden rounded-lg border border-purple-200">
-                                 <img
-                                   src={order.customCake.imageUrl}
-                                   alt="Reference design"
-                                   className="w-full h-full object-cover"
-                                 />
-                               </div>
-                             </div>
-                           )}
-                         </div>
-                       </div>
-                     )}
 
                   
                     {/* Action Buttons */}

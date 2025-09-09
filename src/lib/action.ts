@@ -85,7 +85,7 @@ export async function getCakeById(id: number) {
   }
 }
 
-// Search cakes by name or description
+// Search cakes by name
 export async function searchCakes(query: string) {
   try {
     const cakes = await prisma.cake.findMany({
@@ -93,12 +93,6 @@ export async function searchCakes(query: string) {
         OR: [
           {
             name: {
-              contains: query,
-              mode: 'insensitive'
-            }
-          },
-          {
-            description: {
               contains: query,
               mode: 'insensitive'
             }
@@ -174,8 +168,7 @@ export async function deleteOrder(id: number) {
     const order = await prisma.order.findUnique({
       where: { id },
       include: {
-        items: true,
-        customCake: true
+        items: true
       }
     });
 
@@ -191,12 +184,8 @@ export async function deleteOrder(id: number) {
       });
     }
 
-    // Delete custom cake if it exists
-    if (order.customCake) {
-      await prisma.customCake.delete({
-        where: { orderId: id }
-      });
-    }
+    // Custom cake functionality is now integrated into the main Cake model
+    // No separate customCake deletion needed
 
     // Now delete the order
     await prisma.order.delete({

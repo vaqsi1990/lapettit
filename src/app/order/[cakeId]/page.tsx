@@ -13,6 +13,7 @@ import { useToast } from '@/components/Toast';
 const OrderPage = () => {
   const params = useParams();
   const router = useRouter();
+
   const cakeId = parseInt(params.cakeId as string);
   const { showToast } = useToast();
 
@@ -28,16 +29,146 @@ const OrderPage = () => {
     customerEmail: '',
     address: '',
     city: '',
-    zipCode: '',
     notes: ''
   });
 
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
   const [orderSubmitted, setOrderSubmitted] = useState(false);
-  const [orderId, setOrderId] = useState<number | null>(null);
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
   const [orderRejected, setOrderRejected] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [selectedPieces, setSelectedPieces] = useState(8);
+  const [selectedTopping, setSelectedTopping] = useState<'marzipan' | 'cream' | null>(null);
+  const [selectedFilling, setSelectedFilling] = useState<string>('');
+  const [originalPrice, setOriginalPrice] = useState(0);
+
+  // Filling options mapping
+  const fillingOptions = [
+    {
+      id: 'fruit',
+      name: 'ხილის ტორტი',
+      description: 'კლასიკური ბისკვიტით, მოხარშული შუს კრემით და სხვადასვა სეზონური ხილით (მარწყვი, ბანანი და კენკრის მიქსი)'
+    },
+    {
+      id: 'chocolate',
+      name: 'შოკოლადის ტორტი',
+      description: 'შოკოლადის ბისკვიტით, ნიგვზით, ბეზეთი და კარამელით'
+    },
+    {
+      id: 'pistachio',
+      name: 'ფისტის საფირმო ტორტი',
+      description: 'კლასიკური ბისკვიტით, შოკოლადის პუდინგით, ნაღების კრემით, ფისტის კრემით და ჟოლოთი'
+    },
+    {
+      id: 'black',
+      name: 'შავი საფირმო ტორტი',
+      description: 'შოკოლადის ბისკვიტი, ნაღების კრემი, შავი პუდინგი, ნუთელას კრემი, მარწყვი და ბანანით'
+    }
+  ];
+
+  // Get filling display name
+  const getFillingDisplayName = (fillingId: string) => {
+    const filling = fillingOptions.find(f => f.id === fillingId);
+    return filling ? filling.name : fillingId;
+  };
+
+  // Calculate price range based on cake data
+  const calculatePriceRange = () => {
+    if (!cake) return { min: 0, max: 0 };
+
+    // Get minimum pieces required
+    const minPieces = cake.pieces || 8;
+    
+    // Calculate base prices
+    let marzipanBasePrice = 100; // Default fallback
+    let creamBasePrice = 100; // Default fallback
+    
+    if (cake.marzipanPrice) {
+      marzipanBasePrice = cake.marzipanPrice;
+    }
+    if (cake.creamPrice) {
+      creamBasePrice = cake.creamPrice;
+    }
+
+    // Calculate price ranges for different piece sizes
+    const prices = [];
+    
+    // 8-10 pieces
+    if (minPieces <= 8) {
+      prices.push(marzipanBasePrice, creamBasePrice);
+    }
+    // 10-13 pieces  
+    if (minPieces <= 10) {
+      prices.push(marzipanBasePrice + 30, creamBasePrice + 30);
+    }
+    // 18-20 pieces
+    if (minPieces <= 18) {
+      prices.push(marzipanBasePrice + 60, creamBasePrice + 60);
+    }
+    // 25+ pieces
+    if (minPieces <= 25) {
+      prices.push(marzipanBasePrice + 90, creamBasePrice + 90);
+    }
+
+    const minPrice = Math.min(...prices) * quantity;
+    const maxPrice = Math.max(...prices) * quantity;
+
+    return { min: minPrice, max: maxPrice };
+  };
+
+  // Load customization from sessionStorage when component mounts
+  useEffect(() => {
+    const loadCustomization = () => {
+      if (cake) {
+        try {
+          // Load from sessionStorage using cake ID
+          const sessionData = sessionStorage.getItem(`customization_${cake.id}`);
+          if (sessionData) {
+            const customization = JSON.parse(sessionData);
+            setTotalPrice(customization.price);
+            setSelectedPieces(customization.pieces);
+            setSelectedTopping(customization.topping);
+            setSelectedFilling(customization.filling);
+            setOriginalPrice(customization.price);
+          }
+        } catch (error) {
+          console.error('Error loading customization from sessionStorage:', error);
+        }
+      }
+    };
+
+    loadCustomization();
+  }, [cake]);
+
+  // Update price when quantity changes (for loaded customizations)
+  useEffect(() => {
+    if (originalPrice > 0) {
+      // Use original price to calculate new total
+      setTotalPrice(originalPrice * quantity);
+    }
+  }, [quantity, originalPrice]);
+
+  // Store original price when customization is loaded
+  useEffect(() => {
+    if (totalPrice > 0 && originalPrice === 0) {
+      setOriginalPrice(totalPrice);
+    }
+  }, [totalPrice, originalPrice]);
+
+
+  // Update price when cake changes (for non-customized orders)
+  useEffect(() => {
+    if (cake) {
+      const range = calculatePriceRange();
+      
+      // Only set default price if no customization is loaded
+      const sessionData = sessionStorage.getItem(`customization_${cake.id}`);
+      if (!sessionData) {
+        setTotalPrice(range.min);
+      }
+    }
+  }, [cake]);
 
   const handleVerifyOtp = async () => {
     if (!otp || otp.length !== 6) {
@@ -81,21 +212,18 @@ const OrderPage = () => {
           customerEmail: orderForm.customerEmail,
           address: orderForm.address,
           city: orderForm.city,
-          zipCode: orderForm.zipCode,
           notes: orderForm.notes,
-          totalPrice: cake.price * quantity
+          totalPrice: totalPrice
         };
 
         const orderResult = await submitOrder(orderData);
         
         if (orderResult.success && orderResult.orderId) {
-          const newOrderId = orderResult.orderId;
-          setOrderId(newOrderId);
           showToast('success', 'თქვენი შეკვეთა წარმატებით გაიგზავნა! ადმინი განიხილავს თქვენს შეკვეთას და დაგიკავშირდებათ.');
           setOrderSubmitted(true);
           
           // Start polling for order status with the new order ID
-          startOrderStatusPolling(newOrderId);
+          startOrderStatusPolling(orderResult.orderId);
         } else {
           showToast('error', 'შეკვეთის გაგზავნა ვერ მოხერხდა. სცადეთ თავიდან.');
         }
@@ -319,8 +447,15 @@ const OrderPage = () => {
 
                 <div>
                   <h3 className="text-lg font-semibold text-black mb-2">{cake.titleGeorgian}</h3>
-                  <p className="text-black mb-3">{cake.descriptionGeorgian}</p>
-                
+                  <div className="mt-3">
+                    {selectedFilling && (
+                      <div className="bg-pink-50 border border-pink-200 rounded-lg p-3">
+                        <p className="text-pink-800 text-sm">
+                          <strong>შიგთავსი:</strong> {getFillingDisplayName(selectedFilling)}
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 <div className="border-t pt-4">
@@ -348,8 +483,15 @@ const OrderPage = () => {
                   </div>
 
                   <div className="flex items-center justify-between py-3 border-t border-gray-200">
-                    <span className="md:text-[20px] text-[18px] block text-black font-medium mb-1">სულ:</span>
-                    <span className="text-2xl font-bold text-[#d90b6b]">₾{(cake.price * quantity).toFixed(2)}</span>
+                    <span className="md:text-[20px] text-[18px] block text-black font-medium mb-1">ფასი:</span>
+                    <div className="text-right">
+                      <span className="text-2xl font-bold text-[#d90b6b]">₾{totalPrice.toFixed(2)}</span>
+                      <div className="text-[16px] text-gray-500 mt-1">
+                        {selectedPieces} ნაჭრიანი ტორტი
+                        {selectedTopping && ` • ${selectedTopping === 'marzipan' ? 'მარცეპანით' : 'კრემით'}`}
+                        {selectedFilling && ` • ${getFillingDisplayName(selectedFilling)}`}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -361,7 +503,8 @@ const OrderPage = () => {
               animate={{ opacity: 1, x: 0 }}
               className="bg-white rounded-2xl shadow-xl p-6"
             >
-              <h2 className="md:text-[24px] text-[20px] font-bold text-black mb-6 flex items-center gap-2">შეკვეთის ინფორმაცია</h2>
+              <h2 className="md:text-[24px] text-[20px] font-bold text-black mb-4 flex items-center gap-2">შეკვეთის ინფორმაცია</h2>
+             
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -415,7 +558,7 @@ const OrderPage = () => {
                      placeholder="ელ-ფოსტა"
                      required
                    />
-                  <p className="text-sm text-black mt-1">ერთჯერადი კოდი გაიგზავნება ამ ელ-ფოსტაზე</p>
+                  <p className="text-[16px] text-black mt-1">ერთჯერადი კოდი გაიგზავნება ამ ელ-ფოსტაზე</p>
                 </div>
 
                 <div>
@@ -444,17 +587,6 @@ const OrderPage = () => {
                      />
                   </div>
 
-                  <div>
-                    <label className="md:text-[20px] text-[18px] block text-black font-medium mb-1">პოსტის კოდი</label>
-                                         <input
-                       type="text"
-                       value={orderForm.zipCode}
-                       onChange={(e) => handleInputChange("zipCode", e.target.value)}
-                       disabled={orderSubmitted}
-                       className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                       placeholder="პოსტის კოდი"
-                     />
-                  </div>
                 </div>
 
                 <div>
@@ -605,7 +737,6 @@ const OrderPage = () => {
                         customerEmail: '',
                         address: '',
                         city: '',
-                        zipCode: '',
                         notes: ''
                       });
                     }}
@@ -676,7 +807,6 @@ const OrderPage = () => {
                   </Link>
                   <button 
                     onClick={() => {
-                      setOrderId(null);
                       setOrderRejected(false);
                       setOtpSent(false);
                       setOtp('');
@@ -687,7 +817,6 @@ const OrderPage = () => {
                         customerEmail: '',
                         address: '',
                         city: '',
-                        zipCode: '',
                         notes: ''
                       });
                     }}

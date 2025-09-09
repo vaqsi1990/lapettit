@@ -16,7 +16,6 @@ export async function POST(request: NextRequest) {
       customerEmail,
       address,
       city,
-      zipCode,
       notes,
       totalPrice
     } = body;
@@ -41,7 +40,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const finalTotal = totalPrice || (cake.price * quantity);
+    const finalTotal = totalPrice || 0;
 
     // Create the order
     const order = await prisma.order.create({
@@ -49,7 +48,7 @@ export async function POST(request: NextRequest) {
         customerName: `${customerName} ${body.lastName || ''}`.trim(),
         customerPhone,
         customerEmail: customerEmail || null,
-        address: `${address}, ${city || ''}, ${zipCode || ''}`.trim().replace(/^,\s*/, ''),
+        address: `${address}, ${city || ''}`.trim().replace(/^,\s*/, ''),
         total: finalTotal,
         status: 'PENDING'
       }
@@ -84,7 +83,7 @@ export async function POST(request: NextRequest) {
         notes: notes
       };
 
-      await sendAdminNotification(adminEmailData, false);
+      await sendAdminNotification(adminEmailData);
     } catch (adminEmailError) {
       console.error('Error sending admin notification email:', adminEmailError);
       // Don't fail the order if admin email fails

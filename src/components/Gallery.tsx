@@ -162,12 +162,7 @@ const Gallery = () => {
                     <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-2 line-clamp-1">
                       {image.titleGeorgian}
                     </h3>
-                    <p className="text-black text-[14px] md:text-[16px] mb-2 line-clamp-2 flex-1">
-                      {image.descriptionGeorgian}
-                    </p>
-                    <p className="text-[#d90b6b] text-[18px] md:text-[20px] font-bold mt-auto">
-                      ₾{image.price}
-                    </p>
+                   
                   </div>
                 </motion.div>
               </motion.div>
@@ -193,10 +188,10 @@ const Gallery = () => {
                     <div>
                       <h3 className="font-semibold text-black text-[18px] md:text-[20px]">{selectedImage.titleGeorgian}</h3>
                       <p className="text-[16px] md:text-[18px] font-bold text-pink-600 mb-2">{selectedImage.categoryGeorgian}</p>
-                      <p className="text-[20px] md:text-[24px] font-bold text-[#d90b6b] mb-4">₾{selectedImage.price}</p>
+                   
                     </div>
                   </div>
-                  <p className="text-black mb-6 leading-relaxed">{selectedImage.descriptionGeorgian}</p>
+                
 
                   <div className="space-y-3">
                     <Link 

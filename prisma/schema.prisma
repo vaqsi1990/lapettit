@@ -15,42 +15,40 @@ enum CakeCategory {
   Desserts
 }
 model Cake {
-  id            Int          @id @default(autoincrement())
+  id            Int        @id @default(autoincrement())
   name          String
-  description   String?
-  price         Float
-  imageUrl      String?        // მთავარი სურათი
-  gallery       String[]       // დამატებითი სურათები (სხვადასხვა კუთხე/დიზაინი)
+
+  // სტანდარტული ატრიბუტები
+  imageUrl      String?     // მთავარი სურათი
+
   category      CakeCategory
-  servings      Int?           // რამდენი ადამიანს ჰყოფნის (მაგ: 8, 12, 16)
-  weightKg      Float?         // წონა კილოგრამებში
-  flavors       String[]       // გემოები: ["შოკოლადი", "ვანილი", "წითელი ხავერდი"]
-  fillings      String[]       // შიგთავსი: ["კრემი", "ჯემი", "შოკოლადი"]
-  isCustomizable Boolean       @default(false) // პერსონალიზაცია შეიძლება?
-  available     Boolean        @default(true)  // არის თუ არა გაყიდვაში
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  orders        OrderItem[]
-}
+  available     Boolean     @default(true)  // არის თუ არა გაყიდვაში
 
-model CustomCake {
-  id            Int       @id @default(autoincrement())
-  design        String
-  flavor        String
-  filling       String?
-  glaze         String?
-  shape         String?
-  decorations   String[]  // Array of decoration names
-  text          String?
-  quantity      Int
-  deliveryDate  DateTime
+  // კონფიგურაცია
+  isCustomizable Boolean    @default(false)  // შეიძლება თუ არა რედაქტირება
+
+  // შიგთავსი და შემადგენლობა
+  fillings      String[]    // შიგთავსი (მაგ: ["კრემი", "ჯემი"])
+  hasMarzipan   Boolean     @default(false)
+  marzipanPrice Float?
+  hasCream      Boolean     @default(false)
+  creamPrice    Float?
+
+  // ზომები
+  pieces        Int?        // ნაჭრები (მაგ: 8, 12, 16)
+
+  // Custom დეტალები (მხოლოდ მაშინ თუ isCustomizable == true)
+  age           String?     // მაგ: "2 წლის", "18 წლის"
+  quantity      Int?        // რამდენი ცალი
+  deliveryDate  DateTime?
   deliveryTime  String?
-  imageUrl      String?
-  createdAt     DateTime  @default(now())
 
-  order    Order @relation(fields: [orderId], references: [id])
-  orderId  Int   @unique
+  // შეკვეთები
+  orders        OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 }
+
 
 model Order {
   id            Int          @id @default(autoincrement())
@@ -62,7 +60,6 @@ model Order {
   items         OrderItem[]
   total         Float
 
-  customCake    CustomCake?
 
   bogOrderId    String?   @unique
   paidAt        DateTime? @db.Timestamp(6)

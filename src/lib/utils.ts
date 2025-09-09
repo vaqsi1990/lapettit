@@ -8,11 +8,15 @@ export interface GalleryImage {
   categoryGeorgian: string;
   title: string;
   titleGeorgian: string;
-  description: string;
-  descriptionGeorgian: string;
-  price: number;
   likes?: number;
   comments?: number;
+  isCustomizable?: boolean;
+  pieces?: number;
+  fillings?: string[];
+  hasMarzipan?: boolean;
+  marzipanPrice?: number;
+  hasCream?: boolean;
+  creamPrice?: number;
 }
 
 export interface Category {
@@ -42,11 +46,15 @@ export function mapCakeToGalleryImage(cake: Cake): GalleryImage {
     categoryGeorgian: category.nameGeorgian,
     title: cake.name,
     titleGeorgian: cake.name, // You can add Georgian titles to your schema later
-    description: cake.description || 'Delicious cake for your special occasion',
-    descriptionGeorgian: cake.description || 'გემრიელი ტორტი თქვენი სპეციალური შემთხვევისთვის',
-    price: cake.price,
     likes: Math.floor(Math.random() * 200) + 50, // Random likes for demo
-    comments: Math.floor(Math.random() * 50) + 10 // Random comments for demo
+    comments: Math.floor(Math.random() * 50) + 10, // Random comments for demo
+    isCustomizable: cake.isCustomizable,
+    pieces: cake.pieces ?? undefined,
+    fillings: cake.fillings,
+    hasMarzipan: cake.hasMarzipan,
+    marzipanPrice: cake.marzipanPrice ?? undefined,
+    hasCream: cake.hasCream,
+    creamPrice: cake.creamPrice ?? undefined
   };
 }
 

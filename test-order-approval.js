@@ -21,7 +21,6 @@ const testOrderApproval = async () => {
         customerEmail: 'test@example.com',
         address: 'Test Address 123',
         city: 'Tbilisi',
-        zipCode: '0101',
         notes: 'Test order for approval system',
         totalPrice: 50.00
       }),
@@ -79,7 +78,6 @@ const testOrderApproval = async () => {
         customerEmail: 'custom@example.com',
         address: 'Custom Address 456',
         city: 'Batumi',
-        zipCode: '6000',
         notes: 'Test custom cake order'
       }),
     });

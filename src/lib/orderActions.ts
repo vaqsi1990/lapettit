@@ -9,7 +9,6 @@ export interface OrderFormData {
   customerEmail?: string;
   address: string;
   city?: string;
-  zipCode?: string;
   notes?: string;
   totalPrice?: number;
 }

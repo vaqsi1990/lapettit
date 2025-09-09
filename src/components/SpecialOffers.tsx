@@ -9,10 +9,6 @@ interface SpecialOffer {
     id: number;
     name: string;
     nameGeorgian: string;
-    oldPrice: number;
-    newPrice: number;
-    discountType: 'percentage' | 'fixed' | 'bogo';
-    discountValue: number;
     image: string;
     endDate: string;
     category: string;
@@ -34,10 +30,6 @@ const SpecialOffers = () => {
             id: 1,
             name: "Chocolate Dream Deluxe",
             nameGeorgian: "შოკოლადის ოცნების დელუქსი",
-            oldPrice: 60,
-            newPrice: 45,
-            discountType: 'percentage',
-            discountValue: 25,
             image: "/catalog/1.jpg",
             endDate: "2024-12-31",
             category: "birthday",
@@ -48,10 +40,6 @@ const SpecialOffers = () => {
             id: 2,
             name: "Wedding Elegance",
             nameGeorgian: "ქორწილის ელეგანტურობა",
-            oldPrice: 120,
-            newPrice: 95,
-            discountType: 'fixed',
-            discountValue: 25,
             image: "/catalog/2.jpg",
             endDate: "2024-12-31",
             category: "wedding",
@@ -62,10 +50,6 @@ const SpecialOffers = () => {
             id: 3,
             name: "Mini Cakes Bundle",
             nameGeorgian: "მინი ტორტების კომპლექტი",
-            oldPrice: 80,
-            newPrice: 40,
-            discountType: 'bogo',
-            discountValue: 50,
             image: "/catalog/3.jpg",
             endDate: "2024-12-31",
             category: "celebration",
@@ -181,24 +165,9 @@ const SpecialOffers = () => {
                                         {offer.descriptionGeorgian}
                                     </p>
                                     
-                                    {/* Pricing */}
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="flex items-center space-x-3">
-                                            <span className="text-2xl font-bold text-pink-600">
-                                                ₾{offer.newPrice}
-                                            </span>
-                                            <span className="text-[18px] text-black line-through">
-                                                ₾{offer.oldPrice}
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {/* Offer Details */}
-                                  
-
                                     {/* CTA Button */}
                                     <Link
-                                        href={`/order/${offer.id}`}
+                                        href={`/product/${offer.id}`}
                                         className="w-full md:w-[70%] mx-auto md:text-[20px] text-[18px] bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold text-center transition-all duration-300 transform  shadow-lg  block"
                                     >
                                         შეუკვეთე ახლა

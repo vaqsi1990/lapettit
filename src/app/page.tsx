@@ -14,7 +14,7 @@ export default function Home() {
         <Services />
         <Gallery />
         <Swiper />
-        <SpecialOffers />
+        {/* <SpecialOffers /> */}
         <Why />
       </div>
     </>

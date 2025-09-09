@@ -40,12 +40,7 @@ const Navbar = () => {
                ნამუშევრები
               </Link>
              
-              <Link 
-                href="/custom" 
-                className="text-white  md:text-[20px] px-3 py-2 rounded-md  font-bold transition-colors duration-200"
-              >
-              მორგებული შეკვეთები
-              </Link>
+            
               <Link 
                 href="/about" 
                 className="text-white  md:text-[20px] px-3 py-2 rounded-md  font-bold transition-colors duration-200"
@@ -96,13 +91,7 @@ const Navbar = () => {
               ნამუშევრები
             </Link>
 
-            <Link 
-              href="/custom" 
-              className="text-white  block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              მორგებული შეკვეთები
-            </Link>
+        
             <Link 
               href="/about" 
               className="text-white  block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"

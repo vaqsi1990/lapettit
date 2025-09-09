@@ -21,7 +21,6 @@ const testOrderRejectionToast = async () => {
         customerEmail: 'test@example.com',
         address: 'Test Address 123',
         city: 'Tbilisi',
-        zipCode: '0101',
         notes: 'Test order for rejection toast system',
         totalPrice: 50.00
       }),
@@ -102,7 +101,6 @@ const testOrderRejectionToast = async () => {
         customerEmail: 'customtest@example.com',
         address: 'Custom Test Address 456',
         city: 'Tbilisi',
-        zipCode: '0102',
         notes: 'Test custom cake order for rejection toast system'
       }),
     });

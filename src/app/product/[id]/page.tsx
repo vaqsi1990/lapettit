@@ -15,9 +15,133 @@ const ProductPage = () => {
     const [product, setProduct] = useState<GalleryImage | null>(null);
     const [relatedProducts, setRelatedProducts] = useState<GalleryImage[]>([]);
     const [quantity, setQuantity] = useState(1);
+    const [selectedPieces, setSelectedPieces] = useState(8);
+    const [totalPrice, setTotalPrice] = useState(100);
+    const [selectedTopping, setSelectedTopping] = useState<'marzipan' | 'cream' | null>(null);
+    const [selectedFilling, setSelectedFilling] = useState<string>('');
+   
 
     const [loading, setLoading] = useState(true);
     const [selectedImage] = useState(0);
+
+    // Dynamic piece size options based on product data
+    const getPieceOptions = () => {
+        if (!product) return [];
+
+        const minPieces = product.pieces || 8; // This is the minimum pieces required
+
+        // Calculate base price from selected topping
+        let basePrice = 100; // Default fallback
+        if (selectedTopping === 'marzipan' && product.marzipanPrice) {
+            basePrice = product.marzipanPrice;
+        } else if (selectedTopping === 'cream' && product.creamPrice) {
+            basePrice = product.creamPrice;
+        } else if (product.marzipanPrice) {
+            basePrice = product.marzipanPrice; // Default to marzipan if available
+        } else if (product.creamPrice) {
+            basePrice = product.creamPrice; // Fallback to cream
+        }
+
+        // Generate all possible options
+        const allOptions = [
+            { pieces: 8, label: `8-10 ნაჭერი`, coverage: "15-20 სმ", price: basePrice },
+            { pieces: 10, label: `10-13 ნაჭერი`, coverage: "20-25 სმ", price: basePrice + 30 },
+            { pieces: 18, label: `18-20 ნაჭერი`, coverage: "25-30 სმ", price: basePrice + 60 },
+            { pieces: 25, label: `25-28 ნაჭერი`, coverage: "30-35 სმ", price: basePrice + 90 }
+        ];
+
+        // Filter options to only show those that meet the minimum pieces requirement
+        return allOptions.filter(option => option.pieces >= minPieces);
+    };
+
+    // Predefined filling options
+    const fillingOptions = [
+        {
+            id: 'fruit',
+            name: 'ხილის ტორტი',
+            description: 'კლასიკური ბისკვიტით, მოხარშული შუს კრემით და სხვადასვა სეზონური ხილით (მარწყვი, ბანანი და კენკრის მიქსი)'
+        },
+        {
+            id: 'chocolate',
+            name: 'შოკოლადის ტორტი',
+            description: 'შოკოლადის ბისკვიტით, ნიგვზით, ბეზეთი და კარამელით'
+        },
+        {
+            id: 'pistachio',
+            name: 'ფისტის საფირმო ტორტი',
+            description: 'კლასიკური ბისკვიტით, შოკოლადის პუდინგით, ნაღების კრემით, ფისტის კრემით და ჟოლოთი'
+        },
+        {
+            id: 'black',
+            name: 'შავი საფირმო ტორტი',
+            description: 'შოკოლადის ბისკვიტი, ნაღების კრემი, შავი პუდინგი, ნუთელას კრემი, მარწყვი და ბანანით'
+        }
+    ];
+
+    // Set default topping and pieces when product loads
+    useEffect(() => {
+        if (product) {
+            // Set default pieces to product's base pieces
+            setSelectedPieces(product.pieces || 8);
+
+            // Set default topping
+            if (product.hasMarzipan && product.hasCream) {
+                setSelectedTopping('marzipan');
+            } else if (product.hasMarzipan) {
+                setSelectedTopping('marzipan');
+            } else if (product.hasCream) {
+                setSelectedTopping('cream');
+            } else {
+                setSelectedTopping(null);
+            }
+        }
+    }, [product]);
+
+    // Update total price when pieces, quantity, or topping changes
+    useEffect(() => {
+        const pieceOptions = getPieceOptions();
+        const selectedOption = pieceOptions.find(option => option.pieces === selectedPieces);
+        if (selectedOption) {
+            // Base price already includes marzipan or cream, no additional cost
+            setTotalPrice(selectedOption.price * quantity);
+        }
+    }, [selectedPieces, quantity, selectedTopping, product]);
+
+    // Save customization to API
+    const saveCustomization = async () => {
+        if (!product) return null;
+
+        try {
+            const customizationData = {
+                cakeId: product.id,
+                price: totalPrice,
+                pieces: selectedPieces,
+                topping: selectedTopping,
+                filling: selectedFilling
+            };
+
+            const response = await fetch('/api/customization', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(customizationData),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                const customizationId = result.customizationId;
+                
+                // Also store in localStorage as backup
+                localStorage.setItem(`customization_${customizationId}`, JSON.stringify(customizationData));
+                
+                return customizationId;
+            }
+        } catch (error) {
+            console.error('Error saving customization:', error);
+        }
+        return null;
+    };
 
     // Fetch product and related products
     useEffect(() => {
@@ -108,7 +232,7 @@ const ProductPage = () => {
                             className="relative w-full group overflow-hidden rounded-2xl shadow-lg bg-white"
                         >
                             <Image
-                                width={500} 
+                                width={500}
                                 height={300}
                                 src={productImages[selectedImage]}
                                 alt={product.titleGeorgian}
@@ -140,52 +264,161 @@ const ProductPage = () => {
 
 
 
-                        {/* Description */}
-                        <div className="space-y-4">
+                        {(product.hasMarzipan || product.hasCream) && (
+                            <div className="space-y-3">
+                                <label className="text-[20px] font-medium text-black">აირჩიეთ ტორტის ტიპი:</label>
+                                <div className={`grid gap-2 ${product.hasMarzipan && product.hasCream ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                                    {product.hasMarzipan && (
+                                        <button
+                                            onClick={() => setSelectedTopping('marzipan')}
+                                            className={`p-3 rounded-lg border-2 transition-all duration-200 ${selectedTopping === 'marzipan'
+                                                    ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                    : 'border-gray-200 bg-white hover:border-pink-300'
+                                                }`}
+                                        >
+                                            <div className="text-[18px] font-medium">მარცეპანი</div>
+                                            <div className="text-[16px] text-black">ჩართულია ფასში</div>
+                                        </button>
+                                    )}
 
-                            <p className="text-gray-700 leading-relaxed text-[16px] md:text-[18px]">
-                                {product.descriptionGeorgian}
-                            </p>
+                                    {product.hasCream && (
+                                        <button
+                                            onClick={() => setSelectedTopping('cream')}
+                                            className={`p-3 rounded-lg border-2 transition-all duration-200 ${selectedTopping === 'cream'
+                                                    ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                    : 'border-gray-200 bg-white hover:border-pink-300'
+                                                }`}
+                                        >
+                                            <div className="text-[18px] font-medium">კრემი</div>
+                                            <div className="text-[16px] text-black">ჩართულია ფასში</div>
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+
+
+                        {/* Customization Options */}
+                        {product.isCustomizable && (
+                            <div className=" p-4 rounded-xl ">
+                                <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4"> ტორტის ნაჭრების  არჩევა</h3>
+
+                                {/* Piece Size Selection */}
+                                <div className="space-y-3 mb-4">
+                                    <label className="text-[20px] font-medium text-black">აირჩიეთ ზომა:</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {getPieceOptions().map((option) => (
+                                            <button
+                                                key={option.pieces}
+                                                onClick={() => setSelectedPieces(option.pieces)}
+                                                className={`p-3 rounded-lg border-2 transition-all duration-200 ${selectedPieces === option.pieces
+                                                        ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                        : 'border-gray-200 bg-white hover:border-pink-300'
+                                                    }`}
+                                            >
+                                                <div className="text-[18px] font-medium">{option.label}</div>
+                                                <div className="text-[16px] text-black">{option.coverage}</div>
+                                                <div className="text-[16px] font-bold text-pink-600">₾{option.price}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Topping Selection */}
+
+                                {/* Filling Selection */}
+                                <div className="space-y-3 mt-4">
+                                    <label className="text-[20px] font-medium text-black">აირჩიეთ შიგთავსი:</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {fillingOptions.map((filling) => (
+                                            <button
+                                                key={filling.id}
+                                                onClick={() => setSelectedFilling(selectedFilling === filling.id ? '' : filling.id)}
+                                                className={`p-3 rounded-lg border-2 transition-all duration-200 text-left ${selectedFilling === filling.id
+                                                        ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                        : 'border-gray-200 bg-white hover:border-pink-300'
+                                                    }`}
+                                            >
+                                                <div className="text-[18px] font-medium mb-1">{filling.name}</div>
+                                                <div className="text-[16px] text-black line-clamp-2">{filling.description}</div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Product Features */}
+                        <div className="bg-gray-50 p-4 rounded-xl">
+                            <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-3">პროდუქტის მახასიათებლები</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[14px] md:text-[16px]">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-black">✓</span>
+                                    <span>მაღალი ხარისხის ინგრედიენტები</span>
+                                </div>
+
+                                <div className="flex items-center gap-2">
+                                    <span className="text-black">✓</span>
+                                    <span>უფასო მიწოდება ბათუმში</span>
+                                </div>
+
+                            </div>
                         </div>
 
                         {/* Quantity Selector */}
                         <div className="space-y-4">
-                            <div className="flex items-center justify-between">
-                                <label className="text-black font-medium md:text-[20px] text-[16px]">რაოდენობა:</label>
-                                <div className="flex items-center rounded-lg">
-                                    <button
-                                        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                        className="p-2 md:p-3 cursor-pointer bg-pink-100 rounded-full transition-colors"
-                                    >
-                                        <Minus className="w-5 h-5 text-pink-600 md:w-6 md:h-6" />
-                                    </button>
-                                    <span className="text-base md:text-lg lg:text-xl font-bold text-black min-w-[2.5rem] md:min-w-[3rem] text-center">
-                                        {quantity}
-                                    </span>
-                                    <button
-                                        onClick={() => setQuantity(quantity + 1)}
-                                        className="p-2 md:p-3 cursor-pointer rounded-full bg-pink-100 transition-colors"
-                                    >
-                                        <Plus className="w-5 h-5 text-pink-600 md:w-6 md:h-6" />
-                                    </button>
+                           
+
+                            {/* Total Price Display */}
+                            <div className="bg-pink-100 p-4 rounded-xl border border-pink-200">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[18px] font-semibold text-black">სულ:</span>
+                                    <span className="text-[24px] font-bold text-pink-600">₾{totalPrice}</span>
+                                </div>
+                                <div className="text-[16px] text-black mt-1">
+                                    {getPieceOptions().find(option => option.pieces === selectedPieces)?.label} ({getPieceOptions().find(option => option.pieces === selectedPieces)?.coverage}) × {quantity}
+                                </div>
+                                <div className="text-[15px] text-black mt-1">
+                                    {selectedTopping === 'marzipan' ? 'მარცეპანით' : selectedTopping === 'cream' ? 'კრემით' : ''}
+                                    {selectedFilling && ` • ${fillingOptions.find(f => f.id === selectedFilling)?.name}`}
                                 </div>
                             </div>
 
-                            {/* Total Price */}
-                            <div className="flex items-center justify-between py-3 border-t border-gray-200">
-                                <span className="md:text-[20px] text-[16px] font-medium text-gray-700">სულ:</span>
-                                <span className="text-2xl font-bold text-[#d90b6b]">₾{(product.price * quantity).toFixed(2)}</span>
-                            </div>
 
                             {/* Action Buttons */}
                             <div className="space-y-3">
-                                <Link href={`/order/${product.id}`} className="w-full cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                                   შეუკვეთე ახლა
-                                </Link>
+                                {product.isCustomizable ? (
+                                    <div className="space-y-2">
+                                        <button 
+                                            onClick={async () => {
+                                                // Store customization data in sessionStorage
+                                                const customizationData = {
+                                                    cakeId: product.id,
+                                                    price: totalPrice,
+                                                    pieces: selectedPieces,
+                                                    topping: selectedTopping,
+                                                    filling: selectedFilling
+                                                };
+                                                
+                                                sessionStorage.setItem(`customization_${product.id}`, JSON.stringify(customizationData));
+                                                
+                                                // Navigate to order page without URL parameters
+                                                window.location.href = `/order/${product.id}`;
+                                            }}
+                                            className="w-full cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block"
+                                        >
+                                            შეუკვეთე ახლა
+                                        </button>
 
+                                    </div>
+                                ) : (
+                                    <Link href={`/order/${product.id}`} className="w-full cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block">
+                                        შეუკვეთე ახლა
+                                    </Link>
+                                )}
                             </div>
                         </div>
-
 
                     </motion.div>
                 </div>
@@ -227,7 +460,7 @@ const ProductPage = () => {
                                         {relatedProduct.titleGeorgian}
                                     </h3>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-[#d90b6b] font-bold text-xl">₾{relatedProduct.price}</span>
+
                                         <Link
                                             href={`/product/${relatedProduct.id}`}
                                             className="bg-[#d90b6b] text-white px-4 py-2 rounded-lg font-bold hover:bg-pink-700 transition-colors md:text-[20px] text-[16px]"
