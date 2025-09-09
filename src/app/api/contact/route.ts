@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         imageUrl: null
       };
 
-      await sendAdminNotification(adminEmailData, false); // false = not a cake order
+      await sendAdminNotification(adminEmailData);
       
       return NextResponse.json({
         success: true,
