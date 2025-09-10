@@ -11,6 +11,11 @@ export interface OrderFormData {
   city?: string;
   notes?: string;
   totalPrice?: number;
+  
+  // Cake personalization
+  cakeName?: string;  // Name to be written on the cake
+  age?: string;       // Age to be written on the cake (e.g., "2 წლის", "18 წლის")
+  position?: string;  // Position on cake: "bottom", "center", "top"
 }
 
 export async function submitOrder(formData: OrderFormData) {

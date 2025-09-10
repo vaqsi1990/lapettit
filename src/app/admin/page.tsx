@@ -54,6 +54,9 @@ interface Order {
   items: {
     id: number;
     quantity: number;
+    cakeName?: string;
+    age?: string;
+    position?: string;
     cake: {
       id: number;
       name: string;
@@ -548,6 +551,14 @@ const AdminPage = () => {
                                 <div className="text-sm text-pink-600 mt-1">
                                   {item.cake.isCustomizable ? 'შიგთავსი არჩეულია' : 'სტანდარტული ტორტი'}
                                 </div>
+                                {(item.cakeName || item.age) && (
+                                  <div className="text-sm text-purple-600 mt-1">
+                                    <strong>პერსონალიზაცია:</strong>
+                                    {item.cakeName && ` სახელი: ${item.cakeName}`}
+                                    {item.age && `, ასაკი: ${item.age}`}
+                                    {item.position && `, პოზიცია: ${item.position === 'bottom' ? 'ქვევით' : item.position === 'center' ? 'ცენტრში' : 'ზევით'}`}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))}

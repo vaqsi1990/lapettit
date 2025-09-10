@@ -42,6 +42,9 @@ const OrderPage = () => {
   const [selectedTopping, setSelectedTopping] = useState<'marzipan' | 'cream' | null>(null);
   const [selectedFilling, setSelectedFilling] = useState<string>('');
   const [originalPrice, setOriginalPrice] = useState(0);
+  const [cakeName, setCakeName] = useState<string>('');
+  const [age, setAge] = useState<string>('');
+  const [position, setPosition] = useState<'bottom' | 'center' | 'top'>('center');
 
   // Filling options mapping
   const fillingOptions = [
@@ -131,6 +134,9 @@ const OrderPage = () => {
             setSelectedTopping(customization.topping);
             setSelectedFilling(customization.filling);
             setOriginalPrice(customization.price);
+            setCakeName(customization.cakeName || '');
+            setAge(customization.age || '');
+            setPosition(customization.position || 'center');
           }
         } catch (error) {
           console.error('Error loading customization from sessionStorage:', error);
@@ -213,7 +219,10 @@ const OrderPage = () => {
           address: orderForm.address,
           city: orderForm.city,
           notes: orderForm.notes,
-          totalPrice: totalPrice
+          totalPrice: totalPrice,
+          cakeName: cakeName,
+          age: age,
+          position: position
         };
 
         const orderResult = await submitOrder(orderData);
@@ -447,11 +456,21 @@ const OrderPage = () => {
 
                 <div>
                   <h3 className="text-lg font-semibold text-black mb-2">{cake.titleGeorgian}</h3>
-                  <div className="mt-3">
+                  <div className="mt-3 space-y-2">
                     {selectedFilling && (
                       <div className="bg-pink-50 border border-pink-200 rounded-lg p-3">
                         <p className="text-pink-800 text-sm">
                           <strong>შიგთავსი:</strong> {getFillingDisplayName(selectedFilling)}
+                        </p>
+                      </div>
+                    )}
+                    {(cakeName || age) && (
+                      <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
+                        <p className="text-purple-800 text-sm">
+                          <strong>პერსონალიზაცია:</strong>
+                          {cakeName && ` სახელი: ${cakeName}`}
+                          {age && `, ასაკი: ${age}`}
+                          {position && `, პოზიცია: ${position === 'bottom' ? 'ქვევით' : position === 'center' ? 'ცენტრში' : 'ზევით'}`}
                         </p>
                       </div>
                     )}
@@ -601,6 +620,78 @@ const OrderPage = () => {
                    />
                 </div>
 
+                {/* Cake Personalization Section */}
+                <div className="bg-gradient-to-r from-pink-50 to-purple-50 p-4 rounded-xl border border-pink-200">
+                  <h3 className="md:text-[20px] text-[18px] font-semibold text-black mb-4">ტორტის პერსონალიზაცია</h3>
+                  
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="md:text-[18px] text-[16px] block text-black font-medium mb-1">სახელი ტორტზე</label>
+                      <input
+                        type="text"
+                        value={cakeName}
+                        onChange={(e) => setCakeName(e.target.value)}
+                        disabled={orderSubmitted}
+                        className="w-full text-black placeholder:text-gray-500 px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        placeholder="შეიყვანეთ სახელი"
+                        maxLength={20}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="md:text-[18px] text-[16px] block text-black font-medium mb-1">ასაკი ტორტზე</label>
+                      <input
+                        type="text"
+                        value={age}
+                        onChange={(e) => setAge(e.target.value)}
+                        disabled={orderSubmitted}
+                        className="w-full text-black placeholder:text-gray-500 px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        placeholder="მაგ: 2 წლის, 18 წლის"
+                        maxLength={15}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <label className="md:text-[18px] text-[16px] block text-black font-medium mb-2">პოზიცია ტორტზე</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setPosition('bottom')}
+                        disabled={orderSubmitted}
+                        className={`p-3 rounded-lg border-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${position === 'bottom'
+                                ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                : 'border-gray-200 bg-white hover:border-pink-300'
+                            }`}
+                      >
+                        <div className="text-[16px] font-medium">ქვევით</div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPosition('center')}
+                        disabled={orderSubmitted}
+                        className={`p-3 rounded-lg border-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${position === 'center'
+                                ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                : 'border-gray-200 bg-white hover:border-pink-300'
+                            }`}
+                      >
+                        <div className="text-[16px] font-medium">ცენტრში</div>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPosition('top')}
+                        disabled={orderSubmitted}
+                        className={`p-3 rounded-lg border-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${position === 'top'
+                                ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                : 'border-gray-200 bg-white hover:border-pink-300'
+                            }`}
+                      >
+                        <div className="text-[16px] font-medium">ზევით</div>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
                                  {!otpSent ? (
                    <button
                      type="submit"
@@ -739,6 +830,9 @@ const OrderPage = () => {
                         city: '',
                         notes: ''
                       });
+                      setCakeName('');
+                      setAge('');
+                      setPosition('center');
                     }}
                     className="border-2 border-[#d90b6b] text-[#d90b6b] px-8 py-3 rounded-lg hover:bg-[#d90b6b] hover:text-white transition-colors font-semibold"
                   >
@@ -819,6 +913,9 @@ const OrderPage = () => {
                         city: '',
                         notes: ''
                       });
+                      setCakeName('');
+                      setAge('');
+                      setPosition('center');
                     }}
                     className="border-2 border-[#d90b6b] text-[#d90b6b] px-8 py-3 rounded-lg hover:bg-[#d90b6b] hover:text-white transition-colors font-semibold"
                   >

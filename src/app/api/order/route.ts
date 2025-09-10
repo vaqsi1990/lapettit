@@ -17,7 +17,10 @@ export async function POST(request: NextRequest) {
       address,
       city,
       notes,
-      totalPrice
+      totalPrice,
+      cakeName,
+      age,
+      position
     } = body;
 
     // Validate required fields
@@ -59,7 +62,10 @@ export async function POST(request: NextRequest) {
       data: {
         orderId: order.id,
         cakeId: cakeId,
-        quantity: quantity
+        quantity: quantity,
+        cakeName: cakeName || null,
+        age: age || null,
+        position: position || null
       }
     });
 
@@ -80,7 +86,12 @@ export async function POST(request: NextRequest) {
           month: 'long',
           day: 'numeric'
         }),
-        notes: notes
+        notes: notes,
+        cakePersonalization: {
+          name: cakeName,
+          age: age,
+          position: position
+        }
       };
 
       await sendAdminNotification(adminEmailData);

@@ -109,6 +109,11 @@ export const emailTemplates = {
     quantity: number;
     totalPrice: number;
     orderDate: string;
+    cakePersonalization?: {
+      name?: string;
+      age?: string;
+      position?: string;
+    };
   }) => ({
     subject: `New Order #${orderData.orderId} - ${orderData.cakeName}`,
     html: `
@@ -152,6 +157,14 @@ export const emailTemplates = {
               <h3> პროდუქტის დეტალები</h3>
               <p><strong>პროდუქტის სახელი:</strong> ${orderData.cakeName}</p>
               <p><strong>რაოდენობა:</strong> ${orderData.quantity}</p>
+              ${orderData.cakePersonalization && (orderData.cakePersonalization.name || orderData.cakePersonalization.age) ? `
+                <div style="background: #f0f0ff; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #8b5cf6;">
+                  <h4 style="color: #8b5cf6; margin: 0 0 10px 0;">ტორტის პერსონალიზაცია</h4>
+                  ${orderData.cakePersonalization.name ? `<p><strong>სახელი ტორტზე:</strong> ${orderData.cakePersonalization.name}</p>` : ''}
+                  ${orderData.cakePersonalization.age ? `<p><strong>ასაკი ტორტზე:</strong> ${orderData.cakePersonalization.age}</p>` : ''}
+                  ${orderData.cakePersonalization.position ? `<p><strong>პოზიცია:</strong> ${orderData.cakePersonalization.position === 'bottom' ? 'ქვევით' : orderData.cakePersonalization.position === 'center' ? 'ცენტრში' : 'ზევით'}</p>` : ''}
+                </div>
+              ` : ''}
             </div>
             
             <div class="order-details">
@@ -270,6 +283,11 @@ type RegularOrderData = {
   quantity: number;
   totalPrice: number;
   orderDate: string;
+  cakePersonalization?: {
+    name?: string;
+    age?: string;
+    position?: string;
+  };
 };
 
 type ContactFormData = {

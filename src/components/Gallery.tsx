@@ -67,10 +67,10 @@ const Gallery = () => {
     }
   };
 
-  // Filter images based on selected category and limit to 6 items
+  // Filter images based on selected category and limit to 4 items
   const filteredImages = galleryImages
     .filter(img => img.category === selectedCategory)
-    .slice(0, 6);
+    .slice(0, 4);
 
   const openLightbox = (image: GalleryImage) => {
     setSelectedImage(image);
@@ -132,7 +132,7 @@ const Gallery = () => {
                       : 'text-black hover:bg-white/50'
                     }`}
                 >
-                  {category.nameGeorgian} ({category.count})
+                  {category.nameGeorgian} 
                 </button>
               ))}
             </div>
@@ -140,13 +140,17 @@ const Gallery = () => {
         </motion.div>
 
         {/* Gallery Grid */}
-        <div className="columns-1 sm:columns-2 md:columns-4 gap-6 space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <AnimatePresence mode="wait">
             {filteredImages.map((image, index) => (
               <motion.div
                 key={image.id}
-                className="break-inside-avoid group cursor-pointer mb-6"
+                className="group cursor-pointer"
                 onClick={() => openLightbox(image)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
               >
                 <motion.div className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02] h-full">
                   <div className="relative w-full aspect-[4/5] overflow-hidden">
@@ -195,14 +199,12 @@ const Gallery = () => {
 
                   <div className="space-y-3">
                     <Link 
-                      href={`/order/${selectedImage.id}`}
+                      href={`/product/${selectedImage.id}`}
                       className="w-full bg-[#d90b6b] text-white py-3 px-4 rounded-lg md:text-[20px] text-[18px] font-semibold hover:bg-pink-700 transition-all duration-300 text-center block"
                     >
-                      შეუკვეთე ახლა
+                     დეტალების ნახვა
                     </Link>
-                    <Link href={`/product/${selectedImage.id}`} className="w-full border border-gray-300 text-black py-3 md:text-[20px] text-[18px] px-4 rounded-lg font-medium hover:bg-gray-50 transition-all duration-300 block text-center">
-                      დეტალების ნახვა
-                    </Link>
+                    
                   </div>
                 </div>
               </div>

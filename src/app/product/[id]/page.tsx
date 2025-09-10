@@ -19,7 +19,9 @@ const ProductPage = () => {
     const [totalPrice, setTotalPrice] = useState(100);
     const [selectedTopping, setSelectedTopping] = useState<'marzipan' | 'cream' | null>(null);
     const [selectedFilling, setSelectedFilling] = useState<string>('');
-   
+    const [cakeName, setCakeName] = useState<string>('');
+    const [age, setAge] = useState<string>('');
+    const [position, setPosition] = useState<'bottom' | 'center' | 'top'>('center');
 
     const [loading, setLoading] = useState(true);
     const [selectedImage] = useState(0);
@@ -117,7 +119,10 @@ const ProductPage = () => {
                 price: totalPrice,
                 pieces: selectedPieces,
                 topping: selectedTopping,
-                filling: selectedFilling
+                filling: selectedFilling,
+                cakeName: cakeName,
+                age: age,
+                position: position
             };
 
             const response = await fetch('/api/customization', {
@@ -349,6 +354,71 @@ const ProductPage = () => {
                             </div>
                         )}
 
+                        {/* Cake Personalization */}
+                        <div className="">
+                            <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4">ტორტის პერსონალიზაცია</h3>
+                            
+                            {/* Name Input */}
+                            <div className="space-y-2">
+                                <label className="text-[18px] font-medium text-black">სახელი ტორტზე:</label>
+                                <input
+                                    type="text"
+                                    value={cakeName}
+                                    onChange={(e) => setCakeName(e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors text-black placeholder:text-gray-500"
+                                    placeholder="შეიყვანეთ სახელი"
+                                    maxLength={20}
+                                />
+                            </div>
+
+                            {/* Age Input */}
+                            <div className="space-y-2">
+                                <label className="text-[18px] font-medium text-black">ასაკი ტორტზე:</label>
+                                <input
+                                    type="text"
+                                    value={age}
+                                    onChange={(e) => setAge(e.target.value)}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors text-black placeholder:text-gray-500"
+                                    placeholder="მაგ: 2 წლის, 18 წლის"
+                                    maxLength={15}
+                                />
+                            </div>
+
+                            {/* Position Selection */}
+                            <div className="space-y-3">
+                                <label className="text-[18px] font-medium text-black">პოზიცია ტორტზე:</label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    <button
+                                        onClick={() => setPosition('bottom')}
+                                        className={`p-3 rounded-lg border-2 transition-all duration-200 ${position === 'bottom'
+                                                ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                : 'border-gray-200 bg-white hover:border-pink-300'
+                                            }`}
+                                    >
+                                        <div className="text-[16px] font-medium">ქვევით</div>
+                                    </button>
+                                    <button
+                                        onClick={() => setPosition('center')}
+                                        className={`p-3 rounded-lg border-2 transition-all duration-200 ${position === 'center'
+                                                ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                : 'border-gray-200 bg-white hover:border-pink-300'
+                                            }`}
+                                    >
+                                        <div className="text-[16px] font-medium">ცენტრში</div>
+                                    </button>
+                                    <button
+                                        onClick={() => setPosition('top')}
+                                        className={`p-3 rounded-lg border-2 transition-all duration-200 ${position === 'top'
+                                                ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                : 'border-gray-200 bg-white hover:border-pink-300'
+                                            }`}
+                                    >
+                                        <div className="text-[16px] font-medium">ზევით</div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Product Features */}
                         <div className="bg-gray-50 p-4 rounded-xl">
                             <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-3">პროდუქტის მახასიათებლები</h3>
@@ -382,6 +452,9 @@ const ProductPage = () => {
                                 <div className="text-[15px] text-black mt-1">
                                     {selectedTopping === 'marzipan' ? 'მარცეპანით' : selectedTopping === 'cream' ? 'კრემით' : ''}
                                     {selectedFilling && ` • ${fillingOptions.find(f => f.id === selectedFilling)?.name}`}
+                                    {cakeName && ` • სახელი: ${cakeName}`}
+                                    {age && ` • ასაკი: ${age}`}
+                                    {position && ` • პოზიცია: ${position === 'bottom' ? 'ქვევით' : position === 'center' ? 'ცენტრში' : 'ზევით'}`}
                                 </div>
                             </div>
 
@@ -398,7 +471,10 @@ const ProductPage = () => {
                                                     price: totalPrice,
                                                     pieces: selectedPieces,
                                                     topping: selectedTopping,
-                                                    filling: selectedFilling
+                                                    filling: selectedFilling,
+                                                    cakeName: cakeName,
+                                                    age: age,
+                                                    position: position
                                                 };
                                                 
                                                 sessionStorage.setItem(`customization_${product.id}`, JSON.stringify(customizationData));

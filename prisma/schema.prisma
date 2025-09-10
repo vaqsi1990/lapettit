@@ -79,4 +79,9 @@ model OrderItem {
   cake     Cake  @relation(fields: [cakeId], references: [id])
   cakeId   Int
   quantity Int   @default(1)
+  
+  // Custom cake personalization
+  cakeName String?  // Name to be written on the cake
+  age      String?  // Age to be written on the cake (e.g., "2 წლის", "18 წლის")
+  position String?  // Position on cake: "bottom", "center", "top"
 }
