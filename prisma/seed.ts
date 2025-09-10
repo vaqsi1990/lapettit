@@ -283,19 +283,32 @@ const cakes = [
     isCustomizable: true,
     available: true
   },
-  // {
-  //   name: "დაბადებისდღის ტორტი",
+  {
+    name: "დაბადებისდღის ტორტი",
 
-  //   imageUrl: "/cakes/23.jpeg",
-  //   category: CakeCategory.BIRTHDAY,
-  //   pieces: 8,
-  //   hasCream: false,
-   
-  //   hasMarzipan: true,
-  //   marzipanPrice: 100.0,
-  //   isCustomizable: false,
-  //   available: true
-  // },
+    imageUrl: "/cakes/23.jpeg",
+    category: CakeCategory.BIRTHDAY,
+    pieces: 8,
+    hasCream: true,
+    creamPrice: 90.0,
+    hasMarzipan: true,
+    marzipanPrice: 100.0,
+    isCustomizable: true,
+    available: true
+  },
+  // Non-customizable cakes with standard prices
+  {
+    name: "მარწყვის ტორტი",
+    imageUrl: "/cakes/24.jpeg",
+    category: CakeCategory.BIRTHDAY,
+    pieces:10,
+    price: 50.0,
+    isCustomizable: false,
+    available: true,
+    fillings: [" კრემი"]
+  },
+ 
+ 
 ]
 
 async function main() {

@@ -27,6 +27,9 @@ model Cake {
   // კონფიგურაცია
   isCustomizable Boolean    @default(false)  // შეიძლება თუ არა რედაქტირება
 
+  // ფასი
+  price         Float?      // სტანდარტული ფასი (მხოლოდ isCustomizable: false-ისთვის)
+
   // შიგთავსი და შემადგენლობა
   fillings      String[]    // შიგთავსი (მაგ: ["კრემი", "ჯემი"])
   hasMarzipan   Boolean     @default(false)

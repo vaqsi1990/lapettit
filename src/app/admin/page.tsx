@@ -38,6 +38,7 @@ interface Cake {
   fillings: string[];
   isCustomizable: boolean;
   available: boolean;
+  price?: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -551,7 +552,7 @@ const AdminPage = () => {
                                 <div className="text-sm text-pink-600 mt-1">
                                   {item.cake.isCustomizable ? 'შიგთავსი არჩეულია' : 'სტანდარტული ტორტი'}
                                 </div>
-                                {(item.cakeName || item.age) && (
+                                {item.cake.isCustomizable && (item.cakeName || item.age) && (
                                   <div className="text-sm text-purple-600 mt-1">
                                     <strong>პერსონალიზაცია:</strong>
                                     {item.cakeName && ` სახელი: ${item.cakeName}`}
@@ -666,7 +667,8 @@ const AdminPage = () => {
                         {cake.hasCream && <span className="ml-2">• კრემი</span>}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {cake.marzipanPrice && <span>მარცეპანი: ₾{cake.marzipanPrice}</span>}
+                        {cake.price && <span className="font-bold text-[#d90b6b]">ფასი: ₾{cake.price}</span>}
+                        {cake.marzipanPrice && <span className="ml-2">მარცეპანი: ₾{cake.marzipanPrice}</span>}
                         {cake.creamPrice && <span className="ml-2">კრემი: ₾{cake.creamPrice}</span>}
                       </div>
                       <div className="flex justify-between items-center mt-4">

@@ -17,6 +17,7 @@ export interface GalleryImage {
   marzipanPrice?: number;
   hasCream?: boolean;
   creamPrice?: number;
+  price?: number; // Standard price for non-customizable cakes
 }
 
 export interface Category {
@@ -54,7 +55,8 @@ export function mapCakeToGalleryImage(cake: Cake): GalleryImage {
     hasMarzipan: cake.hasMarzipan,
     marzipanPrice: cake.marzipanPrice ?? undefined,
     hasCream: cake.hasCream,
-    creamPrice: cake.creamPrice ?? undefined
+    creamPrice: cake.creamPrice ?? undefined,
+    price: cake.price ?? undefined
   };
 }
 

@@ -127,6 +127,8 @@ const OrderPage = () => {
         try {
           // Load from sessionStorage using cake ID
           const sessionData = sessionStorage.getItem(`customization_${cake.id}`);
+          const cakeData = sessionStorage.getItem(`cake_${cake.id}`);
+          
           if (sessionData) {
             const customization = JSON.parse(sessionData);
             setTotalPrice(customization.price);
@@ -134,9 +136,15 @@ const OrderPage = () => {
             setSelectedTopping(customization.topping);
             setSelectedFilling(customization.filling);
             setOriginalPrice(customization.price);
-            setCakeName(customization.cakeName || '');
-            setAge(customization.age || '');
-            setPosition(customization.position || 'center');
+            if (cake.isCustomizable) {
+              setCakeName(customization.cakeName || '');
+              setAge(customization.age || '');
+              setPosition(customization.position || 'center');
+            }
+          } else if (cakeData) {
+            const standardCake = JSON.parse(cakeData);
+            setTotalPrice(standardCake.price);
+            setOriginalPrice(standardCake.price);
           }
         } catch (error) {
           console.error('Error loading customization from sessionStorage:', error);
@@ -220,9 +228,9 @@ const OrderPage = () => {
           city: orderForm.city,
           notes: orderForm.notes,
           totalPrice: totalPrice,
-          cakeName: cakeName,
-          age: age,
-          position: position
+          cakeName: cake.isCustomizable ? cakeName : undefined,
+          age: cake.isCustomizable ? age : undefined,
+          position: cake.isCustomizable ? position : undefined
         };
 
         const orderResult = await submitOrder(orderData);
@@ -464,7 +472,7 @@ const OrderPage = () => {
                         </p>
                       </div>
                     )}
-                    {(cakeName || age) && (
+                    {cake.isCustomizable && (cakeName || age) && (
                       <div className="bg-purple-50 border border-purple-200 rounded-lg p-3">
                         <p className="text-purple-800 text-sm">
                           <strong>პერსონალიზაცია:</strong>
@@ -505,11 +513,7 @@ const OrderPage = () => {
                     <span className="md:text-[20px] text-[18px] block text-black font-medium mb-1">ფასი:</span>
                     <div className="text-right">
                       <span className="text-2xl font-bold text-[#d90b6b]">₾{totalPrice.toFixed(2)}</span>
-                      <div className="text-[16px] text-gray-500 mt-1">
-                        {selectedPieces} ნაჭრიანი ტორტი
-                        {selectedTopping && ` • ${selectedTopping === 'marzipan' ? 'მარცეპანით' : 'კრემით'}`}
-                        {selectedFilling && ` • ${getFillingDisplayName(selectedFilling)}`}
-                      </div>
+                      
                     </div>
                   </div>
                 </div>
@@ -620,7 +624,8 @@ const OrderPage = () => {
                    />
                 </div>
 
-                {/* Cake Personalization Section */}
+                {/* Cake Personalization Section - Only for customizable cakes */}
+                {cake.isCustomizable && (
                 <div className="bg-gradient-to-r from-pink-50 to-purple-50 p-4 rounded-xl border border-pink-200">
                   <h3 className="md:text-[20px] text-[18px] font-semibold text-black mb-4">ტორტის პერსონალიზაცია</h3>
                   
@@ -691,6 +696,7 @@ const OrderPage = () => {
                     </div>
                   </div>
                 </div>
+                )}
 
                                  {!otpSent ? (
                    <button
@@ -830,9 +836,11 @@ const OrderPage = () => {
                         city: '',
                         notes: ''
                       });
-                      setCakeName('');
-                      setAge('');
-                      setPosition('center');
+                      if (cake.isCustomizable) {
+                        setCakeName('');
+                        setAge('');
+                        setPosition('center');
+                      }
                     }}
                     className="border-2 border-[#d90b6b] text-[#d90b6b] px-8 py-3 rounded-lg hover:bg-[#d90b6b] hover:text-white transition-colors font-semibold"
                   >
@@ -913,9 +921,11 @@ const OrderPage = () => {
                         city: '',
                         notes: ''
                       });
-                      setCakeName('');
-                      setAge('');
-                      setPosition('center');
+                      if (cake.isCustomizable) {
+                        setCakeName('');
+                        setAge('');
+                        setPosition('center');
+                      }
                     }}
                     className="border-2 border-[#d90b6b] text-[#d90b6b] px-8 py-3 rounded-lg hover:bg-[#d90b6b] hover:text-white transition-colors font-semibold"
                   >

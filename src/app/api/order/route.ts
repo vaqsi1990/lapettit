@@ -63,9 +63,9 @@ export async function POST(request: NextRequest) {
         orderId: order.id,
         cakeId: cakeId,
         quantity: quantity,
-        cakeName: cakeName || null,
-        age: age || null,
-        position: position || null
+        cakeName: cake.isCustomizable ? (cakeName || null) : null,
+        age: cake.isCustomizable ? (age || null) : null,
+        position: cake.isCustomizable ? (position || null) : null
       }
     });
 
@@ -87,11 +87,11 @@ export async function POST(request: NextRequest) {
           day: 'numeric'
         }),
         notes: notes,
-        cakePersonalization: {
+        cakePersonalization: cake.isCustomizable ? {
           name: cakeName,
           age: age,
           position: position
-        }
+        } : undefined
       };
 
       await sendAdminNotification(adminEmailData);

@@ -101,11 +101,20 @@ const ProductPage = () => {
 
     // Update total price when pieces, quantity, or topping changes
     useEffect(() => {
-        const pieceOptions = getPieceOptions();
-        const selectedOption = pieceOptions.find(option => option.pieces === selectedPieces);
-        if (selectedOption) {
-            // Base price already includes marzipan or cream, no additional cost
-            setTotalPrice(selectedOption.price * quantity);
+        if (product) {
+            if (product.isCustomizable) {
+                // For customizable cakes, use the piece-based pricing
+                const pieceOptions = getPieceOptions();
+                const selectedOption = pieceOptions.find(option => option.pieces === selectedPieces);
+                if (selectedOption) {
+                    setTotalPrice(selectedOption.price * quantity);
+                }
+            } else {
+                // For non-customizable cakes, use the standard price
+                if (product.price) {
+                    setTotalPrice(product.price * quantity);
+                }
+            }
         }
     }, [selectedPieces, quantity, selectedTopping, product]);
 
@@ -304,6 +313,15 @@ const ProductPage = () => {
 
 
 
+                        {/* Standard Price Display for Non-Customizable Cakes */}
+                        {!product.isCustomizable && product.price && (
+                            <div className="">
+                                <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4">სტანდარტული ფასი: ₾{product.price}</h3>
+                            
+                               
+                            </div>
+                        )}
+
                         {/* Customization Options */}
                         {product.isCustomizable && (
                             <div className=" p-4 rounded-xl ">
@@ -354,70 +372,72 @@ const ProductPage = () => {
                             </div>
                         )}
 
-                        {/* Cake Personalization */}
-                        <div className="">
-                            <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4">ტორტის პერსონალიზაცია</h3>
-                            
-                            {/* Name Input */}
-                            <div className="space-y-2">
-                                <label className="text-[18px] font-medium text-black">სახელი ტორტზე:</label>
-                                <input
-                                    type="text"
-                                    value={cakeName}
-                                    onChange={(e) => setCakeName(e.target.value)}
-                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors text-black placeholder:text-gray-500"
-                                    placeholder="შეიყვანეთ სახელი"
-                                    maxLength={20}
-                                />
-                            </div>
+                        {/* Cake Personalization - Only for customizable cakes */}
+                        {product.isCustomizable && (
+                            <div className="">
+                                <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4">ტორტის პერსონალიზაცია</h3>
+                                
+                                {/* Name Input */}
+                                <div className="space-y-2">
+                                    <label className="text-[18px] font-medium text-black">სახელი ტორტზე:</label>
+                                    <input
+                                        type="text"
+                                        value={cakeName}
+                                        onChange={(e) => setCakeName(e.target.value)}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors text-black placeholder:text-gray-500"
+                                        placeholder="შეიყვანეთ სახელი"
+                                        maxLength={20}
+                                    />
+                                </div>
 
-                            {/* Age Input */}
-                            <div className="space-y-2">
-                                <label className="text-[18px] font-medium text-black">ასაკი ტორტზე:</label>
-                                <input
-                                    type="text"
-                                    value={age}
-                                    onChange={(e) => setAge(e.target.value)}
-                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors text-black placeholder:text-gray-500"
-                                    placeholder="მაგ: 2 წლის, 18 წლის"
-                                    maxLength={15}
-                                />
-                            </div>
+                                {/* Age Input */}
+                                <div className="space-y-2">
+                                    <label className="text-[18px] font-medium text-black">ასაკი ტორტზე:</label>
+                                    <input
+                                        type="text"
+                                        value={age}
+                                        onChange={(e) => setAge(e.target.value)}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors text-black placeholder:text-gray-500"
+                                        placeholder="მაგ: 2 წლის, 18 წლის"
+                                        maxLength={15}
+                                    />
+                                </div>
 
-                            {/* Position Selection */}
-                            <div className="space-y-3">
-                                <label className="text-[18px] font-medium text-black">პოზიცია ტორტზე:</label>
-                                <div className="grid grid-cols-3 gap-2">
-                                    <button
-                                        onClick={() => setPosition('bottom')}
-                                        className={`p-3 rounded-lg border-2 transition-all duration-200 ${position === 'bottom'
-                                                ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                : 'border-gray-200 bg-white hover:border-pink-300'
-                                            }`}
-                                    >
-                                        <div className="text-[16px] font-medium">ქვევით</div>
-                                    </button>
-                                    <button
-                                        onClick={() => setPosition('center')}
-                                        className={`p-3 rounded-lg border-2 transition-all duration-200 ${position === 'center'
-                                                ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                : 'border-gray-200 bg-white hover:border-pink-300'
-                                            }`}
-                                    >
-                                        <div className="text-[16px] font-medium">ცენტრში</div>
-                                    </button>
-                                    <button
-                                        onClick={() => setPosition('top')}
-                                        className={`p-3 rounded-lg border-2 transition-all duration-200 ${position === 'top'
-                                                ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                : 'border-gray-200 bg-white hover:border-pink-300'
-                                            }`}
-                                    >
-                                        <div className="text-[16px] font-medium">ზევით</div>
-                                    </button>
+                                {/* Position Selection */}
+                                <div className="space-y-3">
+                                    <label className="text-[18px] font-medium text-black">პოზიცია ტორტზე:</label>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        <button
+                                            onClick={() => setPosition('bottom')}
+                                            className={`p-3 rounded-lg border-2 transition-all duration-200 ${position === 'bottom'
+                                                    ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                    : 'border-gray-200 bg-white hover:border-pink-300'
+                                                }`}
+                                        >
+                                            <div className="text-[16px] font-medium">ქვევით</div>
+                                        </button>
+                                        <button
+                                            onClick={() => setPosition('center')}
+                                            className={`p-3 rounded-lg border-2 transition-all duration-200 ${position === 'center'
+                                                    ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                    : 'border-gray-200 bg-white hover:border-pink-300'
+                                                }`}
+                                        >
+                                            <div className="text-[16px] font-medium">ცენტრში</div>
+                                        </button>
+                                        <button
+                                            onClick={() => setPosition('top')}
+                                            className={`p-3 rounded-lg border-2 transition-all duration-200 ${position === 'top'
+                                                    ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                    : 'border-gray-200 bg-white hover:border-pink-300'
+                                                }`}
+                                        >
+                                            <div className="text-[16px] font-medium">ზევით</div>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Product Features */}
                         <div className="bg-gray-50 p-4 rounded-xl">
@@ -447,14 +467,26 @@ const ProductPage = () => {
                                     <span className="text-[24px] font-bold text-pink-600">₾{totalPrice}</span>
                                 </div>
                                 <div className="text-[16px] text-black mt-1">
-                                    {getPieceOptions().find(option => option.pieces === selectedPieces)?.label} ({getPieceOptions().find(option => option.pieces === selectedPieces)?.coverage}) × {quantity}
+                                    {product.isCustomizable ? (
+                                        <>
+                                            {getPieceOptions().find(option => option.pieces === selectedPieces)?.label} ({getPieceOptions().find(option => option.pieces === selectedPieces)?.coverage}) × {quantity}
+                                        </>
+                                    ) : (
+                                        <span>რაოდენობა: {quantity}</span>
+                                    )}
                                 </div>
                                 <div className="text-[15px] text-black mt-1">
-                                    {selectedTopping === 'marzipan' ? 'მარცეპანით' : selectedTopping === 'cream' ? 'კრემით' : ''}
-                                    {selectedFilling && ` • ${fillingOptions.find(f => f.id === selectedFilling)?.name}`}
-                                    {cakeName && ` • სახელი: ${cakeName}`}
-                                    {age && ` • ასაკი: ${age}`}
-                                    {position && ` • პოზიცია: ${position === 'bottom' ? 'ქვევით' : position === 'center' ? 'ცენტრში' : 'ზევით'}`}
+                                    {product.isCustomizable ? (
+                                        <>
+                                            {selectedTopping === 'marzipan' ? 'მარცეპანით' : selectedTopping === 'cream' ? 'კრემით' : ''}
+                                            {selectedFilling && ` • ${fillingOptions.find(f => f.id === selectedFilling)?.name}`}
+                                            {cakeName && ` • სახელი: ${cakeName}`}
+                                            {age && ` • ასაკი: ${age}`}
+                                            {position && ` • პოზიცია: ${position === 'bottom' ? 'ქვევით' : position === 'center' ? 'ცენტრში' : 'ზევით'}`}
+                                        </>
+                                    ) : (
+                                        <span>სტანდარტული ტორტი</span>
+                                    )}
                                 </div>
                             </div>
 
@@ -482,16 +514,31 @@ const ProductPage = () => {
                                                 // Navigate to order page without URL parameters
                                                 window.location.href = `/order/${product.id}`;
                                             }}
-                                            className="w-full cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block"
+                                            className="w-full md:w-[30%] cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block"
                                         >
                                             შეუკვეთე ახლა
                                         </button>
 
                                     </div>
                                 ) : (
-                                    <Link href={`/order/${product.id}`} className="w-full cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block">
+                                    <button 
+                                        onClick={async () => {
+                                            // Store standard cake data in sessionStorage
+                                            const cakeData = {
+                                                cakeId: product.id,
+                                                price: totalPrice,
+                                                isStandard: true
+                                            };
+                                            
+                                            sessionStorage.setItem(`cake_${product.id}`, JSON.stringify(cakeData));
+                                            
+                                            // Navigate to order page
+                                            window.location.href = `/order/${product.id}`;
+                                        }}
+                                        className="w-full md:w-[30%]  cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block"
+                                    >
                                         შეუკვეთე ახლა
-                                    </Link>
+                                    </button>
                                 )}
                             </div>
                         </div>

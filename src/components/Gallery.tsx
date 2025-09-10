@@ -166,7 +166,11 @@ const Gallery = () => {
                     <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-2 line-clamp-1">
                       {image.titleGeorgian}
                     </h3>
-                   
+                    {image.price && (
+                      <div className="text-[16px] md:text-[18px] font-bold text-[#d90b6b] mt-auto">
+                        ₾{image.price}
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               </motion.div>
@@ -192,7 +196,9 @@ const Gallery = () => {
                     <div>
                       <h3 className="font-semibold text-black text-[18px] md:text-[20px]">{selectedImage.titleGeorgian}</h3>
                       <p className="text-[16px] md:text-[18px] font-bold text-pink-600 mb-2">{selectedImage.categoryGeorgian}</p>
-                   
+                      {selectedImage.price && (
+                        <p className="text-[18px] md:text-[20px] font-bold text-[#d90b6b] mb-2">₾{selectedImage.price}</p>
+                      )}
                     </div>
                   </div>
                 
