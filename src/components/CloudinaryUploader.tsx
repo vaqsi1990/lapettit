@@ -47,9 +47,9 @@ const ImageUpload = ({ onChange, value }: ImageUploadProps): React.JSX.Element =
                 <Image  
                   src={url}
                   alt={`ატვირთული სურათი ${index + 1}`}
-                  className="w-full h-32 object-cover rounded-lg border-2 border-gray-200 hover:border-pink-500 transition-colors"
+                  className="w-full h-full object-cover rounded-lg border-2 border-gray-200 hover:border-pink-500 transition-colors"
                   width={150}
-                  height={128}
+                  height={228}
                 />
                 <div className="absolute top-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
                   {index + 1}

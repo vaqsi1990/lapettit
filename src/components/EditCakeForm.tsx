@@ -26,6 +26,7 @@ interface Cake {
   fillings: string[];
   isCustomizable: boolean;
   available: boolean;
+  price?: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -41,6 +42,7 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
     name: cake.name,
     imageUrl: cake.imageUrl || '',
     category: cake.category,
+    price: cake.price?.toString() || '',
     pieces: cake.pieces?.toString() || '',
     marzipanPrice: cake.marzipanPrice?.toString() || '',
     creamPrice: cake.creamPrice?.toString() || '',
@@ -109,9 +111,10 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
          name: formData.name,
          imageUrl: formData.imageUrl,
          category: formData.category,
+         price: formData.isCustomizable ? null : (formData.price ? Math.round(parseFloat(formData.price) * 100) / 100 : null),
          pieces: formData.pieces ? parseInt(formData.pieces) : null,
-         marzipanPrice: formData.marzipanPrice ? parseFloat(formData.marzipanPrice) : null,
-         creamPrice: formData.creamPrice ? parseFloat(formData.creamPrice) : null,
+         marzipanPrice: formData.hasMarzipan && formData.marzipanPrice ? Math.round(parseFloat(formData.marzipanPrice) * 100) / 100 : null,
+         creamPrice: formData.hasCream && formData.creamPrice ? Math.round(parseFloat(formData.creamPrice) * 100) / 100 : null,
          hasMarzipan: formData.hasMarzipan,
          hasCream: formData.hasCream,
          fillings: formData.fillings,
@@ -149,24 +152,6 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            ნაჭრების რაოდენობა
-          </label>
-          <input
-            type="number"
-            name="pieces"
-            value={formData.pieces}
-            onChange={handleInputChange}
-            min="1"
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-            placeholder="მაგ: 8"
-          />
-        </div>
-      </div>
-
-      {/* Category and Pricing */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
             კატეგორია *
           </label>
           <select
@@ -183,43 +168,80 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
             <option value={CakeCategory.Desserts}>დესერტები</option>
           </select>
         </div>
+      </div>
 
+      {/* Cake Type Selection */}
+      <div className="bg-gray-50 p-6 rounded-xl">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">ტორტის ტიპი</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-center space-x-3">
+            <input
+              type="radio"
+              name="isCustomizable"
+              value="false"
+              checked={!formData.isCustomizable}
+              onChange={(e) => setFormData(prev => ({ ...prev, isCustomizable: false }))}
+              className="w-5 h-5 text-pink-600 border-gray-300 focus:ring-pink-500"
+            />
+            <label className="text-sm font-medium text-gray-700">
+              სტანდარტული ტორტი (ფიქსირებული ფასი)
+            </label>
+          </div>
+          <div className="flex items-center space-x-3">
+            <input
+              type="radio"
+              name="isCustomizable"
+              value="true"
+              checked={formData.isCustomizable}
+              onChange={(e) => setFormData(prev => ({ ...prev, isCustomizable: true }))}
+              className="w-5 h-5 text-pink-600 border-gray-300 focus:ring-pink-500"
+            />
+            <label className="text-sm font-medium text-gray-700">
+              კასტომიზებადი ტორტი (ფასი კონფიგურაციის მიხედვით)
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Price Field - Only for non-customizable cakes */}
+      {!formData.isCustomizable && (
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            მარცეპანის ფასი (₾)
+            ფასი (₾) *
           </label>
           <input
             type="number"
-            name="marzipanPrice"
-            value={formData.marzipanPrice}
+            name="price"
+            value={formData.price}
             onChange={handleInputChange}
+            required={!formData.isCustomizable}
             step="0.01"
             min="0"
             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
             placeholder="მაგ: 45.99"
           />
         </div>
+      )}
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            კრემის ფასი (₾)
-          </label>
-          <input
-            type="number"
-            name="creamPrice"
-            value={formData.creamPrice}
-            onChange={handleInputChange}
-            step="0.01"
-            min="0"
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-            placeholder="მაგ: 35.99"
-          />
-        </div>
+      {/* Pieces Field */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          ნაჭრები
+        </label>
+        <input
+          type="number"
+          name="pieces"
+          value={formData.pieces}
+          onChange={handleInputChange}
+          min="1"
+          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+          placeholder="მაგ: 8, 12, 16"
+        />
       </div>
 
-      {/* Topping Options */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="flex items-center space-x-3">
+      {/* Marzipan Options */}
+      <div className="bg-gray-50 p-6 rounded-xl">
+        <div className="flex items-center space-x-3 mb-4">
           <input
             type="checkbox"
             name="hasMarzipan"
@@ -228,11 +250,31 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
             className="w-5 h-5 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
           />
           <label className="text-sm font-medium text-gray-700">
-            მარცეპანი
+            მარცეპანი ხელმისაწვდომია
           </label>
         </div>
+        {formData.hasMarzipan && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              მარცეპანის ფასი (₾)
+            </label>
+            <input
+              type="number"
+              name="marzipanPrice"
+              value={formData.marzipanPrice}
+              onChange={handleInputChange}
+              step="0.01"
+              min="0"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+              placeholder="მაგ: 15.00"
+            />
+          </div>
+        )}
+      </div>
 
-        <div className="flex items-center space-x-3">
+      {/* Cream Options */}
+      <div className="bg-gray-50 p-6 rounded-xl">
+        <div className="flex items-center space-x-3 mb-4">
           <input
             type="checkbox"
             name="hasCream"
@@ -241,10 +283,28 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
             className="w-5 h-5 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
           />
           <label className="text-sm font-medium text-gray-700">
-            კრემი
+            კრემი ხელმისაწვდომია
           </label>
         </div>
+        {formData.hasCream && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              კრემის ფასი (₾)
+            </label>
+            <input
+              type="number"
+              name="creamPrice"
+              value={formData.creamPrice}
+              onChange={handleInputChange}
+              step="0.01"
+              min="0"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+              placeholder="მაგ: 10.00"
+            />
+          </div>
+        )}
       </div>
+
 
       {/* Fillings */}
       <div>
@@ -357,3 +417,4 @@ const EditCakeForm: React.FC<EditCakeFormProps> = ({ cake, onUpdate, onCancel })
 };
 
 export default EditCakeForm;
+

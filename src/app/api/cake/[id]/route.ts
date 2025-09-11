@@ -21,23 +21,31 @@ export async function PUT(
     
     const {
       name,
-      description,
-      price,
       category,
-      servings,
-      weightKg,
-      flavors,
+      price,
       fillings,
       isCustomizable,
       available,
       imageUrl,
-  
+      pieces,
+      hasMarzipan,
+      marzipanPrice,
+      hasCream,
+      creamPrice,
     } = body;
 
     // Validate required fields
-    if (!name || !description || !price || !category || !imageUrl) {
+    if (!name || !category || !imageUrl) {
       return NextResponse.json(
         { success: false, error: 'ყველა სავალდებულო ველი უნდა იყოს შევსებული' },
+        { status: 400 }
+      );
+    }
+
+    // Validate price for non-customizable cakes
+    if (!isCustomizable && (!price || price <= 0)) {
+      return NextResponse.json(
+        { success: false, error: 'სტანდარტული ტორტისთვის ფასი სავალდებულოა' },
         { status: 400 }
       );
     }
@@ -67,18 +75,17 @@ export async function PUT(
       where: { id: cakeId },
       data: {
         name,
-      
-        
-      
         category,
-    
-     
-       
+        price: isCustomizable ? null : (price ? Math.round(price * 100) / 100 : null),
         fillings: fillings || [],
-        isCustomizable: isCustomizable !== undefined ? isCustomizable : true,
+        isCustomizable: isCustomizable !== undefined ? isCustomizable : false,
         available: available !== undefined ? available : true,
         imageUrl: imageUrl,
-
+        pieces: pieces ? parseInt(pieces) : null,
+        hasMarzipan: hasMarzipan || false,
+        marzipanPrice: hasMarzipan && marzipanPrice ? Math.round(parseFloat(marzipanPrice) * 100) / 100 : null,
+        hasCream: hasCream || false,
+        creamPrice: hasCream && creamPrice ? Math.round(parseFloat(creamPrice) * 100) / 100 : null,
       }
     });
 

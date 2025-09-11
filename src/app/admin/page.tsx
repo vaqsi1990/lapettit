@@ -20,6 +20,7 @@ import {
   Mail
 } from 'lucide-react';
 import { getCakes, getOrders, deleteCake, deleteOrder } from '@/lib/action';
+import { formatPrice } from '@/lib/utils';
 
 import AddCakeForm from '@/components/AddCakeForm';
 
@@ -364,7 +365,7 @@ const AdminPage = () => {
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { title: 'საერთო შემოსავალი', value: `₾${totalRevenue.toFixed(2)}`, icon: DollarSign, color: 'bg-green-500' },
+                { title: 'საერთო შემოსავალი', value: formatPrice(totalRevenue), icon: DollarSign, color: 'bg-green-500' },
                 { title: 'მიმდინარე შეკვეთები', value: pendingOrders.toString(), icon: ShoppingCart, color: 'bg-yellow-500' },
                 { title: 'სულ ტორტები', value: cakes.length.toString(), icon: Package, color: 'bg-pink-500' },
                 { title: 'სულ კლიენტები', value: totalCustomers.toString(), icon: Users, color: 'bg-blue-500' }
@@ -405,7 +406,7 @@ const AdminPage = () => {
                       </div>
                     </div>
                                          <div className="text-right">
-                       <p className="font-bold text-[#d90b6b]">₾{order.total}</p>
+                       <p className="font-bold text-[#d90b6b]">{formatPrice(order.total)}</p>
                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                          {getStatusText(order.status)}
                        </span>
@@ -542,7 +543,7 @@ const AdminPage = () => {
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-lg font-bold text-[#d90b6b]">₾{order.total.toFixed(2)}</div>
+                                <div className="text-lg font-bold text-[#d90b6b]">{formatPrice(order.total)}</div>
                                 <div className="md:text-[18px] text-[16px] text-black">რაოდენობა: {item.quantity}</div>
                                 <div className="text-sm text-gray-500">
                                   {item.cake.pieces && `${item.cake.pieces} ნაჭერი`}
@@ -667,9 +668,9 @@ const AdminPage = () => {
                         {cake.hasCream && <span className="ml-2">• კრემი</span>}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {cake.price && <span className="font-bold text-[#d90b6b]">ფასი: ₾{cake.price}</span>}
-                        {cake.marzipanPrice && <span className="ml-2">მარცეპანი: ₾{cake.marzipanPrice}</span>}
-                        {cake.creamPrice && <span className="ml-2">კრემი: ₾{cake.creamPrice}</span>}
+                        {cake.price && <span className="font-bold text-[#d90b6b]">ფასი: {formatPrice(cake.price)}</span>}
+                        {cake.marzipanPrice && <span className="ml-2">მარცეპანი: {formatPrice(cake.marzipanPrice)}</span>}
+                        {cake.creamPrice && <span className="ml-2">კრემი: {formatPrice(cake.creamPrice)}</span>}
                       </div>
                       <div className="flex justify-between items-center mt-4">
                         <div className="text-xs text-gray-400">
@@ -778,13 +779,13 @@ const AdminPage = () => {
                 },
                 { 
                   title: 'საშუალო შეკვეთა', 
-                  value: `₾${(orders.reduce((sum, order) => sum + order.total, 0) / orders.length || 0).toFixed(2)}`, 
+                  value: formatPrice(orders.reduce((sum, order) => sum + order.total, 0) / orders.length || 0), 
                   icon: ShoppingCart, 
                   color: 'bg-yellow-500' 
                 },
                 { 
                   title: 'საშუალო კლიენტის ღირებულება', 
-                  value: `₾${(orders.reduce((sum, order) => sum + order.total, 0) / new Set(orders.map(order => `${order.customerName}-${order.customerPhone}`)).size || 0).toFixed(2)}`, 
+                  value: formatPrice(orders.reduce((sum, order) => sum + order.total, 0) / new Set(orders.map(order => `${order.customerName}-${order.customerPhone}`)).size || 0), 
                   icon: DollarSign, 
                   color: 'bg-purple-500' 
                 }
@@ -993,7 +994,7 @@ const AdminPage = () => {
                               </div>
                               <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600">სულ:</span>
-                                <span className="font-bold text-[#d90b6b]">₾{customer.totalSpent.toFixed(2)}</span>
+                                <span className="font-bold text-[#d90b6b]">{formatPrice(customer.totalSpent)}</span>
                               </div>
                               <div className="flex items-center justify-between">
                                 <span className="text-sm text-gray-600">ბოლო:</span>

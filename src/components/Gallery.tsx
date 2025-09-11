@@ -6,7 +6,7 @@ import { motion, useTransform, AnimatePresence, useScroll } from 'framer-motion'
 import { X,  } from 'lucide-react';
 import Link from 'next/link';
 import { getCakes} from '@/lib/action';
-import { mapCakeToGalleryImage, createCategories, updateCategoryCounts, type GalleryImage, type Category } from '@/lib/utils';
+import { mapCakeToGalleryImage, createCategories, updateCategoryCounts, type GalleryImage, type Category, formatPrice } from '@/lib/utils';
 
 // Separate component for parallax effects to avoid hydration issues
 const ParallaxBackground = ({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) => {
@@ -168,7 +168,7 @@ const Gallery = () => {
                     </h3>
                     {image.price && (
                       <div className="text-[16px] md:text-[18px] font-bold text-[#d90b6b] mt-auto">
-                        ₾{image.price}
+                        {formatPrice(image.price)}
                       </div>
                     )}
                   </div>
@@ -197,7 +197,7 @@ const Gallery = () => {
                       <h3 className="font-semibold text-black text-[18px] md:text-[20px]">{selectedImage.titleGeorgian}</h3>
                       <p className="text-[16px] md:text-[18px] font-bold text-pink-600 mb-2">{selectedImage.categoryGeorgian}</p>
                       {selectedImage.price && (
-                        <p className="text-[18px] md:text-[20px] font-bold text-[#d90b6b] mb-2">₾{selectedImage.price}</p>
+                        <p className="text-[18px] md:text-[20px] font-bold text-[#d90b6b] mb-2">{formatPrice(selectedImage.price)}</p>
                       )}
                     </div>
                   </div>

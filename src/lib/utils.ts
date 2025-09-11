@@ -84,3 +84,18 @@ export function updateCategoryCounts(categories: Category[], cakes: Cake[]): Cat
     count: category.id === 'all' ? cakes.length : (counts[category.id] || 0)
   }));
 }
+
+// Utility function to properly round prices and avoid floating point errors
+export function roundPrice(price: number): number {
+  return Math.round(price * 100) / 100;
+}
+
+// Format price for display with proper rounding
+export function formatPrice(price: number): string {
+  return `₾${roundPrice(price).toFixed(2)}`;
+}
+
+// Calculate total price with proper rounding
+export function calculateTotalPrice(basePrice: number, quantity: number): number {
+  return roundPrice(basePrice * quantity);
+}

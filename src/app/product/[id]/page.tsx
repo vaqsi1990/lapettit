@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Plus, Minus, } from 'lucide-react';
 import { getCakeById, getCakes } from '@/lib/action';
-import { mapCakeToGalleryImage, type GalleryImage } from '@/lib/utils';
+import { mapCakeToGalleryImage, type GalleryImage, calculateTotalPrice, formatPrice } from '@/lib/utils';
 
 const ProductPage = () => {
     const params = useParams();
@@ -107,12 +107,12 @@ const ProductPage = () => {
                 const pieceOptions = getPieceOptions();
                 const selectedOption = pieceOptions.find(option => option.pieces === selectedPieces);
                 if (selectedOption) {
-                    setTotalPrice(selectedOption.price * quantity);
+                    setTotalPrice(calculateTotalPrice(selectedOption.price, quantity));
                 }
             } else {
                 // For non-customizable cakes, use the standard price
                 if (product.price) {
-                    setTotalPrice(product.price * quantity);
+                    setTotalPrice(calculateTotalPrice(product.price, quantity));
                 }
             }
         }
@@ -316,7 +316,7 @@ const ProductPage = () => {
                         {/* Standard Price Display for Non-Customizable Cakes */}
                         {!product.isCustomizable && product.price && (
                             <div className="">
-                                <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4">სტანდარტული ფასი: ₾{product.price}</h3>
+                                <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4">სტანდარტული ფასი: {formatPrice(product.price)}</h3>
                             
                                
                             </div>
@@ -342,7 +342,7 @@ const ProductPage = () => {
                                             >
                                                 <div className="text-[18px] font-medium">{option.label}</div>
                                                 <div className="text-[16px] text-black">{option.coverage}</div>
-                                                <div className="text-[16px] font-bold text-pink-600">₾{option.price}</div>
+                                                <div className="text-[16px] font-bold text-pink-600">{formatPrice(option.price)}</div>
                                             </button>
                                         ))}
                                     </div>
@@ -464,7 +464,7 @@ const ProductPage = () => {
                             <div className="bg-pink-100 p-4 rounded-xl border border-pink-200">
                                 <div className="flex justify-between items-center">
                                     <span className="text-[18px] font-semibold text-black">სულ:</span>
-                                    <span className="text-[24px] font-bold text-pink-600">₾{totalPrice}</span>
+                                    <span className="text-[24px] font-bold text-pink-600">{formatPrice(totalPrice)}</span>
                                 </div>
                                 <div className="text-[16px] text-black mt-1">
                                     {product.isCustomizable ? (

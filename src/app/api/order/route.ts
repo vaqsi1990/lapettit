@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const finalTotal = totalPrice || 0;
+    const finalTotal = totalPrice ? Math.round(totalPrice * 100) / 100 : 0;
 
     // Create the order
     const order = await prisma.order.create({

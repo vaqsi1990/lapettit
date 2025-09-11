@@ -20,20 +20,20 @@ interface AddCakeFormProps {
 const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
-    price: '',
     imageUrl: '',
     category: CakeCategory.BIRTHDAY,
-    servings: '',
-    weightKg: '',
-    flavors: [] as string[],
-    fillings: [] as string[],
-    isCustomizable: true,
     available: true,
+    isCustomizable: false,
+    price: '',
+    fillings: [] as string[],
+    hasMarzipan: false,
+    marzipanPrice: '',
+    hasCream: false,
+    creamPrice: '',
+    pieces: '',
     gallery: [] as string[]
   });
 
-  const [flavorInput, setFlavorInput] = useState('');
   const [fillingInput, setFillingInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showToast } = useToast();
@@ -55,22 +55,6 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
     }
   };
 
-  const addFlavor = () => {
-    if (flavorInput.trim() && !formData.flavors.includes(flavorInput.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        flavors: [...prev.flavors, flavorInput.trim()]
-      }));
-      setFlavorInput('');
-    }
-  };
-
-  const removeFlavor = (flavor: string) => {
-    setFormData(prev => ({
-      ...prev,
-      flavors: prev.flavors.filter(f => f !== flavor)
-    }));
-  };
 
   const addFilling = () => {
     if (fillingInput.trim() && !formData.fillings.includes(fillingInput.trim())) {
@@ -109,9 +93,10 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
         },
         body: JSON.stringify({
           ...formData,
-          price: parseFloat(formData.price),
-          servings: formData.servings ? parseInt(formData.servings) : null,
-          weightKg: formData.weightKg ? parseFloat(formData.weightKg) : null,
+          price: formData.isCustomizable ? null : (formData.price ? Math.round(parseFloat(formData.price) * 100) / 100 : null),
+          pieces: formData.pieces ? parseInt(formData.pieces) : null,
+          marzipanPrice: formData.hasMarzipan && formData.marzipanPrice ? Math.round(parseFloat(formData.marzipanPrice) * 100) / 100 : null,
+          creamPrice: formData.hasCream && formData.creamPrice ? Math.round(parseFloat(formData.creamPrice) * 100) / 100 : null,
         }),
       });
 
@@ -122,19 +107,19 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
         // Reset form
         setFormData({
           name: '',
-          description: '',
-          price: '',
           imageUrl: '',
           category: CakeCategory.BIRTHDAY,
-          servings: '',
-          weightKg: '',
-          flavors: [],
-          fillings: [],
-          isCustomizable: true,
           available: true,
+          isCustomizable: false,
+          price: '',
+          fillings: [],
+          hasMarzipan: false,
+          marzipanPrice: '',
+          hasCream: false,
+          creamPrice: '',
+          pieces: '',
           gallery: []
         });
-        setFlavorInput('');
         setFillingInput('');
         onCakeAdded();
       } else {
@@ -169,41 +154,6 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            ფასი (₾) *
-          </label>
-          <input
-            type="number"
-            name="price"
-            value={formData.price}
-            onChange={handleInputChange}
-            required
-            step="0.01"
-            min="0"
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-            placeholder="მაგ: 45.99"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          აღწერა *
-        </label>
-        <textarea
-          name="description"
-          value={formData.description}
-          onChange={handleInputChange}
-          required
-          rows={3}
-          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-          placeholder="ტორტის დეტალური აღწერა..."
-        />
-      </div>
-
-      {/* Category and Details */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
             კატეგორია *
           </label>
           <select
@@ -220,78 +170,75 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
             <option value={CakeCategory.Desserts}>დესერტები</option>
           </select>
         </div>
+      </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            რაოდენობა (ადამიანი)
-          </label>
-          <input
-            type="number"
-            name="servings"
-            value={formData.servings}
-            onChange={handleInputChange}
-            min="1"
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-            placeholder="მაგ: 8"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            წონა (კგ)
-          </label>
-          <input
-            type="number"
-            name="weightKg"
-            value={formData.weightKg}
-            onChange={handleInputChange}
-            step="0.1"
-            min="0"
-            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-            placeholder="მაგ: 1.5"
-          />
+      {/* Cake Type Selection */}
+      <div className="bg-gray-50 p-6 rounded-xl">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">ტორტის ტიპი</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex items-center space-x-3">
+            <input
+              type="radio"
+              name="isCustomizable"
+              value="false"
+              checked={!formData.isCustomizable}
+              onChange={(e) => setFormData(prev => ({ ...prev, isCustomizable: false }))}
+              className="w-5 h-5 text-pink-600 border-gray-300 focus:ring-pink-500"
+            />
+            <label className="text-sm font-medium text-gray-700">
+              სტანდარტული ტორტი (ფიქსირებული ფასი)
+            </label>
+          </div>
+          <div className="flex items-center space-x-3">
+            <input
+              type="radio"
+              name="isCustomizable"
+              value="true"
+              checked={formData.isCustomizable}
+              onChange={(e) => setFormData(prev => ({ ...prev, isCustomizable: true }))}
+              className="w-5 h-5 text-pink-600 border-gray-300 focus:ring-pink-500"
+            />
+            <label className="text-sm font-medium text-gray-700">
+              კასტომიზებადი ტორტი (ფასი კონფიგურაციის მიხედვით)
+            </label>
+          </div>
         </div>
       </div>
 
-      {/* Flavors */}
+      {/* Price Field - Only for non-customizable cakes */}
+      {!formData.isCustomizable && (
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            ფასი (₾) *
+          </label>
+          <input
+            type="number"
+            name="price"
+            value={formData.price}
+            onChange={handleInputChange}
+            required={!formData.isCustomizable}
+            step="0.01"
+            min="0"
+            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+            placeholder="მაგ: 45.99"
+          />
+        </div>
+      )}
+
+      {/* Pieces Field */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          გემოები
+          ნაჭრები
         </label>
-        <div className="flex gap-2 mb-3">
-          <input
-            type="text"
-            value={flavorInput}
-            onChange={(e) => setFlavorInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addFlavor())}
-            className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-            placeholder="დაამატეთ გემო (მაგ: შოკოლადი)"
-          />
-          <button
-            type="button"
-            onClick={addFlavor}
-            className="px-6 py-3 bg-pink-500 text-white rounded-xl hover:bg-pink-600 transition-colors"
-          >
-            დამატება
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {formData.flavors.map((flavor, index) => (
-            <span
-              key={index}
-              className="px-3 py-1 bg-pink-100 text-pink-800 rounded-full text-sm flex items-center gap-2"
-            >
-              {flavor}
-              <button
-                type="button"
-                onClick={() => removeFlavor(flavor)}
-                className="text-pink-600 hover:text-pink-800"
-              >
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
+        <input
+          type="number"
+          name="pieces"
+          value={formData.pieces}
+          onChange={handleInputChange}
+          min="1"
+          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+          placeholder="მაგ: 8, 12, 16"
+        />
       </div>
 
       {/* Fillings */}
@@ -335,44 +282,95 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
         </div>
       </div>
 
-      {/* Single Image Upload */}
-      <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-          სურათი *
-        </label>
-                 <ImageUpload
-           value={formData.gallery}
-           onChange={handleGalleryChange}
-         />     
+      {/* Marzipan Options */}
+      <div className="bg-gray-50 p-6 rounded-xl">
+        <div className="flex items-center space-x-3 mb-4">
+          <input
+            type="checkbox"
+            name="hasMarzipan"
+            checked={formData.hasMarzipan}
+            onChange={handleInputChange}
+            className="w-5 h-5 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+          />
+          <label className="text-sm font-medium text-gray-700">
+            მარცეპანი ხელმისაწვდომია
+          </label>
+        </div>
+        {formData.hasMarzipan && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              მარცეპანის ფასი (₾)
+            </label>
+            <input
+              type="number"
+              name="marzipanPrice"
+              value={formData.marzipanPrice}
+              onChange={handleInputChange}
+              step="0.01"
+              min="0"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+              placeholder="მაგ: 15.00"
+            />
+          </div>
+        )}
       </div>
 
-      {/* Options */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="flex items-center space-x-3">
+      {/* Cream Options */}
+      <div className="bg-gray-50 p-6 rounded-xl">
+        <div className="flex items-center space-x-3 mb-4">
           <input
             type="checkbox"
-            name="isCustomizable"
-            checked={formData.isCustomizable}
+            name="hasCream"
+            checked={formData.hasCream}
             onChange={handleInputChange}
             className="w-5 h-5 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
           />
           <label className="text-sm font-medium text-gray-700">
-            პერსონალიზაცია შეიძლება
+            კრემი ხელმისაწვდომია
           </label>
         </div>
+        {formData.hasCream && (
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              კრემის ფასი (₾)
+            </label>
+            <input
+              type="number"
+              name="creamPrice"
+              value={formData.creamPrice}
+              onChange={handleInputChange}
+              step="0.01"
+              min="0"
+              className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+              placeholder="მაგ: 10.00"
+            />
+          </div>
+        )}
+      </div>
 
-        <div className="flex items-center space-x-3">
-          <input
-            type="checkbox"
-            name="available"
-            checked={formData.available}
-            onChange={handleInputChange}
-            className="w-5 h-5 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
-          />
-          <label className="text-sm font-medium text-gray-700">
-            ხელმისაწვდომია გაყიდვაში
-          </label>
-        </div>
+      {/* Image Upload */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          სურათი *
+        </label>
+        <ImageUpload
+          value={formData.gallery}
+          onChange={handleGalleryChange}
+        />     
+      </div>
+
+      {/* Availability */}
+      <div className="flex items-center space-x-3">
+        <input
+          type="checkbox"
+          name="available"
+          checked={formData.available}
+          onChange={handleInputChange}
+          className="w-5 h-5 text-pink-600 border-gray-300 rounded focus:ring-pink-500"
+        />
+        <label className="text-sm font-medium text-gray-700">
+          ხელმისაწვდომია გაყიდვაში
+        </label>
       </div>
 
       {/* Submit Button */}

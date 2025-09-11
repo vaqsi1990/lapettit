@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useRouter } from 'next/navigation';
 import { getCakeById } from '@/lib/action';
-import { mapCakeToGalleryImage, type GalleryImage } from '@/lib/utils';
+import { mapCakeToGalleryImage, type GalleryImage, calculateTotalPrice, formatPrice } from '@/lib/utils';
 import { submitOrder, type OrderFormData } from '@/lib/orderActions';
 import { Plus, Minus, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
@@ -114,8 +114,8 @@ const OrderPage = () => {
       prices.push(marzipanBasePrice + 90, creamBasePrice + 90);
     }
 
-    const minPrice = Math.min(...prices) * quantity;
-    const maxPrice = Math.max(...prices) * quantity;
+    const minPrice = calculateTotalPrice(Math.min(...prices), quantity);
+    const maxPrice = calculateTotalPrice(Math.max(...prices), quantity);
 
     return { min: minPrice, max: maxPrice };
   };
@@ -512,7 +512,7 @@ const OrderPage = () => {
                   <div className="flex items-center justify-between py-3 border-t border-gray-200">
                     <span className="md:text-[20px] text-[18px] block text-black font-medium mb-1">ფასი:</span>
                     <div className="text-right">
-                      <span className="text-2xl font-bold text-[#d90b6b]">₾{totalPrice.toFixed(2)}</span>
+                      <span className="text-2xl font-bold text-[#d90b6b]">{formatPrice(totalPrice)}</span>
                       
                     </div>
                   </div>
