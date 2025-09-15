@@ -287,7 +287,7 @@ const AdminPage = () => {
       case 'IN_PROGRESS': return 'bg-blue-100 text-blue-800';
       case 'DELIVERED': return 'bg-green-100 text-green-800';
       case 'CANCELLED': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-black';
     }
   };
 
@@ -375,12 +375,12 @@ const AdminPage = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
+                  className="bg-white text-black placeholder:text-black rounded-2xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300"
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-sm font-medium">{stat.title}</p>
-                      <p className="text-3xl font-bold text-gray-800 mt-2">{stat.value}</p>
+                      <p className="text-black text-sm font-medium">{stat.title}</p>
+                      <p className="text-3xl font-bold text-black mt-2">{stat.value}</p>
                     </div>
                     <div className={`${stat.color} p-3 rounded-xl`}>
                       <stat.icon className="w-8 h-8 text-white" />
@@ -391,18 +391,18 @@ const AdminPage = () => {
             </div>
 
             {/* Recent Orders */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-2xl font-bold text-gray-800 mb-6">ბოლო შეკვეთები</h2>
+            <div className="bg-white text-black placeholder:text-black rounded-2xl shadow-lg p-6">
+              <h2 className="text-2xl font-bold text-black mb-6">ბოლო შეკვეთები</h2>
               <div className="space-y-4">
                 {orders.slice(0, 5).map((order) => (
-                  <div key={order.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                  <div key={order.id} className="flex items-center justify-between p-4 bg-black rounded-xl">
                     <div className="flex items-center space-x-4">
                       <div className="w-12 h-12 bg-[#d90b6b] rounded-full flex items-center justify-center">
                         <span className="text-white font-bold">{order.customerName.charAt(0)}</span>
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-800">{order.customerName}</p>
-                        <p className="text-sm text-gray-600">{order.customerPhone}</p>
+                        <p className="font-semibold text-black">{order.customerName}</p>
+                        <p className="text-sm text-black">{order.customerPhone}</p>
                       </div>
                     </div>
                                          <div className="text-right">
@@ -429,7 +429,7 @@ const AdminPage = () => {
             className="space-y-6"
           >
             {/* Search and Filter */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-white text-black placeholder:text-black rounded-2xl shadow-lg p-6">
               <div className="flex flex-col md:flex-row gap-4 items-center">
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -469,7 +469,7 @@ const AdminPage = () => {
                   key={order.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-white rounded-2xl shadow-lg overflow-hidden"
+                  className="bg-white text-black placeholder:text-black rounded-2xl shadow-lg overflow-hidden"
                 >
                   {/* Order Header */}
                   <div className="bg-white p-6 border-b border-black">
@@ -799,8 +799,8 @@ const AdminPage = () => {
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-gray-600 text-sm font-medium">{stat.title}</p>
-                      <p className="text-3xl font-bold text-gray-800 mt-2">{stat.value}</p>
+                      <p className="text-black text-sm font-medium">{stat.title}</p>
+                      <p className="text-3xl font-bold text-black mt-2">{stat.value}</p>
                     </div>
                     <div className={`${stat.color} p-3 rounded-xl`}>
                       <stat.icon className="w-8 h-8 text-white" />
@@ -838,9 +838,9 @@ const AdminPage = () => {
             </div>
 
             {/* Simple Customers List - Only Customer Information */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
+            <div className="bg-white text-black placeholder:text-black rounded-2xl shadow-lg p-6">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">კლიენტების სია</h2>
+                <h2 className="text-2xl font-bold text-black">კლიენტების სია</h2>
                 <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
                   {(() => {
                     const customerMap = new Map<string, boolean>();
@@ -860,11 +860,11 @@ const AdminPage = () => {
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-gray-200">
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">კლიენტი</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">კონტაქტი</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">მისამართი</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">სტატისტიკა</th>
-                      <th className="text-left py-3 px-4 font-semibold text-gray-700">მოქმედებები</th>
+                      <th className="text-left py-3 px-4 font-semibold text-black">კლიენტი</th>
+                      <th className="text-left py-3 px-4 font-semibold text-black">კონტაქტი</th>
+                      <th className="text-left py-3 px-4 font-semibold text-black">მისამართი</th>
+                      <th className="text-left py-3 px-4 font-semibold text-black">სტატისტიკა</th>
+                      <th className="text-left py-3 px-4 font-semibold text-black">მოქმედებები</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -950,7 +950,7 @@ const AdminPage = () => {
                                 <span className="text-white font-bold text-lg">{customer.customerName.charAt(0)}</span>
                               </div>
                               <div>
-                                <p className="font-semibold text-gray-800 text-lg">{customer.customerName}</p>
+                                <p className="font-semibold text-black text-lg">{customer.customerName}</p>
                                 <p className="text-sm text-gray-500">ID: {customer.customerPhone.slice(-4)}</p>
                               </div>
                             </div>
@@ -989,16 +989,16 @@ const AdminPage = () => {
                           <td className="py-4 px-4">
                             <div className="space-y-1">
                               <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600">შეკვეთები:</span>
-                                <span className="font-semibold text-gray-800">{customer.orders.length}</span>
+                                <span className="text-sm text-black">შეკვეთები:</span>
+                                <span className="font-semibold text-black">{customer.orders.length}</span>
                               </div>
                               <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600">სულ:</span>
+                                <span className="text-sm text-black">სულ:</span>
                                 <span className="font-bold text-[#d90b6b]">{formatPrice(customer.totalSpent)}</span>
                               </div>
                               <div className="flex items-center justify-between">
-                                <span className="text-sm text-gray-600">ბოლო:</span>
-                                <span className="text-xs text-gray-500">
+                                <span className="text-sm text-black">ბოლო:</span>
+                                <span className="text-xs text-black">
                                   {new Date(customer.lastOrder).toLocaleDateString('ka-GE', {
                                     month: 'short',
                                     day: 'numeric'

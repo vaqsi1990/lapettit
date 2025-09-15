@@ -285,9 +285,9 @@ const ProductPage = () => {
                                     {product.hasMarzipan && (
                                         <button
                                             onClick={() => setSelectedTopping('marzipan')}
-                                            className={`p-3 rounded-lg border-2 transition-all duration-200 ${selectedTopping === 'marzipan'
+                                            className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${selectedTopping === 'marzipan'
                                                     ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                    : 'border-gray-200 bg-white hover:border-pink-300'
+                                                    : 'border-gray-200 bg-white text-black hover:border-pink-300'
                                                 }`}
                                         >
                                             <div className="text-[18px] font-medium">მარცეპანი</div>
@@ -298,9 +298,9 @@ const ProductPage = () => {
                                     {product.hasCream && (
                                         <button
                                             onClick={() => setSelectedTopping('cream')}
-                                            className={`p-3 rounded-lg border-2 transition-all duration-200 ${selectedTopping === 'cream'
+                                            className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${selectedTopping === 'cream'
                                                     ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                    : 'border-gray-200 bg-white hover:border-pink-300'
+                                                    : 'border-gray-200 text-black bg-white hover:border-pink-300'
                                                 }`}
                                         >
                                             <div className="text-[18px] font-medium">კრემი</div>
@@ -335,9 +335,9 @@ const ProductPage = () => {
                                             <button
                                                 key={option.pieces}
                                                 onClick={() => setSelectedPieces(option.pieces)}
-                                                className={`p-3 rounded-lg border-2 transition-all duration-200 ${selectedPieces === option.pieces
+                                                className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${selectedPieces === option.pieces
                                                         ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                        : 'border-gray-200 bg-white hover:border-pink-300'
+                                                        : 'border-gray-200 text-black bg-white hover:border-pink-300'
                                                     }`}
                                             >
                                                 <div className="text-[18px] font-medium">{option.label}</div>
@@ -358,9 +358,9 @@ const ProductPage = () => {
                                             <button
                                                 key={filling.id}
                                                 onClick={() => setSelectedFilling(selectedFilling === filling.id ? '' : filling.id)}
-                                                className={`p-3 rounded-lg border-2 transition-all duration-200 text-left ${selectedFilling === filling.id
+                                                className={`p-3 rounded-lg text-black border-2 transition-all duration-200 text-left ${selectedFilling === filling.id
                                                         ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                        : 'border-gray-200 bg-white hover:border-pink-300'
+                                                        : 'border-gray-200 text-black bg-white hover:border-pink-300'
                                                     }`}
                                             >
                                                 <div className="text-[18px] font-medium mb-1">{filling.name}</div>
@@ -384,7 +384,7 @@ const ProductPage = () => {
                                         type="text"
                                         value={cakeName}
                                         onChange={(e) => setCakeName(e.target.value)}
-                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors text-black placeholder:text-gray-500"
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors text-black placeholder:text-black"
                                         placeholder="შეიყვანეთ სახელი"
                                         maxLength={20}
                                     />
@@ -397,7 +397,7 @@ const ProductPage = () => {
                                         type="text"
                                         value={age}
                                         onChange={(e) => setAge(e.target.value)}
-                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors text-black placeholder:text-gray-500"
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-pink-500 focus:outline-none transition-colors text-black placeholder:text-black"
                                         placeholder="მაგ: 2 წლის, 18 წლის"
                                         maxLength={15}
                                     />
@@ -409,30 +409,30 @@ const ProductPage = () => {
                                     <div className="grid grid-cols-3 gap-2">
                                         <button
                                             onClick={() => setPosition('bottom')}
-                                            className={`p-3 rounded-lg border-2 transition-all duration-200 ${position === 'bottom'
+                                            className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${position === 'bottom'
                                                     ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                    : 'border-gray-200 bg-white hover:border-pink-300'
+                                                    : 'border-gray-200 text-black bg-white hover:border-pink-300'
                                                 }`}
                                         >
-                                            <div className="text-[16px] font-medium">ქვევით</div>
+                                            <div className="text-[16px] text-black font-medium">ქვევით</div>
                                         </button>
                                         <button
                                             onClick={() => setPosition('center')}
-                                            className={`p-3 rounded-lg border-2 transition-all duration-200 ${position === 'center'
+                                            className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${position === 'center'
                                                     ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                    : 'border-gray-200 bg-white hover:border-pink-300'
+                                                    : 'border-gray-200 bg-white text-black hover:border-pink-300'
                                                 }`}
                                         >
-                                            <div className="text-[16px] font-medium">ცენტრში</div>
+                                            <div className="text-[16px] text-black font-medium">ცენტრში</div>
                                         </button>
                                         <button
                                             onClick={() => setPosition('top')}
-                                            className={`p-3 rounded-lg border-2 transition-all duration-200 ${position === 'top'
+                                            className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${position === 'top'
                                                     ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                    : 'border-gray-200 bg-white hover:border-pink-300'
+                                                    : 'border-gray-200 bg-white text-black hover:border-pink-300'
                                                 }`}
                                         >
-                                            <div className="text-[16px] font-medium">ზევით</div>
+                                            <div className="text-[16px] text-black font-medium">ზევით</div>
                                         </button>
                                     </div>
                                 </div>
@@ -440,9 +440,9 @@ const ProductPage = () => {
                         )}
 
                         {/* Product Features */}
-                        <div className="bg-gray-50 p-4 rounded-xl">
+                        <div className="bg-white p-4 rounded-xl">
                             <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-3">პროდუქტის მახასიათებლები</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-[14px] md:text-[16px]">
+                            <div className="grid text-black grid-cols-1 md:grid-cols-2 gap-3 text-[14px] md:text-[16px]">
                                 <div className="flex items-center gap-2">
                                     <span className="text-black">✓</span>
                                     <span>მაღალი ხარისხის ინგრედიენტები</span>
