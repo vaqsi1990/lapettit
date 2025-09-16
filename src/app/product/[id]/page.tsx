@@ -58,12 +58,10 @@ const ProductPage = () => {
             
             if (difference <= 0) {
                 return basePrice; // Smaller or equal to product pieces
-            } else if (difference <= 5) {
-                return basePrice + 30; // 1-5 pieces more
-            } else if (difference <= 10) {
-                return basePrice + 60; // 6-10 pieces more
+            } else if (difference <= 8) {
+                return basePrice + 30; // 1-8 pieces more
             } else if (difference <= 15) {
-                return basePrice + 90; // 11-15 pieces more
+                return basePrice + 60; // 9-15 pieces more
             } else {
                 return basePrice + 90; // 16+ pieces more
             }
