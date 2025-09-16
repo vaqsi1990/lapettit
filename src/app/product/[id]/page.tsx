@@ -65,7 +65,7 @@ const ProductPage = () => {
             } else if (difference <= 15) {
                 return basePrice + 90; // 11-15 pieces more
             } else {
-                return basePrice + 120; // 16+ pieces more
+                return basePrice + 90; // 16+ pieces more
             }
         };
 
