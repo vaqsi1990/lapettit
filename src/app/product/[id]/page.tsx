@@ -30,7 +30,7 @@ const ProductPage = () => {
     const getPieceOptions = () => {
         if (!product) return [];
 
-        const minPieces = product.pieces || 8; // This is the minimum pieces required
+        const minPieces = product?.pieces || 8; // This is the minimum pieces required
 
         // Calculate base price from selected topping
         let basePrice = 100; // Default fallback
@@ -44,12 +44,48 @@ const ProductPage = () => {
             basePrice = product.creamPrice; // Fallback to cream
         }
 
-        // Generate all possible options
+        // Function to calculate price based on piece count
+        const calculatePriceForPieces = (pieces: number) => {
+            const productPieces = product?.pieces || 8;
+            
+            // If selected pieces equals product pieces, use base price (no addition)
+            if (pieces === productPieces) {
+                return basePrice;
+            }
+            
+            // Calculate additional price based on difference from product pieces
+            const difference = pieces - productPieces;
+            
+            if (difference <= 0) {
+                return basePrice; // Smaller or equal to product pieces
+            } else if (difference <= 5) {
+                return basePrice + 30; // 1-5 pieces more
+            } else if (difference <= 10) {
+                return basePrice + 60; // 6-10 pieces more
+            } else if (difference <= 15) {
+                return basePrice + 90; // 11-15 pieces more
+            } else {
+                return basePrice + 120; // 16+ pieces more
+            }
+        };
+
+        // Function to generate coverage based on pieces
+        const generateCoverage = (pieces: number) => {
+            if (pieces <= 8) return "15-20 სმ";
+            if (pieces <= 15) return "18-20 სმ";
+            if (pieces <= 18) return "25-30 სმ";
+            if (pieces <= 25) return "30-35 სმ";
+            return "35+ სმ";
+        };
+
+        // Generate multiple size options with dynamic pricing
         const allOptions = [
-            { pieces: 8, label: `8-10 ნაჭერი`, coverage: "15-20 სმ", price: basePrice },
-            { pieces: 10, label: `10-13 ნაჭერი`, coverage: "20-25 სმ", price: basePrice + 30 },
-            { pieces: 18, label: `18-20 ნაჭერი`, coverage: "25-30 სმ", price: basePrice + 60 },
-            { pieces: 25, label: `25-28 ნაჭერი`, coverage: "30-35 სმ", price: basePrice + 90 }
+            { pieces: 8, label: `8-10 ნაჭერი`, coverage: generateCoverage(8), price: calculatePriceForPieces(8) },
+            { pieces: 10, label: `10-13 ნაჭერი`, coverage: generateCoverage(10), price: calculatePriceForPieces(10) },
+            // Only show 15-piece option if product.pieces is exactly 15
+            ...(product?.pieces === 15 ? [{ pieces: 15, label: `15 ნაჭერი`, coverage: generateCoverage(15), price: calculatePriceForPieces(15) }] : []),
+            { pieces: 18, label: `18-20 ნაჭერი`, coverage: generateCoverage(18), price: calculatePriceForPieces(18) },
+            { pieces: 25, label: `25-28 ნაჭერი`, coverage: generateCoverage(25), price: calculatePriceForPieces(25) }
         ];
 
         // Filter options to only show those that meet the minimum pieces requirement
@@ -327,26 +363,28 @@ const ProductPage = () => {
                             <div className=" p-4 rounded-xl ">
                                 <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4"> ტორტის ნაჭრების  არჩევა</h3>
 
-                                {/* Piece Size Selection */}
-                                <div className="space-y-3 mb-4">
-                                    <label className="text-[20px] font-medium text-black">აირჩიეთ ზომა:</label>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {getPieceOptions().map((option) => (
-                                            <button
-                                                key={option.pieces}
-                                                onClick={() => setSelectedPieces(option.pieces)}
-                                                className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${selectedPieces === option.pieces
-                                                        ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                        : 'border-gray-200 text-black bg-white hover:border-pink-300'
-                                                    }`}
-                                            >
-                                                <div className="text-[18px] font-medium">{option.label}</div>
-                                                <div className="text-[16px] text-black">{option.coverage}</div>
-                                                <div className="text-[16px] font-bold text-pink-600">{formatPrice(option.price)}</div>
-                                            </button>
-                                        ))}
+                                {/* Piece Size Selection - Only show if product.pieces is 18 or less */}
+                                {product?.pieces && product.pieces <= 18 && (
+                                    <div className="space-y-3 mb-4">
+                                        <label className="text-[20px] font-medium text-black">აირჩიეთ ზომა:</label>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {getPieceOptions().map((option) => (
+                                                <button
+                                                    key={option.pieces}
+                                                    onClick={() => setSelectedPieces(option.pieces)}
+                                                    className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${selectedPieces === option.pieces
+                                                            ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                            : 'border-gray-200 text-black bg-white hover:border-pink-300'
+                                                        }`}
+                                                >
+                                                    <div className="text-[18px] font-medium">{option.label}</div>
+                                                    <div className="text-[16px] text-black">{option.coverage}</div>
+                                                    <div className="text-[16px] font-bold text-pink-600">{formatPrice(option.price)}</div>
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
 
                                 {/* Topping Selection */}
 

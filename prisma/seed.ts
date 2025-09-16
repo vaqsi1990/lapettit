@@ -307,7 +307,19 @@ const cakes = [
     available: true,
     fillings: [" კრემი"]
   },
- 
+  {
+    name: "დაბადებისდღის ტორტი პატარასთვის",
+
+    imageUrl: "/cakes/41.jpg",
+    category: CakeCategory.BIRTHDAY,
+    pieces: 15,
+    hasCream: false,
+   
+    hasMarzipan: true,
+    marzipanPrice: 180.0,
+    isCustomizable: true,
+    available: true
+  },
  
 ]
 
