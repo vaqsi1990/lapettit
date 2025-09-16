@@ -16,7 +16,7 @@ const ProductPage = () => {
     const [relatedProducts, setRelatedProducts] = useState<GalleryImage[]>([]);
     const [quantity, setQuantity] = useState(1);
     const [selectedPieces, setSelectedPieces] = useState(8);
-    const [totalPrice, setTotalPrice] = useState(100);
+    const [totalPrice, setTotalPrice] = useState(0);
     const [selectedTopping, setSelectedTopping] = useState<'marzipan' | 'cream' | null>(null);
     const [selectedFilling, setSelectedFilling] = useState<string>('');
     const [cakeName, setCakeName] = useState<string>('');
@@ -78,16 +78,16 @@ const ProductPage = () => {
 
         // Generate multiple size options with dynamic pricing
         const allOptions = [
-            { pieces: 8, label: `8-10 ნაჭერი`, coverage: generateCoverage(8), price: calculatePriceForPieces(8) },
-            { pieces: 10, label: `10-13 ნაჭერი`, coverage: generateCoverage(10), price: calculatePriceForPieces(10) },
+            { pieces: 8, label: `8 ნაჭერი`, coverage: generateCoverage(8), price: calculatePriceForPieces(8) },
+            { pieces: 10, label: `10 ნაჭერი`, coverage: generateCoverage(10), price: calculatePriceForPieces(10) },
             // Only show 15-piece option if product.pieces is exactly 15
             ...(product?.pieces === 15 ? [{ pieces: 15, label: `15 ნაჭერი`, coverage: generateCoverage(15), price: calculatePriceForPieces(15) }] : []),
-            { pieces: 18, label: `18-20 ნაჭერი`, coverage: generateCoverage(18), price: calculatePriceForPieces(18) },
-            { pieces: 25, label: `25-28 ნაჭერი`, coverage: generateCoverage(25), price: calculatePriceForPieces(25) }
+            { pieces: 18, label: `18 ნაჭერი`, coverage: generateCoverage(18), price: calculatePriceForPieces(18) },
+            { pieces: 25, label: `25 ნაჭერი`, coverage: generateCoverage(25), price: calculatePriceForPieces(25) }
         ];
 
-        // Filter options to only show those that meet the minimum pieces requirement
-        return allOptions.filter(option => option.pieces >= minPieces);
+        // Filter out options smaller than product pieces
+        return allOptions.filter(option => option.pieces >= (product?.pieces || 8));
     };
 
     // Predefined filling options
@@ -142,6 +142,19 @@ const ProductPage = () => {
                 const selectedOption = pieceOptions.find(option => option.pieces === selectedPieces);
                 if (selectedOption) {
                     setTotalPrice(calculateTotalPrice(selectedOption.price, quantity));
+                } else {
+                    // If no size options available (large cakes), use base price
+                    let basePrice = 100; // Default fallback
+                    if (selectedTopping === 'marzipan' && product.marzipanPrice) {
+                        basePrice = product.marzipanPrice;
+                    } else if (selectedTopping === 'cream' && product.creamPrice) {
+                        basePrice = product.creamPrice;
+                    } else if (product.marzipanPrice) {
+                        basePrice = product.marzipanPrice; // Default to marzipan if available
+                    } else if (product.creamPrice) {
+                        basePrice = product.creamPrice; // Fallback to cream
+                    }
+                    setTotalPrice(calculateTotalPrice(basePrice, quantity));
                 }
             } else {
                 // For non-customizable cakes, use the standard price
@@ -265,6 +278,7 @@ const ProductPage = () => {
         product.src,
         product.src
     ];
+console.log(product);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 pt-20">
@@ -307,7 +321,9 @@ const ProductPage = () => {
                             <h1 className="text-[24px] md:text-[32px] font-bold text-black mb-3 leading-tight">
                                 {product.titleGeorgian}
                             </h1>
-
+                            {/* <div className="text-[18px] text-gray-600 mb-4">
+                                {product.pieces} ნაჭერი
+                            </div> */}
                         </div>
 
 
@@ -362,7 +378,7 @@ const ProductPage = () => {
                                 <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4"> ტორტის ნაჭრების  არჩევა</h3>
 
                                 {/* Piece Size Selection - Only show if product.pieces is 18 or less */}
-                                {product?.pieces && product.pieces <= 18 && (
+                                {product?.pieces && product.pieces <= 18 ? (
                                     <div className="space-y-3 mb-4">
                                         <label className="text-[20px] font-medium text-black">აირჩიეთ ზომა:</label>
                                         <div className="grid grid-cols-2 gap-2">
@@ -381,6 +397,10 @@ const ProductPage = () => {
                                                 </button>
                                             ))}
                                         </div>
+                                    </div>
+                                ) : (
+                                    <div className="p-3 rounded-lg text-center w-[50%] text-black border-2 transition-all duration-200 border-pink-500 bg-pink-100 text-pink-700">
+                                        {product.pieces} ნაჭერი
                                     </div>
                                 )}
 
