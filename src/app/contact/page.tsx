@@ -168,13 +168,13 @@ const Contact = () => {
                 <h3 className="text-[18px] text-black md:text-[20px] font-semibold  mb-4">გამოგვყევით</h3>
                 <div className="flex gap-4">
                   <a 
-                    href="#" 
+                    href="https://www.instagram.com/lappetitbatumi?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
                     className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center transition-colors duration-300"
                   >
                     <Instagram className="w-8 h-8 text-pink-600" />
                   </a>
                   <a 
-                    href="/https://www.facebook.com/lappetitbatumy" 
+                    href="https://www.facebook.com/lappetitbatumy" 
                     className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center transition-colors duration-300"
                   >
                     <Facebook className="w-8 h-8 text-pink-600" />

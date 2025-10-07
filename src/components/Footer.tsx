@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram,  Mail, Phone, MapPin } from 'lucide-react';
 
 const Footer = () => {
   return (
@@ -21,23 +21,18 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4 mb-4">
               <a
-                href="#"
+                href="https://www.facebook.com/lappetitbatumy"  target='_blank'
                 className="w-10 h-10 bg-pink-600  hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
               >
                 <Facebook className="w-5 h-5" />
               </a>
-              <a
-                href="#"
+              <a target='_blank'
+                href="https://www.instagram.com/lappetitbatumi?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
                 className="w-10 h-10 bg-pink-600  hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
               >
                 <Instagram className="w-5 h-5" />
               </a>
-              <a
-                href="#"
-                className="w-10 h-10 bg-pink-600  hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
-              >
-                <Twitter className="w-5 h-5" />
-              </a>
+
             </div>
           </div>
 
