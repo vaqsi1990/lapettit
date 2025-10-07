@@ -120,7 +120,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="text-[18px] text-black md:text-[20px] font-semibold  mb-2">ტელეფონი</h3>
-                    <p className=" text-[18px] text-black md:text-[20px]">+995 599 123 456</p>
+                    <p className=" text-[18px] text-black md:text-[20px]">+995599332050</p>
                     <p className=" text-[18px] text-black md:text-[20px]">ორშაბათი - შაბათი: 9:00 - 20:00</p>
                   </div>
                 </div>
@@ -132,7 +132,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="text-[18px] text-black md:text-[20px] font-semibold  mb-2">ელ-ფოსტა</h3>
-                    <p className=" text-[18px] text-black md:text-[20px]">info@cakes.ge</p>
+                    <p className=" text-[18px] text-black md:text-[20px]">Lappetit2019@gmail.com</p>
                     <p className="text-black">პასუხს მოგცემთ 24 საათის განმავლობაში</p>
                   </div>
                 </div>
@@ -144,7 +144,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="text-[18px] text-black md:text-[20px] font-semibold  mb-2">მისამართი</h3>
-                    <p className=" text-[18px] text-black md:text-[20px]">რუსთავის გზატკეცილი 123</p>
+                    <p className=" text-[18px] text-black md:text-[20px]">67 ლერმონტოვის ქუჩა, ბათუმი</p>
                     <p className=" text-[18px] text-black md:text-[20px]">თბილისი, საქართველო</p>
                   </div>
                 </div>
@@ -174,7 +174,7 @@ const Contact = () => {
                     <Instagram className="w-8 h-8 text-pink-600" />
                   </a>
                   <a 
-                    href="#" 
+                    href="/https://www.facebook.com/lappetitbatumy" 
                     className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center transition-colors duration-300"
                   >
                     <Facebook className="w-8 h-8 text-pink-600" />

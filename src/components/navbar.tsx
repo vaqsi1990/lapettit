@@ -39,20 +39,17 @@ const Navbar = () => {
               >
                ნამუშევრები
               </Link>
-             
+              <Link 
+              href="/contact" 
+              className="text-white  block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              კონტაქტი
+            </Link>
+        
             
-              <Link 
-                href="/about" 
-                className="text-white  md:text-[20px] px-3 py-2 rounded-md  font-bold transition-colors duration-200"
-              >
-                ჩვენს შესახებ
-              </Link>
-              <Link 
-                href="/contact" 
-                className="text-white md:text-[20px] px-3 py-2 rounded-md  font-bold transition-colors duration-200"
-              >
-               კონტაქტი
-              </Link>
+            
+        
             </div>
           </div>
           
@@ -92,13 +89,7 @@ const Navbar = () => {
             </Link>
 
         
-            <Link 
-              href="/about" 
-              className="text-white  block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              ჩვენს შესახებ
-            </Link>
+         
             <Link 
               href="/contact" 
               className="text-white  block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"
