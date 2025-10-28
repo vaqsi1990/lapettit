@@ -4,10 +4,11 @@ import { prisma } from '@/lib/prisma';
 // Delete a specific response
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const responseId = parseInt(params.id);
+    const { id } = await params;
+    const responseId = parseInt(id);
 
     await prisma.chatResponse.delete({
       where: { id: responseId }
