@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/components/Toast';
+import Image from 'next/image';
+
 import { 
   Package, 
   ShoppingCart, 
@@ -72,10 +74,31 @@ interface Order {
   }[];
 }
 
+interface SurveySession {
+  id: number;
+  sessionId: string;
+  currentStep: number;
+  isComplete: boolean;
+  createdAt: Date;
+  responses: {
+    id: number;
+    questionId: number;
+    questionText: string;
+    answerType: string;
+    selectedOption: number | null;
+    answerText: string | null;
+    fileUrl: string | null;
+    fileName: string | null;
+    createdAt: Date;
+  }[];
+}
+
 const AdminPage = () => {
   const [activeTab, setActiveTab] = useState('orders');
   const [cakes, setCakes] = useState<Cake[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [surveySessions, setSurveySessions] = useState<SurveySession[]>([]);
+  const [surveyQuestions, setSurveyQuestions] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [editingCake, setEditingCake] = useState<Cake | null>(null);
@@ -95,6 +118,20 @@ const AdminPage = () => {
         const ordersResult = await getOrders();
         if (ordersResult.success && ordersResult.data) {
           setOrders(ordersResult.data);
+        }
+
+        // Fetch survey responses
+        const surveyResponse = await fetch('/api/chat-survey/responses');
+        const surveyData = await surveyResponse.json();
+        if (surveyData.success && surveyData.sessions) {
+          setSurveySessions(surveyData.sessions);
+        }
+
+        // Fetch survey questions
+        const questionsResponse = await fetch('/api/chat-survey/questions');
+        const questionsData = await questionsResponse.json();
+        if (questionsData.success && questionsData.questions) {
+          setSurveyQuestions(questionsData.questions);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -337,7 +374,8 @@ const AdminPage = () => {
               { id: 'orders', label: 'შეკვეთები', icon: ShoppingCart },
               { id: 'cakes', label: 'ტორტები', icon: Cake },
               { id: 'add-cake', label: 'ახალი ტორტი', icon: Plus },
-              { id: 'customers', label: 'კლიენტები', icon: Users }
+              { id: 'customers', label: 'კლიენტები', icon: Users },
+              { id: 'survey-responses', label: 'კითხვებზე პასუხები', icon: Package }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -1027,6 +1065,169 @@ const AdminPage = () => {
                     })()}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Survey Responses Tab */}
+        {activeTab === 'survey-responses' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-6"
+          >
+            <div className="bg-white rounded-2xl shadow-lg p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-black">კითხვებზე პასუხები</h2>
+                <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                  {surveySessions.filter(session => session.responses.length > 0).length} სესია
+                </div>
+              </div>
+
+                      {/* Survey Sessions List */}
+                      <div className="space-y-6">
+                        {surveySessions.filter(session => session.responses.length > 0).length === 0 ? (
+                          <div className="text-center py-12 text-gray-500">
+                            <p className="text-lg">ჯერ არ არის პასუხები</p>
+                          </div>
+                        ) : (
+                          surveySessions.filter(session => session.responses.length > 0).map((session, index) => (
+                    <motion.div
+                      key={session.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition-shadow"
+                    >
+                      {/* Session Header */}
+                      <div className="flex items-center justify-between mb-4 pb-4 border-b">
+                        <div>
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center">
+                              <span className="text-white font-bold text-sm">#{index + 1}</span>
+                            </div>
+                            <div>
+                              <p className="font-semibold text-black">
+                                {(() => {
+                                  const nameResponse = session.responses.find(r => r.questionId === 9);
+                                  return nameResponse?.answerText || 'სესიის ID: ' + session.sessionId.slice(0, 20);
+                                })()}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                {new Date(session.createdAt).toLocaleDateString('ka-GE', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric',
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                                <div className="flex items-center space-x-2">
+                                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                                    session.isComplete
+                                      ? 'bg-green-100 text-green-800'
+                                      : 'bg-yellow-100 text-yellow-800'
+                                  }`}>
+                                    {session.isComplete ? '✓ დასრულებული' : 'მიმდინარე'}
+                                  </span>
+                                  <button
+                            onClick={async () => {
+                              if (window.confirm('ნამდვილად გსურთ ამ სესიის წაშლა? ყველა პასუხიც წაიშლება.')) {
+                                try {
+                                  const deleteResponse = await fetch(`/api/chat-survey/sessions/${session.id}`, {
+                                    method: 'DELETE'
+                                  });
+                                  if (deleteResponse.ok) {
+                                    showToast('success', 'სესია წარმატებით წაიშალა');
+                                    // Refresh data
+                                    const surveyResponse = await fetch('/api/chat-survey/responses');
+                                    const surveyData = await surveyResponse.json();
+                                    if (surveyData.success && surveyData.sessions) {
+                                      setSurveySessions(surveyData.sessions);
+                                    }
+                                  }
+                                } catch (error) {
+                                  showToast('error', 'შეცდომა');
+                                }
+                              }
+                            }}
+                            className="px-3 py-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors text-sm font-medium border border-red-300"
+                          >
+                             წაშლა
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Responses */}
+                      <div className="space-y-4">
+                        {session.responses.length === 0 ? (
+                          <p className="text-gray-500 text-sm italic">პასუხები არ არის</p>
+                        ) : (
+                          session.responses.map((response, respIndex) => (
+                            <div key={response.id} className="bg-gray-50 rounded-lg p-4">
+                              <div className="flex items-start space-x-3">
+                                <div className="flex-shrink-0 w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
+                                  <span className="text-pink-600 font-bold text-sm">{respIndex + 1}</span>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-medium text-gray-800 mb-2">{response.questionText}</p>
+                                  
+                                  {response.answerType === 'multiple_choice' && response.selectedOption !== null && (() => {
+                                    const question = surveyQuestions.find(q => q.id === response.questionId);
+                                    const selectedOptionText = question?.options?.[response.selectedOption] || `ვარიანტი ${response.selectedOption + 1}`;
+                                    return (
+                                      <div className="bg-white border border-gray-200 rounded-lg px-3 py-2">
+                                        <p className="text-sm text-gray-700">
+                                          ✓ პასუხი: {selectedOptionText}
+                                        </p>
+                                      </div>
+                                    );
+                                  })()}
+
+                                  {response.answerType === 'text' && response.answerText && (
+                                    <div className="bg-white border border-gray-200 rounded-lg px-3 py-2">
+                                      <p className="text-sm text-gray-700">{response.answerText}</p>
+                                    </div>
+                                  )}
+
+                                  {response.answerType === 'file' && response.fileUrl && (
+                                    <div className="bg-white border border-gray-200 rounded-lg px-3 py-2">
+                                      {/* Show image if it's an image file */}
+                                      {(response.fileUrl.includes('.jpg') || response.fileUrl.includes('.jpeg') || response.fileUrl.includes('.png') || response.fileUrl.includes('.gif') || response.fileUrl.includes('uploadthing')) && (
+                                        <div className="relative w-full max-w-md h-64 mb-3">
+                                          <Image 
+                                            src={response.fileUrl} 
+                                            alt="Uploaded" 
+                                            fill
+                                            className="object-contain rounded-lg border border-gray-200"
+                                          />
+                                        </div>
+                                      )}
+                                      {/* Show file link for all file types */}
+                                      <a
+                                        href={response.fileUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sm text-blue-600 hover:text-blue-800 flex items-center space-x-2"
+                                      >
+                                        <span>📎</span>
+                                      <Image src={response.fileUrl} alt="Uploaded" width={800} height={800} />  <span>  </span>
+                                      </a>
+                                    </div>
+                                  )}
+                                        </div>
+                                      </div>
+                                    </div>
+                          ))
+                        )}
+                      </div>
+                    </motion.div>
+                  ))
+                )}
               </div>
             </div>
           </motion.div>

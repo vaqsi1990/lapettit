@@ -16,6 +16,20 @@ export const ourFileRouter = {
   
       return { uploadedBy: metadata.userId };
     }),
+  
+  chatSurveyUploader: f({ 
+    image: { maxFileSize: "16MB" },
+    video: { maxFileSize: "64MB" },
+    pdf: { maxFileSize: "16MB" }
+  })
+    .middleware(async ({ req }) => {
+      const user = await auth(req);
+      if (!user) throw new UploadThingError("Unauthorized");
+      return { userId: user.id };
+    })
+    .onUploadComplete(async ({ metadata, file }) => {
+      return { uploadedBy: metadata.userId };
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

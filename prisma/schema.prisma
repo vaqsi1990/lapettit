@@ -88,3 +88,27 @@ model OrderItem {
   age      String?  // Age to be written on the cake (e.g., "2 წლის", "18 წლის")
   position String?  // Position on cake: "bottom", "center", "top"
 }
+
+model ChatSession {
+  id          Int            @id @default(autoincrement())
+  sessionId   String         @unique
+  currentStep Int            @default(0)
+  isComplete  Boolean        @default(false)
+  responses   ChatResponse[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model ChatResponse {
+  id           Int         @id @default(autoincrement())
+  session      ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId    Int
+  questionId   Int         // Question number
+  questionText String
+  answerType   String      // "multiple_choice", "file", "text"
+  selectedOption Int?      // For multiple choice questions (0-3)
+  answerText   String?     // For text answers
+  fileUrl      String?     // For file uploads
+  fileName     String?     // Original file name
+  createdAt    DateTime    @default(now())
+}

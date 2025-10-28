@@ -39,6 +39,7 @@ const Navbar = () => {
               >
                ნამუშევრები
               </Link>
+          
               <Link 
               href="/contact" 
               className="text-white  block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"
@@ -87,8 +88,7 @@ const Navbar = () => {
             >
               ნამუშევრები
             </Link>
-
-        
+          
          
             <Link 
               href="/contact" 
