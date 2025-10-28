@@ -98,7 +98,7 @@ const AdminPage = () => {
   const [cakes, setCakes] = useState<Cake[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [surveySessions, setSurveySessions] = useState<SurveySession[]>([]);
-  const [surveyQuestions, setSurveyQuestions] = useState<any[]>([]);
+  const [surveyQuestions, setSurveyQuestions] = useState<{ id: number; text: string; type: string; options?: string[] }[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [editingCake, setEditingCake] = useState<Cake | null>(null);
@@ -1215,7 +1215,7 @@ const AdminPage = () => {
                                         className="text-sm text-blue-600 hover:text-blue-800 flex items-center space-x-2"
                                       >
                                         <span>📎</span>
-                                      <Image src={response.fileUrl} alt="Uploaded" width={800} height={800} />  <span>  </span>
+                                        <span>{response.fileName || 'ატვირთული ფაილი'}</span>
                                       </a>
                                     </div>
                                   )}
