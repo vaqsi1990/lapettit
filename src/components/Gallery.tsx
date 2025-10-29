@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { motion, useTransform, useScroll } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
-import { getCakes} from '@/lib/action';
+import { getCakes } from '@/lib/action';
 import { mapCakeToGalleryImage, type GalleryImage, formatPrice } from '@/lib/utils';
 import { Swiper as SwiperComponent, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
@@ -51,7 +51,7 @@ const Gallery = () => {
     try {
       setIsLoading(true);
       const result = await getCakes();
-      
+
       if (result.success && result.data) {
         const mappedImages = result.data.map(mapCakeToGalleryImage);
         setGalleryImages(mappedImages);
@@ -65,7 +65,7 @@ const Gallery = () => {
 
   // Show latest added items (already sorted by createdAt desc from getCakes)
   const filteredImages = galleryImages.slice(0, 8);
-  
+
   const swiperRef = useRef<React.ComponentRef<typeof SwiperComponent>>(null);
 
 
@@ -111,14 +111,14 @@ const Gallery = () => {
         {/* Carousel */}
         <div className="relative w-full">
           {/* Navigation Arrows - Outside carousel */}
-          <button 
+          <button
             className="gallery-button-prev absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg cursor-pointer transition-all duration-300 hover:scale-110"
             aria-label="Previous slide"
           >
             <ChevronLeft className="w-6 h-6 text-gray-700" />
           </button>
-          
-          <button 
+
+          <button
             className="gallery-button-next absolute right-0 md:-right-12 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg cursor-pointer transition-all duration-300 hover:scale-110"
             aria-label="Next slide"
           >
@@ -126,7 +126,7 @@ const Gallery = () => {
           </button>
 
           {/* Swiper Container with padding */}
-          <div className="px-8 md:px-12">
+          <div className="px-0 md:px-10">
             <SwiperComponent
               ref={swiperRef}
               modules={[Navigation, Pagination]}
@@ -159,9 +159,9 @@ const Gallery = () => {
             >
               {filteredImages.map((image, index) => (
                 <SwiperSlide key={image.id}>
-                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-full flex flex-col border border-gray-100">
+                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-full md:h-[450px]  flex flex-col border border-gray-100">
                     {/* Image */}
-                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-gray-100">
+                    <div className="relative w-full h-60 sm:h-72 md:h-80 overflow-hidden bg-gray-100 ">
                       <Image
                         src={image.src}
                         alt={image.alt}
@@ -170,18 +170,23 @@ const Gallery = () => {
                         priority={index < 4}
                       />
                     </div>
-                    
+
+
                     {/* Content */}
                     <div className="p-4 flex flex-col flex-1">
                       <h3 className="text-base md:text-lg font-bold text-center text-gray-900 mb-2 line-clamp-1">
                         {image.titleGeorgian}
                       </h3>
-                      {image.price && (
-                        <p className="text-base md:text-lg font-bold text-center text-gray-900 mb-4">
-                          {formatPrice(image.price)}
-                        </p>
-                      )}
-                      <Link 
+                      <div className="mb-4 h-6 md:h-7 flex items-center justify-center">
+                        {image.price ? (
+                          <span className="text-base md:text-lg font-bold text-gray-900">
+                            {formatPrice(image.price)}
+                          </span>
+                        ) : (
+                          <span className="invisible select-none">0</span>
+                        )}
+                      </div>
+                      <Link
                         href={`/product/${image.id}`}
                         className="w-full md:w-[200px] mx-auto cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-2 px-4 text-center rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                       >
@@ -216,9 +221,9 @@ const Gallery = () => {
         </div>
       </div>
 
- 
 
-     
+
+
     </section>
   );
 };
