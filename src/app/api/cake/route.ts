@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { ProductType, CakeCategory } from '@prisma/client';
 
-const CakeCategory = {
+const CakeCategoryValues = {
   BIRTHDAY: 'BIRTHDAY',
   WEDDING: 'WEDDING',
   ANNIVERSARY: 'ANNIVERSARY',
@@ -9,7 +10,7 @@ const CakeCategory = {
   Desserts: 'Desserts'
 } as const;
 
-const ProductType = {
+const ProductTypeValues = {
   FULL_CAKE: 'FULL_CAKE',
   SET: 'SET',
   INDIVIDUAL_SLICE: 'INDIVIDUAL_SLICE'
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate category
-    if (!Object.values(CakeCategory).includes(category)) {
+    if (!Object.values(CakeCategoryValues).includes(category)) {
       return NextResponse.json(
         { success: false, error: 'არასწორი კატეგორია' },
         { status: 400 }
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate product type
-    if (productType && !Object.values(ProductType).includes(productType)) {
+    if (productType && !Object.values(ProductTypeValues).includes(productType)) {
       return NextResponse.json(
         { success: false, error: 'არასწორი პროდუქტის ტიპი' },
         { status: 400 }
@@ -75,8 +76,8 @@ export async function POST(request: NextRequest) {
     const cake = await prisma.cake.create({
       data: {
         name,
-        category,
-        productType: (productType || 'FULL_CAKE') as any,
+        category: category as CakeCategory,
+        productType: (productType || 'FULL_CAKE') as ProductType,
         price: isCustomizable ? null : (price ? Math.round(price * 100) / 100 : null),
         fillings: fillings || [],
         isCustomizable: isCustomizable !== undefined ? isCustomizable : false,
@@ -91,7 +92,7 @@ export async function POST(request: NextRequest) {
         setDescription: setDescription || null,
         sliceWeight: sliceWeight || null,
         sliceDescription: sliceDescription || null,
-      } as any
+      }
     });
 
     return NextResponse.json({
