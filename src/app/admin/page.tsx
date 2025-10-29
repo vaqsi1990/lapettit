@@ -692,10 +692,11 @@ const AdminPage = () => {
                   className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300"
                 >
                   <div className="relative h-48 overflow-hidden">
-                    <img
+                    <Image
                       src={cake.imageUrl || '/catalog/1.jpg'}
                       alt={cake.name}
-                      className="w-full h-full object-cover"
+                      fill
+                      className="object-cover"
                     />
                     <div className="absolute top-3 right-3 bg-black/50 text-white px-2 py-1 rounded-lg text-xs">
                       {cake.category}
@@ -1155,7 +1156,7 @@ const AdminPage = () => {
                                       setSurveySessions(surveyData.sessions);
                                     }
                                   }
-                                } catch (error) {
+                                } catch {
                                   showToast('error', 'შეცდომა');
                                 }
                               }
