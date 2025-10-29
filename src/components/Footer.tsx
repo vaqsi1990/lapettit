@@ -8,7 +8,7 @@ const Footer = () => {
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       {/* Main Footer Content */}
       <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 ">
+        <div className="grid grid-cols-1 py-10 text-center md:text-left md:py-10 md:grid-cols-4 ">
           
           {/* Company Info */}
           <div
@@ -19,7 +19,7 @@ const Footer = () => {
               ჩვენ ვქმნით არა მხოლოდ ტორტებს, არამედ უნიკალურ გამოცდილებას, 
               რომელიც თქვენს სპეციალურ დღეს გახდის უვივი და დავიწყებადი.
             </p>
-            <div className="flex space-x-4 mb-4">
+            <div className="flex space-x-4 mb-4 justify-center md:justify-start">
               <a
                 href="https://www.facebook.com/lappetitbatumy"  target='_blank'
                 className="w-10 h-10 bg-pink-600  hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
@@ -73,7 +73,7 @@ const Footer = () => {
           <div className='text-[16px] md:text-[18px]'
           >
             <h4 className=" text-[16px] md:text-[18px] font-semibold text-white mb-4">კონტაქტი</h4>
-              <div className="space-y-3 text-[16px] md:text-[18px]">
+              <div className="space-y-3 justify-center md:justify-start items-center md:items-start text-[16px] md:text-[18px]">
               <div className="flex items-center space-x-3">
                 <Phone className="w-4 h-4 text-pink-600" />
                 <span className="text-white text-[16px] md:text-[18px]">+995599332050</span>

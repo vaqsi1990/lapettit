@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { UploadButton } from '@/utils/uploadthing';
 import { Send, Loader2, MessageCircle, X } from 'lucide-react';
-
+import { SURVEY_QUESTIONS } from '@/lib/survey-questions';
+import { Cake } from 'lucide-react';
 interface Message {
   type: 'bot' | 'user';
   text: string;
@@ -103,7 +104,7 @@ const ChatWidget = () => {
         setMessages([
           {
             type: 'bot',
-            text: 'გამარჯობა!  მოგესალმებით . გთხოვთ, უპასუხეთ რამდენიმე შეკითხვას.',
+            text: 'გამარჯობა! მე ვარ SweetBot, თქვენი ტორტის ასისტენტი დავიწყოთ შეკვეთა?',
             options: undefined
           },
           {
@@ -238,6 +239,11 @@ const ChatWidget = () => {
     return false;
   };
 
+  // Calculate progress
+  const totalQuestions = SURVEY_QUESTIONS.length;
+  const completedQuestions = surveyState.currentStep;
+  const progress = surveyState.isComplete ? 100 : (completedQuestions / totalQuestions) * 100;
+
   return (
     <>
       {/* Floating Chat Button */}
@@ -255,18 +261,59 @@ const ChatWidget = () => {
       {isOpen && (
         <div className="fixed bottom-0 right-0 md:bottom-6 md:right-6 w-full md:w-[400px] h-full md:h-[600px] bg-white rounded-none md:rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50">
           {/* Header */}
-          <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-4 flex items-center justify-between">
-            <div>
-              <h3 className="font-bold text-lg">ბოტი</h3>
-              <p className="text-xs opacity-90">გთხოვთ, უპასუხოთ შეკითხვებს</p>
+          <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-4">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+              
+                <p className="text-lg text-white">გთხოვთ, უპასუხოთ შეკითხვებს</p>
+              </div>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="hover:bg-white/20 rounded-full p-1 transition-colors"
+                aria-label="Close chat"
+              >
+                <X size={20} />
+              </button>
             </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="hover:bg-white/20 rounded-full p-1 transition-colors"
-              aria-label="Close chat"
-            >
-              <X size={20} />
-            </button>
+            
+            {/* Progress Bar - Cake Icons */}
+            {!surveyState.isComplete && (
+              <div className="mt-3">
+                <div className="flex gap-1 md:gap-2 justify-center items-center flex-wrap">
+                  {Array.from({ length: totalQuestions }).map((_, index) => {
+                    const isCompleted = index < completedQuestions;
+                    const isCurrent = index === completedQuestions;
+                    return (
+                      <div
+                        key={index}
+                        className={`transition-all duration-500 ${
+                          isCompleted
+                            ? 'text-white'
+                            : isCurrent
+                            ? 'text-yellow-300 animate-pulse scale-110'
+                            : 'text-white/30'
+                        }`}
+                        style={{
+                          transform: isCurrent ? 'scale(1.2)' : 'scale(1)',
+                          filter: isCurrent ? 'drop-shadow(0 0 8px rgba(255, 255, 0, 0.8))' : 'none'
+                        }}
+                        title={`${isCompleted ? '✓' : isCurrent ? '→' : ''} ${index + 1}/${totalQuestions}`}
+                      >
+                        <Cake 
+                          size={isCurrent ? 28 : isCompleted ? 24 : 18} 
+                          className="transition-all duration-300"
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="mt-2 text-center">
+                  <p className="text-xs opacity-90 font-medium">
+                    {completedQuestions} / {totalQuestions} შეკითხვა უპასუხებია
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Messages */}

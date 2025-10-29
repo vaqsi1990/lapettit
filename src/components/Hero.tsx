@@ -129,7 +129,7 @@ const ElegantHeroSlider = () => {
                 <div className="bg-gradient-to-br rounded-xl from-pink-50 via-rose-50 to-purple-50 ">
 
                   <Link
-                    href="/list"
+                    href="/cakes"
                     className=" text-center    md:text-[20px] text-[18px] w-full w-full bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl md:w-[70%] border-radius:20px  px-4 sm:px-6 md:px-8 py-2 text-white rounded-xl font-bold  transition-all duration-300 transform shadow-lg    "
                   >
                     საუკეთესო ტორტი შენთვის

@@ -310,7 +310,7 @@ const ProductPage = () => {
                     >
                         {/* Category Badge */}
                         <div className="inline-block">
-                            <span className="bg-pink-100 text-[#d90b6b] md:text-[20px] text-[16px] px-4 py-2 rounded-full text-sm font-medium">
+                            <span className="bg-[#d90b6b] text-white md:text-[20px] text-[16px] px-4 py-2 rounded-full text-sm font-medium">
                                 {product.categoryGeorgian}
                             </span>
                         </div>
@@ -332,15 +332,15 @@ const ProductPage = () => {
 
                         {/* Set Information - Only for SET type */}
                         {product.productType === 'SET' && (
-                            <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-3">
+                            <div className="bg-[#d90b6b] border border-pink-100 rounded-xl p-4 space-y-3">
                                 {product.setItems && product.setItems.length > 0 && (
                                     <>
-                                        <h3 className="text-[18px] md:text-[20px] font-semibold text-black">ნაკრების შემადგენლობა:</h3>
+                                        <h3 className="text-[18px] md:text-[20px] font-semibold text-white">ნაკრების შემადგენლობა:</h3>
                                         <ul className="space-y-2">
                                             {product.setItems.map((item, index) => (
                                                 <li key={index} className="flex items-start">
-                                                    <span className="text-green-600 mr-2">✓</span>
-                                                    <span className="text-black text-[16px]">{item}</span>
+                                                    <span className="text-white mr-2">✓</span>
+                                                    <span className="text-white text-[16px]">{item}</span>
                                                 </li>
                                             ))}
                                         </ul>
@@ -564,9 +564,9 @@ const ProductPage = () => {
                            
 
                             {/* Total Price Display */}
-                            <div className="bg-pink-100 p-4 rounded-xl border border-pink-200">
+                            <div className=" p-4 ">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-[18px] font-semibold text-black">სულ:</span>
+                                    <span className="text-[18px] font-semibold text-black">ჯამი:</span>
                                     <span className="text-[24px] font-bold text-pink-600">{formatPrice(totalPrice)}</span>
                                 </div>
                                 {/* Only show details for FULL_CAKE type */}

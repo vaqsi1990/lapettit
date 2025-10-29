@@ -139,7 +139,7 @@ const Services = () => {
             id: 6,
             icon: <Palette className="w-8 h-8" />,
             title: "Cake Decorating",
-            titleGeorgian: "ტორტის დეკორირება",
+            titleGeorgian: "ნამცხვრები",
             description: "Professional cake decoration services",
             descriptionGeorgian: "პროფესიონალური ტორტის დეკორირების სერვისები",
             features: [
@@ -225,10 +225,7 @@ const Services = () => {
                                         {service.descriptionGeorgian}
                                     </p>
 
-                                    {/* Price */}
-                                    <div className="text-[18px] md:text-[20px] font-bold text-pink-600 mb-4">
-                                        {service.price}
-                                    </div>
+                                   
                                 </div>
 
                                 {/* Features List */}
@@ -259,7 +256,7 @@ const Services = () => {
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, delay: 0.4 }}
-                    className=" rounded-3xl  mt-20"
+                    className=" rounded-3xl pb-4 mt-20"
                 >
                     <h3 className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-8 font-bold text-center mb-4 md:text-2xl  max-w-4xl mx-auto leading-relaxed">
                         დამატებითი სერვისები

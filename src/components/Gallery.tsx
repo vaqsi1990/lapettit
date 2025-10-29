@@ -6,7 +6,7 @@ import { motion, useTransform, AnimatePresence, useScroll } from 'framer-motion'
 import { X,  } from 'lucide-react';
 import Link from 'next/link';
 import { getCakes} from '@/lib/action';
-import { mapCakeToGalleryImage, createCategories, updateCategoryCounts, type GalleryImage, type Category, formatPrice } from '@/lib/utils';
+import { mapCakeToGalleryImage, type GalleryImage, formatPrice } from '@/lib/utils';
 
 // Separate component for parallax effects to avoid hydration issues
 const ParallaxBackground = ({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) => {
@@ -36,12 +36,10 @@ const ParallaxBackground = ({ containerRef }: { containerRef: React.RefObject<HT
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState('birthday'); // Default to birthday instead of 'all'
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -54,11 +52,6 @@ const Gallery = () => {
       if (result.success && result.data) {
         const mappedImages = result.data.map(mapCakeToGalleryImage);
         setGalleryImages(mappedImages);
-        
-        // Update categories with counts
-        const baseCategories = createCategories();
-        const updatedCategories = updateCategoryCounts(baseCategories, result.data);
-        setCategories(updatedCategories);
       }
     } catch (error) {
       console.error('Error fetching cakes:', error);
@@ -67,26 +60,17 @@ const Gallery = () => {
     }
   };
 
-  // Filter images based on selected category and limit to 4 items
-  const filteredImages = galleryImages
-    .filter(img => img.category === selectedCategory)
-    .slice(0, 4);
-
-  const openLightbox = (image: GalleryImage) => {
-    setSelectedImage(image);
-    setCurrentImageIndex(galleryImages.findIndex(img => img.id === image.id));
-  };
-
-  const closeLightbox = () => setSelectedImage(null);
+  // Show latest added items (already sorted by createdAt desc from getCakes)
+  const filteredImages = galleryImages.slice(0, 4);
 
 
 
 
 
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId);
-    // No need to fetch again - just filter locally
-  };
+
+
+
+
 
   useEffect(() => {
     setIsMounted(true);
@@ -115,28 +99,8 @@ const Gallery = () => {
         <motion.div initial={{ opacity: 0, y: 100 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }} className="text-center mb-10">
           <motion.h2 className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-4">ტორტები</motion.h2>
           <motion.p className="text-[18px] md:text-[20px] md:text-2xl text-black max-w-4xl mx-auto leading-relaxed">
-            გაიხილეთ ჩვენი ტორტების კოლექცია და აირჩიეთ თქვენი იდეალური დიზაინი
+            დაათვალიერეთ ჩვენი ტორტების კოლექცია და აირჩიეთ თქვენი იდეალური დიზაინი
           </motion.p>
-        </motion.div>
-
-        {/* Category Filter */}
-        <motion.div className="flex justify-center mb-8 md:mb-16 ">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-1 md:p-2 shadow-xl border border-white/20 w-full max-w-7xl">
-            <div className="flex flex-col md:flex-row flex-wrap justify-center gap-2 md:gap-3">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => handleCategoryChange(category.id)}
-                  className={`px-4 font-bold cursor-pointer px-5 md:px-6 py-3 rounded-2xl md:text-[20px] text-[18px] font-medium transition-all duration-300 whitespace-nowrap ${selectedCategory === category.id
-                      ? 'bg-[#d90b6b] text-white shadow-lg'
-                      : 'text-black hover:bg-white/50'
-                    }`}
-                >
-                  {category.nameGeorgian} 
-                </button>
-              ))}
-            </div>
-          </div>
         </motion.div>
 
         {/* Gallery Grid */}
@@ -146,7 +110,7 @@ const Gallery = () => {
               <motion.div
                 key={image.id}
                 className="group cursor-pointer"
-                onClick={() => openLightbox(image)}
+              
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
@@ -162,67 +126,32 @@ const Gallery = () => {
                       priority={index < 4}
                     />
                   </div>
-                  <div className="p-4 flex flex-col h-32">
-                    <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-2 line-clamp-1">
+                  <div className="p-4 flex flex-col h-44 gap-2">
+                    <h3 className="text-[18px] md:text-[20px] font-semibold text-black  line-clamp-1">
                       {image.titleGeorgian}
                     </h3>
                     {image.price && (
-                      <div className="text-[16px] md:text-[18px] font-bold text-[#d90b6b] mt-auto">
-                        {formatPrice(image.price)}
+                      <div className="text-[16px] md:text-[18px] font-bold ">
+                   ფასი:     {formatPrice(image.price)}
                       </div>
                     )}
+                    <Link href={`/product/${image.id}`} className="w-full cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">დეტალები</Link>
                   </div>
                 </motion.div>
               </motion.div>
-
             ))}
           </AnimatePresence>
         </div>
+
+        {/* Additional Cakes Link - Centered */}
+        <div className="flex pb-4 justify-center mt-8 md:mt-12">
+          <Link href="/cakes" className="cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-8 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">დამატებითი ტორტები</Link>
+        </div>
       </div>
 
-      {/* Lightbox */}
-      <AnimatePresence>
-        {selectedImage && (
-          <motion.div className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4" onClick={closeLightbox} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <motion.div className="relative max-w-6xl max-h-full bg-white rounded-2xl overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()} initial={{ scale: 0.8 }} animate={{ scale: 1 }} exit={{ scale: 0.8 }}>
-              <button onClick={closeLightbox} className="absolute top-4 right-4 z-10 bg-black/20 backdrop-blur-sm text-white p-2 rounded-full hover:bg-black/40"><X className="w-5 h-5" /></button>
-             
-              <div className="flex flex-col lg:flex-row">
-                <div className="flex-1 relative">
-                  <Image src={selectedImage.src} alt={selectedImage.alt} width={800} height={800} className="w-full h-auto object-cover" />
-                </div>
-                <div className="w-full lg:w-96 bg-white p-8 border-l border-gray-200">
-                  <div className="flex items-center space-x-3 mb-6">
-                    <div>
-                      <h3 className="font-semibold text-black text-[18px] md:text-[20px]">{selectedImage.titleGeorgian}</h3>
-                      <p className="text-[16px] md:text-[18px] font-bold text-pink-600 mb-2">{selectedImage.categoryGeorgian}</p>
-                      {selectedImage.price && (
-                        <p className="text-[18px] md:text-[20px] font-bold text-[#d90b6b] mb-2">{formatPrice(selectedImage.price)}</p>
-                      )}
-                    </div>
-                  </div>
-                
+ 
 
-                  <div className="space-y-3">
-                    <Link 
-                      href={`/product/${selectedImage.id}`}
-                      className="w-full bg-[#d90b6b] text-white py-3 px-4 rounded-lg md:text-[20px] text-[18px] font-semibold hover:bg-pink-700 transition-all duration-300 text-center block"
-                    >
-                     დეტალების ნახვა
-                    </Link>
-                    
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <style jsx>{`
-        .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-      `}</style>
+     
     </section>
   );
 };

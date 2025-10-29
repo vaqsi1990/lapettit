@@ -74,7 +74,7 @@ const Why = () => {
             transition={{ duration: 1, delay: 0.2 }}
             className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-8"
           >
-            რატომ აირჩიოთ ჩვენ?
+            რატომ შეუკვეთოთ ჩვენთან?
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 30 }}
@@ -121,45 +121,7 @@ const Why = () => {
         </div>
 
         {/* Statistics Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.6 }}
-          className="bg-white/80 backdrop-blur-sm rounded-3xl p-12 shadow-2xl border border-white/20 mb-20"
-        >
-          <div className="text-center mb-12">
-            <h3 className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-4">
-              ჩვენი მიღწევები
-            </h3>
-            <p className="text-[18px] md:text-[20px] text-black">
-              რიცხვები, რომლებიც საუბრობენ თავად
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, scale: 0.8 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
-                className="text-center"
-              >
-                <motion.div
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  transition={{ duration: 0.8, delay: 1 + index * 0.1 }}
-                  className=" font-bold  text-[24px] md:text-[30px] text-[#d90b6b]  mb-2"
-                >
-                  {stat.number}
-                </motion.div>
-                <p className="text-black text-[16px] md:text-[16px] font-medium">
-                  {stat.labelGeorgian}
-                </p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+       
 
         {/* Delivery Info Section */}
         <motion.div 
@@ -192,9 +154,9 @@ const Why = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <h4 className="text-xl font-bold text-black mb-3">მიწოდების ზონები</h4>
+                <h4 className="text-xl font-bold text-black mb-3">მიწოდების ქალაქები</h4>
                 <p className="text-black text-[14px] md:text-[16px] leading-relaxed">
-                  თბილისი, რუსთავი, ქუთაისი, ბათუმი, გორი, ზუგდიდი
+                ბათუმი
                 </p>
               </div>
             </motion.div>
