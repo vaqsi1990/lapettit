@@ -9,6 +9,12 @@ const CakeCategory = {
   Desserts: 'Desserts'
 } as const;
 
+const ProductType = {
+  FULL_CAKE: 'FULL_CAKE',
+  SET: 'SET',
+  INDIVIDUAL_SLICE: 'INDIVIDUAL_SLICE'
+} as const;
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -16,6 +22,7 @@ export async function POST(request: NextRequest) {
     const {
       name,
       category,
+      productType,
       price,
       fillings,
       isCustomizable,
@@ -26,6 +33,10 @@ export async function POST(request: NextRequest) {
       marzipanPrice,
       hasCream,
       creamPrice,
+      setItems,
+      setDescription,
+      sliceWeight,
+      sliceDescription,
     } = body;
 
     // Validate required fields
@@ -52,11 +63,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate product type
+    if (productType && !Object.values(ProductType).includes(productType)) {
+      return NextResponse.json(
+        { success: false, error: 'არასწორი პროდუქტის ტიპი' },
+        { status: 400 }
+      );
+    }
+
     // Create the cake
     const cake = await prisma.cake.create({
       data: {
         name,
         category,
+        productType: (productType || 'FULL_CAKE') as any,
         price: isCustomizable ? null : (price ? Math.round(price * 100) / 100 : null),
         fillings: fillings || [],
         isCustomizable: isCustomizable !== undefined ? isCustomizable : false,
@@ -67,7 +87,11 @@ export async function POST(request: NextRequest) {
         marzipanPrice: hasMarzipan && marzipanPrice ? Math.round(parseFloat(marzipanPrice) * 100) / 100 : null,
         hasCream: hasCream || false,
         creamPrice: hasCream && creamPrice ? Math.round(parseFloat(creamPrice) * 100) / 100 : null,
-      }
+        setItems: setItems || [],
+        setDescription: setDescription || null,
+        sliceWeight: sliceWeight || null,
+        sliceDescription: sliceDescription || null,
+      } as any
     });
 
     return NextResponse.json({

@@ -18,6 +18,11 @@ export interface GalleryImage {
   hasCream?: boolean;
   creamPrice?: number;
   price?: number; // Standard price for non-customizable cakes
+  productType?: string; // FULL_CAKE, SET, INDIVIDUAL_SLICE
+  setItems?: string[]; // Items in the set
+  setDescription?: string; // Description for sets
+  sliceWeight?: string; // Weight for individual slices
+  sliceDescription?: string; // Description for individual slices
 }
 
 export interface Category {
@@ -56,7 +61,12 @@ export function mapCakeToGalleryImage(cake: Cake): GalleryImage {
     marzipanPrice: cake.marzipanPrice ?? undefined,
     hasCream: cake.hasCream,
     creamPrice: cake.creamPrice ?? undefined,
-    price: cake.price ?? undefined
+    price: cake.price ?? undefined,
+    productType: cake.productType,
+    setItems: cake.setItems ?? undefined,
+    setDescription: cake.setDescription ?? undefined,
+    sliceWeight: cake.sliceWeight ?? undefined,
+    sliceDescription: cake.sliceDescription ?? undefined
   };
 }
 

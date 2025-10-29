@@ -37,7 +37,7 @@ const Navbar = () => {
                 href="/cakes" 
                 className="text-white  text-[16px] md:text-[20px]  px-3 py-2 rounded-md font-bold transition-colors duration-200"
               >
-               ნამუშევრები
+               ტორტები
               </Link>
           
               <Link 
@@ -86,7 +86,7 @@ const Navbar = () => {
               className="text-white block px-3 py-2 rounded-md  text-[18px] font-bold transition-colors duration-200"
               onClick={() => setIsMenuOpen(false)}
             >
-              ნამუშევრები
+              ტორტები
             </Link>
           
          

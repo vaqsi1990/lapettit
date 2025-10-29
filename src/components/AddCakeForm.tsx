@@ -12,6 +12,12 @@ const CakeCategory = {
   Desserts: 'Desserts'
 } as const;
 
+const ProductType = {
+  FULL_CAKE: 'FULL_CAKE',
+  SET: 'SET',
+  INDIVIDUAL_SLICE: 'INDIVIDUAL_SLICE'
+} as const;
+
 
 interface AddCakeFormProps {
   onCakeAdded: () => void;
@@ -22,6 +28,7 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
     name: '',
     imageUrl: '',
     category: CakeCategory.BIRTHDAY,
+    productType: ProductType.FULL_CAKE as typeof ProductType[keyof typeof ProductType],
     available: true,
     isCustomizable: false,
     price: '',
@@ -31,10 +38,15 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
     hasCream: false,
     creamPrice: '',
     pieces: '',
-    gallery: [] as string[]
+    gallery: [] as string[],
+    setItems: [] as string[],
+    setDescription: '',
+    sliceWeight: '',
+    sliceDescription: ''
   });
 
   const [fillingInput, setFillingInput] = useState('');
+  const [setItemInput, setSetItemInput] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { showToast } = useToast();
 
@@ -73,6 +85,23 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
     }));
   };
 
+  const addSetItem = () => {
+    if (setItemInput.trim() && !formData.setItems.includes(setItemInput.trim())) {
+      setFormData(prev => ({
+        ...prev,
+        setItems: [...prev.setItems, setItemInput.trim()]
+      }));
+      setSetItemInput('');
+    }
+  };
+
+  const removeSetItem = (item: string) => {
+    setFormData(prev => ({
+      ...prev,
+      setItems: prev.setItems.filter(a => a !== item)
+    }));
+  };
+
   const handleGalleryChange = (urls: string[]) => {
     setFormData(prev => ({
       ...prev,
@@ -97,6 +126,9 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
           pieces: formData.pieces ? parseInt(formData.pieces) : null,
           marzipanPrice: formData.hasMarzipan && formData.marzipanPrice ? Math.round(parseFloat(formData.marzipanPrice) * 100) / 100 : null,
           creamPrice: formData.hasCream && formData.creamPrice ? Math.round(parseFloat(formData.creamPrice) * 100) / 100 : null,
+          setDescription: formData.productType === ProductType.SET ? formData.setDescription : null,
+          sliceWeight: formData.productType === ProductType.INDIVIDUAL_SLICE ? formData.sliceWeight : null,
+          sliceDescription: formData.productType === ProductType.INDIVIDUAL_SLICE ? formData.sliceDescription : null,
         }),
       });
 
@@ -109,6 +141,7 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
           name: '',
           imageUrl: '',
           category: CakeCategory.BIRTHDAY,
+          productType: ProductType.FULL_CAKE,
           available: true,
           isCustomizable: false,
           price: '',
@@ -118,9 +151,14 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
           hasCream: false,
           creamPrice: '',
           pieces: '',
-          gallery: []
+          gallery: [],
+          setItems: [],
+          setDescription: '',
+          sliceWeight: '',
+          sliceDescription: ''
         });
         setFillingInput('');
+        setSetItemInput('');
         onCakeAdded();
       } else {
         showToast('error', `შეცდომა: ${result.error}`);
@@ -169,6 +207,52 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
             <option className='text-black ' value={CakeCategory.CUSTOM}>ინდივიდუალური</option>
             <option className='text-black ' value={CakeCategory.Desserts}>დესერტები</option>
           </select>
+        </div>
+      </div>
+
+      {/* Product Type Selection */}
+      <div className="bg-white p-6 rounded-xl">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">პროდუქტის ტიპი</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="flex items-center space-x-3">
+            <input
+              type="radio"
+              name="productType"
+              value={ProductType.FULL_CAKE}
+              checked={formData.productType === ProductType.FULL_CAKE}
+              onChange={(e) => setFormData(prev => ({ ...prev, productType: e.target.value as typeof ProductType[keyof typeof ProductType] }))}
+              className="w-5 h-5 text-pink-600 border-gray-300 focus:ring-pink-500"
+            />
+            <label className="text-[16px] text-black font-medium text-gray-700">
+              სრული ტორტი
+            </label>
+          </div>
+          <div className="flex items-center space-x-3">
+            <input
+              type="radio"
+              name="productType"
+              value={ProductType.SET}
+              checked={formData.productType === ProductType.SET}
+              onChange={(e) => setFormData(prev => ({ ...prev, productType: e.target.value as typeof ProductType[keyof typeof ProductType] }))}
+              className="w-5 h-5 text-pink-600 border-gray-300 focus:ring-pink-500"
+            />
+            <label className="text-[16px] text-black font-medium text-gray-700">
+              ნაკრები
+            </label>
+          </div>
+          <div className="flex items-center space-x-3">
+            <input
+              type="radio"
+              name="productType"
+              value={ProductType.INDIVIDUAL_SLICE}
+              checked={formData.productType === ProductType.INDIVIDUAL_SLICE}
+              onChange={(e) => setFormData(prev => ({ ...prev, productType: e.target.value as typeof ProductType[keyof typeof ProductType] }))}
+              className="w-5 h-5 text-pink-600 border-gray-300 focus:ring-pink-500"
+            />
+            <label className="text-[16px] text-black font-medium text-gray-700">
+              ინდივიდუალური ნაჭერი
+            </label>
+          </div>
         </div>
       </div>
 
@@ -225,21 +309,115 @@ const AddCakeForm: React.FC<AddCakeFormProps> = ({ onCakeAdded }) => {
         </div>
       )}
 
-      {/* Pieces Field */}
-      <div>
-        <label className="block text-[16px] text-black font-medium text-gray-700 mb-2">
-          ნაჭრები
-        </label>
-        <input
-          type="number"
-          name="pieces"
-          value={formData.pieces}
-          onChange={handleInputChange}
-          min="1"
-          className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
-          placeholder="მაგ: 8, 12, 16"
-        />
-      </div>
+      {/* Pieces Field - Only for FULL_CAKE */}
+      {formData.productType === ProductType.FULL_CAKE && (
+        <div>
+          <label className="block text-[16px] text-black font-medium text-gray-700 mb-2">
+            ნაჭრები
+          </label>
+          <input
+            type="number"
+            name="pieces"
+            value={formData.pieces}
+            onChange={handleInputChange}
+            min="1"
+            className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+            placeholder="მაგ: 8, 12, 16"
+          />
+        </div>
+      )}
+
+      {/* Set Items - Only for SET */}
+      {formData.productType === ProductType.SET && (
+        <>
+          <div>
+            <label className="block text-[16px] text-black font-medium text-gray-700 mb-2">
+              ნაკრებში შემავალი პროდუქტები
+            </label>
+            <div className="flex gap-2 mb-3">
+              <input
+                type="text"
+                value={setItemInput}
+                onChange={(e) => setSetItemInput(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSetItem())}
+                className="flex-1 text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+                placeholder="დაამატეთ პროდუქტი (მაგ: 4 ტორტის ნაჭერი, 2 ნაღვლის რქა)"
+              />
+              <button
+                type="button"
+                onClick={addSetItem}
+                className="px-6 py-3 bg-pink-500 text-white rounded-xl hover:bg-pink-600 transition-colors"
+              >
+                დამატება
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {formData.setItems.map((item, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-[16px] text-black flex items-center gap-2"
+                >
+                  {item}
+                  <button
+                    type="button"
+                    onClick={() => removeSetItem(item)}
+                    className="text-green-600 hover:text-green-800"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[16px] text-black font-medium text-gray-700 mb-2">
+              ნაკრების აღწერა
+            </label>
+            <textarea
+              name="setDescription"
+              value={formData.setDescription}
+              onChange={handleInputChange}
+              rows={3}
+              className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+              placeholder="ნაკრების დეტალური აღწერა..."
+            />
+          </div>
+        </>
+      )}
+
+      {/* Individual Slice Fields - Only for INDIVIDUAL_SLICE */}
+      {formData.productType === ProductType.INDIVIDUAL_SLICE && (
+        <>
+          <div>
+            <label className="block text-[16px] text-black font-medium text-gray-700 mb-2">
+              ნაჭრის წონა
+            </label>
+            <input
+              type="text"
+              name="sliceWeight"
+              value={formData.sliceWeight}
+              onChange={handleInputChange}
+              className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+              placeholder="მაგ: 200გრ, 250გრ"
+            />
+          </div>
+
+          <div>
+            <label className="block text-[16px] text-black font-medium text-gray-700 mb-2">
+              ნაჭრის აღწერა
+            </label>
+            <textarea
+              name="sliceDescription"
+              value={formData.sliceDescription}
+              onChange={handleInputChange}
+              rows={3}
+              className="w-full text-black placeholder:text-black px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
+              placeholder="ნაჭრის დეტალური აღწერა..."
+            />
+          </div>
+        </>
+      )}
 
       {/* Fillings */}
       <div>

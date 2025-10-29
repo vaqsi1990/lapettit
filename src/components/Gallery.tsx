@@ -113,7 +113,7 @@ const Gallery = () => {
       <div className="relative z-10 container mx-auto px-4 ">
         {/* Header */}
         <motion.div initial={{ opacity: 0, y: 100 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }} className="text-center mb-10">
-          <motion.h2 className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-4">ჩვენი ნამუშევრები</motion.h2>
+          <motion.h2 className="text-[20px] md:text-[30px] font-bold text-[#d90b6b] mb-4">ტორტები</motion.h2>
           <motion.p className="text-[18px] md:text-[20px] md:text-2xl text-black max-w-4xl mx-auto leading-relaxed">
             გაიხილეთ ჩვენი ტორტების კოლექცია და აირჩიეთ თქვენი იდეალური დიზაინი
           </motion.p>

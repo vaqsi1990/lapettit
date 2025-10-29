@@ -278,7 +278,6 @@ const ProductPage = () => {
         product.src,
         product.src
     ];
-console.log(product);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 pt-20">
@@ -321,14 +320,62 @@ console.log(product);
                             <h1 className="text-[24px] md:text-[32px] font-bold text-black mb-3 leading-tight">
                                 {product.titleGeorgian}
                             </h1>
-                            {/* <div className="text-[18px] text-gray-600 mb-4">
-                                {product.pieces} ნაჭერი
-                            </div> */}
+                            {/* Product Type Badge */}
+                         
+                            
+                            {product.productType === 'FULL_CAKE' && product.pieces && (
+                                <div className="text-[18px] text-gray-600 mb-4">
+                                    {product.pieces} ნაჭერი
+                                </div>
+                            )}
                         </div>
 
+                        {/* Set Information - Only for SET type */}
+                        {product.productType === 'SET' && (
+                            <div className="bg-green-50 border border-green-200 rounded-xl p-4 space-y-3">
+                                {product.setItems && product.setItems.length > 0 && (
+                                    <>
+                                        <h3 className="text-[18px] md:text-[20px] font-semibold text-black">ნაკრების შემადგენლობა:</h3>
+                                        <ul className="space-y-2">
+                                            {product.setItems.map((item, index) => (
+                                                <li key={index} className="flex items-start">
+                                                    <span className="text-green-600 mr-2">✓</span>
+                                                    <span className="text-black text-[16px]">{item}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </>
+                                )}
+                                {product.setDescription && (
+                                    <div className={product.setItems && product.setItems.length > 0 ? "mt-3" : ""}>
+                                        <p className="text-black text-[16px]">{product.setDescription}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Individual Slice Information - Only for INDIVIDUAL_SLICE type */}
+                        {product.productType === 'INDIVIDUAL_SLICE' && (product.sliceWeight || product.sliceDescription) && (
+                            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 space-y-3">
+                                {product.sliceWeight && (
+                                    <div>
+                                        <span className="text-[18px] font-semibold text-black">წონა: </span>
+                                        <span className="text-black text-[16px]">{product.sliceWeight}</span>
+                                    </div>
+                                )}
+                                {product.sliceDescription && (
+                                    <div>
+                                        <h3 className="text-[18px] font-semibold text-black mb-2">აღწერა:</h3>
+                                        <p className="text-black text-[16px]">{product.sliceDescription}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
 
-                        {(product.hasMarzipan || product.hasCream) && (
+
+                        {/* Topping selection - Only for FULL_CAKE */}
+                        {product.productType === 'FULL_CAKE' && (product.hasMarzipan || product.hasCream) && (
                             <div className="space-y-3">
                                 <label className="text-[20px] font-medium text-black">აირჩიეთ ტორტის ტიპი:</label>
                                 <div className={`grid gap-2 ${product.hasMarzipan && product.hasCream ? 'grid-cols-2' : 'grid-cols-1'}`}>
@@ -372,8 +419,8 @@ console.log(product);
                             </div>
                         )}
 
-                        {/* Customization Options */}
-                        {product.isCustomizable && (
+                        {/* Customization Options - Only for FULL_CAKE */}
+                        {product.productType === 'FULL_CAKE' && product.isCustomizable && (
                             <div className=" p-4 rounded-xl ">
                                 <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4"> ტორტის ნაჭრების  არჩევა</h3>
 
@@ -428,8 +475,8 @@ console.log(product);
                             </div>
                         )}
 
-                        {/* Cake Personalization - Only for customizable cakes */}
-                        {product.isCustomizable && (
+                        {/* Cake Personalization - Only for customizable FULL_CAKE */}
+                        {product.productType === 'FULL_CAKE' && product.isCustomizable && (
                             <div className="">
                                 <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4">ტორტის პერსონალიზაცია</h3>
                                 
@@ -522,34 +569,39 @@ console.log(product);
                                     <span className="text-[18px] font-semibold text-black">სულ:</span>
                                     <span className="text-[24px] font-bold text-pink-600">{formatPrice(totalPrice)}</span>
                                 </div>
-                                <div className="text-[16px] text-black mt-1">
-                                    {product.isCustomizable ? (
-                                        <>
-                                            {getPieceOptions().find(option => option.pieces === selectedPieces)?.label} ({getPieceOptions().find(option => option.pieces === selectedPieces)?.coverage}) × {quantity}
-                                        </>
-                                    ) : (
-                                        <span>რაოდენობა: {quantity}</span>
-                                    )}
-                                </div>
-                                <div className="text-[15px] text-black mt-1">
-                                    {product.isCustomizable ? (
-                                        <>
-                                            {selectedTopping === 'marzipan' ? 'მარცეპანით' : selectedTopping === 'cream' ? 'კრემით' : ''}
-                                            {selectedFilling && ` • ${fillingOptions.find(f => f.id === selectedFilling)?.name}`}
-                                            {cakeName && ` • სახელი: ${cakeName}`}
-                                            {age && ` • ასაკი: ${age}`}
-                                            {position && ` • პოზიცია: ${position === 'bottom' ? 'ქვევით' : position === 'center' ? 'ცენტრში' : 'ზევით'}`}
-                                        </>
-                                    ) : (
-                                        <span>სტანდარტული ტორტი</span>
-                                    )}
-                                </div>
+                                {/* Only show details for FULL_CAKE type */}
+                                {product.productType === 'FULL_CAKE' && (
+                                    <>
+                                        <div className="text-[16px] text-black mt-1">
+                                            {product.isCustomizable ? (
+                                                <>
+                                                    {getPieceOptions().find(option => option.pieces === selectedPieces)?.label} ({getPieceOptions().find(option => option.pieces === selectedPieces)?.coverage}) × {quantity}
+                                                </>
+                                            ) : (
+                                                <span>რაოდენობა: {quantity}</span>
+                                            )}
+                                        </div>
+                                        <div className="text-[15px] text-black mt-1">
+                                            {product.isCustomizable ? (
+                                                <>
+                                                    {selectedTopping === 'marzipan' ? 'მარცეპანით' : selectedTopping === 'cream' ? 'კრემით' : ''}
+                                                    {selectedFilling && ` • ${fillingOptions.find(f => f.id === selectedFilling)?.name}`}
+                                                    {cakeName && ` • სახელი: ${cakeName}`}
+                                                    {age && ` • ასაკი: ${age}`}
+                                                    {position && ` • პოზიცია: ${position === 'bottom' ? 'ქვევით' : position === 'center' ? 'ცენტრში' : 'ზევით'}`}
+                                                </>
+                                            ) : (
+                                                <span>სტანდარტული ტორტი</span>
+                                            )}
+                                        </div>
+                                    </>
+                                )}
                             </div>
 
 
                             {/* Action Buttons */}
                             <div className="space-y-3">
-                                {product.isCustomizable ? (
+                                {product.productType === 'FULL_CAKE' && product.isCustomizable ? (
                                     <div className="space-y-2">
                                         <button 
                                             onClick={async () => {
@@ -579,14 +631,15 @@ console.log(product);
                                 ) : (
                                     <button 
                                         onClick={async () => {
-                                            // Store standard cake data in sessionStorage
-                                            const cakeData = {
+                                            // Store standard product data in sessionStorage
+                                            const productData = {
                                                 cakeId: product.id,
                                                 price: totalPrice,
-                                                isStandard: true
+                                                isStandard: true,
+                                                productType: product.productType
                                             };
                                             
-                                            sessionStorage.setItem(`cake_${product.id}`, JSON.stringify(cakeData));
+                                            sessionStorage.setItem(`cake_${product.id}`, JSON.stringify(productData));
                                             
                                             // Navigate to order page
                                             window.location.href = `/order/${product.id}`;

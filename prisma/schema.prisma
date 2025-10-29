@@ -14,6 +14,13 @@ enum CakeCategory {
   CUSTOM
   Desserts
 }
+
+enum ProductType {
+  FULL_CAKE       // სრული ტორტი
+  SET             // ნაკრები
+  INDIVIDUAL_SLICE // ინდივიდუალური ნაჭერი
+}
+
 model Cake {
   id            Int        @id @default(autoincrement())
   name          String
@@ -22,6 +29,7 @@ model Cake {
   imageUrl      String?     // მთავარი სურათი
 
   category      CakeCategory
+  productType   ProductType @default(FULL_CAKE)  // პროდუქტის ტიპი
   available     Boolean     @default(true)  // არის თუ არა გაყიდვაში
 
   // კონფიგურაცია
@@ -38,7 +46,15 @@ model Cake {
   creamPrice    Float?
 
   // ზომები
-  pieces        Int?        // ნაჭრები (მაგ: 8, 12, 16)
+  pieces        Int?        // ნაჭრები (მაგ: 8, 12, 16) - FULL_CAKE-ისთვის
+
+  // ნაკრებისთვის (SET)
+  setItems      String[]    // ნაკრებში შემავალი პროდუქტები (მაგ: ["4 ტორტის ნაჭერი", "2 ნაღვლის რქა"])
+  setDescription String?    // ნაკრების აღწერა
+
+  // ინდივიდუალური ნაჭრისთვის (INDIVIDUAL_SLICE)
+  sliceWeight   String?     // ნაჭრის წონა (მაგ: "200გრ")
+  sliceDescription String?  // ნაჭრის აღწერა
 
   // Custom დეტალები (მხოლოდ მაშინ თუ isCustomizable == true)
   age           String?     // მაგ: "2 წლის", "18 წლის"

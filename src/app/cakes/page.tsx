@@ -13,6 +13,8 @@ const CakesPage = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [cakes, setCakes] = useState<GalleryImage[]>([])
   const [loading, setLoading] = useState(true)
+  const [minPrice, setMinPrice] = useState<number>(0)
+  const [maxPrice, setMaxPrice] = useState<number>(1000)
   const itemsPerPage = 9
 
   const categories = [
@@ -33,6 +35,16 @@ const CakesPage = () => {
         if (result.success && result.data) {
           const mappedCakes = result.data.map(mapCakeToGalleryImage)
           setCakes(mappedCakes)
+          
+          // Calculate min and max prices from available cakes
+          const prices = mappedCakes
+            .map(cake => cake.price)
+            .filter((price): price is number => price !== undefined && price !== null)
+          
+          if (prices.length > 0) {
+            setMinPrice(Math.floor(Math.min(...prices)))
+            setMaxPrice(Math.ceil(Math.max(...prices)))
+          }
         }
       } catch (error) {
         console.error('Error fetching cakes:', error)
@@ -44,7 +56,27 @@ const CakesPage = () => {
     fetchCakes()
   }, [])
 
-  // Filter cakes based on category and search
+  // State for price range filter
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000])
+  
+  // Update price range when cakes are loaded
+  useEffect(() => {
+    if (cakes.length > 0) {
+      const prices = cakes
+        .map(cake => cake.price)
+        .filter((price): price is number => price !== undefined && price !== null && price > 0)
+      
+      if (prices.length > 0) {
+        const min = Math.floor(Math.min(...prices))
+        const max = Math.ceil(Math.max(...prices))
+        setMinPrice(min)
+        setMaxPrice(max)
+        setPriceRange([min, max])
+      }
+    }
+  }, [cakes])
+
+  // Filter cakes based on category, search, and price
   const filteredCakes = useMemo(() => {
     let filtered = cakes
     
@@ -58,8 +90,19 @@ const CakesPage = () => {
       )
     }
     
+    // Filter by price range
+    if (priceRange[0] > 0 || priceRange[1] < maxPrice) {
+      filtered = filtered.filter(cake => {
+        if (cake.price === undefined || cake.price === null || cake.price === 0) {
+          // For customizable cakes without price, include them
+          return true
+        }
+        return cake.price >= priceRange[0] && cake.price <= priceRange[1]
+      })
+    }
+    
     return filtered
-  }, [selectedCategory, searchQuery, cakes])
+  }, [selectedCategory, searchQuery, priceRange, maxPrice, cakes])
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredCakes.length / itemsPerPage)
@@ -113,7 +156,7 @@ const CakesPage = () => {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1)
-  }, [selectedCategory, searchQuery])
+  }, [selectedCategory, searchQuery, priceRange])
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -202,32 +245,90 @@ const CakesPage = () => {
                   </div>
                 </div>
 
-                {/* Top Sale Products */}
-                <div>
-                  <h3 className="md:text-[20px] text-[18px] font-semibold text-black mb-4">ტოპ გაყიდვები</h3>
-                  <div className="space-y-4">
-                    {cakes.slice(0, 3).map((cake) => (
-                      <div key={cake.id} className="flex items-center space-x-3">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden text-[16px] md:text-[18px]">
-                          <Image
-                            src={cake.src}
-                            alt={cake.titleGeorgian}
-                            width={64}
-                            height={64}
-                            className="w-full h-full object-cover"
+                {/* Price Filter */}
+                {/* {minPrice > 0 && maxPrice > minPrice && (
+                  <div className="mb-8">
+                    <h3 className="md:text-[20px] text-[18px] font-semibold text-black mb-4">ფასი</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-[14px] text-black">₾{priceRange[0]}</span>
+                          <span className="text-[14px] text-black">₾{priceRange[1]}</span>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 mb-3">
+                          <input
+                            type="number"
+                            min={minPrice}
+                            max={maxPrice}
+                            value={priceRange[0]}
+                            onChange={(e) => {
+                              const value = Math.max(minPrice, Math.min(Number(e.target.value) || minPrice, priceRange[1]))
+                              setPriceRange([value, priceRange[1]])
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500 text-black text-[14px]"
+                            placeholder="მინ"
+                          />
+                          <input
+                            type="number"
+                            min={minPrice}
+                            max={maxPrice}
+                            value={priceRange[1]}
+                            onChange={(e) => {
+                              const value = Math.min(maxPrice, Math.max(Number(e.target.value) || maxPrice, priceRange[0]))
+                              setPriceRange([priceRange[0], value])
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500 text-black text-[14px]"
+                            placeholder="მაქს"
                           />
                         </div>
-                        <div className="flex-1">
-                          <h4 className="md:text-[18px] text-[16px] font-medium text-black">{cake.titleGeorgian}</h4>
-                          <div className="flex items-center space-x-1">
-                            {renderStars(4.5)}
-                          </div>
-                       
+                        <div className="relative h-4 py-1">
+                          <div
+                            className="absolute h-2 bg-gray-200 rounded-lg w-full top-1/2 -translate-y-1/2"
+                            style={{
+                              background: maxPrice > minPrice ? `linear-gradient(to right, #e5e7eb 0%, #e5e7eb ${((priceRange[0] - minPrice) / (maxPrice - minPrice)) * 100}%, #ec4899 ${((priceRange[0] - minPrice) / (maxPrice - minPrice)) * 100}%, #ec4899 ${((priceRange[1] - minPrice) / (maxPrice - minPrice)) * 100}%, #e5e7eb ${((priceRange[1] - minPrice) / (maxPrice - minPrice)) * 100}%, #e5e7eb 100%)` : '#e5e7eb'
+                            }}
+                          />
+                          <input
+                            type="range"
+                            min={minPrice}
+                            max={maxPrice}
+                            step={1}
+                            value={priceRange[0]}
+                            onChange={(e) => {
+                              const min = Math.max(minPrice, Math.min(Number(e.target.value), priceRange[1] - 1))
+                              setPriceRange([min, priceRange[1]])
+                            }}
+                            className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer z-20 top-1/2 -translate-y-1/2"
+                          />
+                          <input
+                            type="range"
+                            min={minPrice}
+                            max={maxPrice}
+                            step={1}
+                            value={priceRange[1]}
+                            onChange={(e) => {
+                              const max = Math.min(maxPrice, Math.max(Number(e.target.value), priceRange[0] + 1))
+                              setPriceRange([priceRange[0], max])
+                            }}
+                            className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer z-30 top-1/2 -translate-y-1/2"
+                          />
                         </div>
                       </div>
-                    ))}
+                      {priceRange[0] !== minPrice || priceRange[1] !== maxPrice ? (
+                        <button
+                          onClick={() => {
+                            setPriceRange([minPrice, maxPrice])
+                          }}
+                          className="w-full text-[14px] text-[#d90b6b] hover:text-pink-700 font-medium"
+                        >
+                          ფილტრის გასუფთავება
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
-                </div>
+                )} */}
+
+             
               </div>
             </div>
 

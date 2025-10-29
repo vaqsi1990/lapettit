@@ -33,6 +33,7 @@ interface Cake {
   name: string;
   imageUrl: string | null;
   category: string;
+  productType?: string;
   pieces: number | null;
   marzipanPrice: number | null;
   creamPrice: number | null;
@@ -42,6 +43,10 @@ interface Cake {
   isCustomizable: boolean;
   available: boolean;
   price?: number | null;
+  setItems?: string[];
+  setDescription?: string | null;
+  sliceWeight?: string | null;
+  sliceDescription?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
