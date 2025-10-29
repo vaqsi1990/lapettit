@@ -5,6 +5,7 @@ import Services from "../components/Services";
 import Why from "@/components/Why";
 import Swiper from "@/components/Swiper";
 import Gallery from "@/components/Gallery";
+import About from "@/components/About";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
         <Services />
         <Gallery />
         <Swiper />
+        <About />
         {/* <SpecialOffers /> */}
         <Why />
       </div>
