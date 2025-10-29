@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { motion, useTransform, useScroll, AnimatePresence } from 'framer-motion';
+import { motion, useTransform, useScroll } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { getCakes} from '@/lib/action';
@@ -40,8 +40,6 @@ const ParallaxBackground = ({ containerRef }: { containerRef: React.RefObject<HT
 };
 
 const Gallery = () => {
-  const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null);
-
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
@@ -68,7 +66,7 @@ const Gallery = () => {
   // Show latest added items (already sorted by createdAt desc from getCakes)
   const filteredImages = galleryImages.slice(0, 8);
   
-  const swiperRef = useRef<any>(null);
+  const swiperRef = useRef<React.ComponentRef<typeof SwiperComponent>>(null);
 
 
 
