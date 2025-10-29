@@ -1,92 +1,148 @@
 "use client";
 
-import React from 'react';
-import { Facebook, Instagram,  Mail, Phone, MapPin } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import Image from "next/image";
+import { Facebook, Instagram, Mail, Phone, MapPin, Heart } from "lucide-react";
+import Link from "next/link";
+import { getCakes } from "@/lib/action";
+import { mapCakeToGalleryImage, type GalleryImage } from "@/lib/utils";
+import { Swiper as SwiperComponent, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+import "swiper/css";
 
 const Footer = () => {
-  return (
-    <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-      {/* Main Footer Content */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 py-10 text-center md:text-left md:py-10 md:grid-cols-4 ">
-          
-          {/* Company Info */}
-          <div
-            className="lg:col-span-2"
-          >
-            <h3 className="text-2xl font-bold text-white mb-4"> Sweet Dreams</h3>
-            <p className="text-white text-[16px] md:text-[18px] leading-relaxed mb-6 max-w-md">
-              ჩვენ ვქმნით არა მხოლოდ ტორტებს, არამედ უნიკალურ გამოცდილებას, 
-              რომელიც თქვენს სპეციალურ დღეს გახდის უვივი და დავიწყებადი.
-            </p>
-            <div className="flex space-x-4 mb-4 justify-center md:justify-start">
-              <a
-                href="https://www.facebook.com/lappetitbatumy"  target='_blank'
-                className="w-10 h-10 bg-pink-600  hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
-              >
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a target='_blank'
-                href="https://www.instagram.com/lappetitbatumi?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
-                className="w-10 h-10 bg-pink-600  hover:bg-pink-600 rounded-full flex items-center justify-center transition-colors duration-300"
-              >
-                <Instagram className="w-5 h-5" />
-              </a>
+  const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
 
+  useEffect(() => {
+    const fetchCakes = async () => {
+      try {
+        const result = await getCakes();
+        if (result.success && result.data) {
+          const mappedImages = result.data.map(mapCakeToGalleryImage);
+          setGalleryImages(mappedImages.slice(0, 12));
+        }
+      } catch (error) {
+        console.error("Error fetching cakes for footer gallery:", error);
+      }
+    };
+    fetchCakes();
+  }, []);
+
+  return (
+    <footer className=" bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
+   
+
+      {/* 🎂 Main Footer Content */}
+      <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-16 px-6">
+        <div className="container mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+          {/* Company Info */}
+          <div>
+            <h3 className="text-2xl font-[Cormorant_Garamond] font-bold mb-4">
+              Lappetit
+            </h3>
+            <p className="text-white mb-6 leading-relaxed text-[16px]">
+              ჩვენ ვქმნით არა მხოლოდ ტორტებს, არამედ ტკბილ ემოციებს — ყოველი შეკვეთა სიყვარულითა და დახვეწილობით.
+            </p>
+            <div className="flex space-x-4">
+              <a
+                href="https://www.facebook.com/lappetitbatumy"
+                target="_blank"
+                className="w-10 h-10 rounded-full bg-[#c23b6d] flex items-center justify-center text-white hover:bg-[#a5305b] transition-all"
+              >
+                <Facebook size={18} />
+              </a>
+              <a
+                href="https://www.instagram.com/lappetitbatumi"
+                target="_blank"
+                className="w-10 h-10 rounded-full bg-[#c23b6d] flex items-center justify-center text-white hover:bg-[#a5305b] transition-all"
+              >
+                <Instagram size={18} />
+              </a>
             </div>
           </div>
 
           {/* Quick Links */}
-          <div className='text-[16px] md:text-[18px]'
-          >
-            <h4 className="text-lg font-semibold text-white mb-4">სწრაფი ბმულები</h4>
-            <ul className="space-y-2">
+          <div>
+            <h4 className="text-xl font-[Cormorant_Garamond] font-semibold text-white mb-4">
+              სწრაფი ბმულები
+            </h4>
+            <ul className="space-y-2 text-[16px]">
               <li>
-                <a href="#" className="text-white hover:text-pink-400 transition-colors duration-300">
+                <Link href="/" className="hover:text-[#c23b6d] transition-colors">
                   მთავარი
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="/cakes" className="text-white  hover:text-pink-400 transition-colors duration-300">
-                 ტორტები
-                </a>
+                <Link href="/cakes" className="hover:text-[#c23b6d] transition-colors">
+                  ტორტები
+                </Link>
               </li>
-             
-              
               <li>
-                <a href="/contact" className="text-white hover:text-pink-400 transition-colors duration-300">
+                <Link href="/contact" className="hover:text-[#c23b6d] transition-colors">
                   კონტაქტი
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
 
           {/* Contact Info */}
-          <div className='text-[16px] md:text-[18px]'
-          >
-            <h4 className=" text-[16px] md:text-[18px] font-semibold text-white mb-4">კონტაქტი</h4>
-              <div className="space-y-3 justify-center md:justify-start items-center md:items-start text-[16px] md:text-[18px]">
-              <div className="flex items-center space-x-3">
-                <Phone className="w-4 h-4 text-pink-600" />
-                <span className="text-white text-[16px] md:text-[18px]">+995599332050</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Mail className="w-4 h-4 text-pink-600" />
-                <span className="text-white text-[16px] md:text-[18px]">Lappetit2019@gmail.com</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="w-4 h-4 text-pink-600" />
-                <span className="text-white text-[16px] md:text-[18px]">67 ლერმონტოვის ქუჩა, ბათუმი</span>
-              </div>
-            
-            </div>
+          <div>
+            <h4 className="text-xl font-[Cormorant_Garamond] font-semibold text-white mb-4">
+              კონტაქტი
+            </h4>
+            <ul className="space-y-3 text-[16px]">
+              <li className="flex items-center gap-3">
+                <Phone size={18} className="text-[#c23b6d]" />
+                <span>+995 599 332 050</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Mail size={18} className="text-[#c23b6d]" />
+                <span>Lappetit2019@gmail.com</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <MapPin size={18} className="text-[#c23b6d]" />
+                <span>67 ლერმონტოვის ქუჩა, ბათუმი</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Gallery */}
+          <div>
+            <h4 className="text-xl font-[Cormorant_Garamond] font-semibold text-white mb-4">
+              გალერეა
+            </h4>
+            {galleryImages.length > 0 && (
+              <SwiperComponent
+                modules={[Autoplay]}
+                slidesPerView={1}
+                loop
+                autoplay={{
+                  delay: 6000,
+                  disableOnInteraction: false,
+                }}
+                className="rounded-xl overflow-hidden shadow-lg"
+              >
+                {galleryImages.map((image) => (
+                  <SwiperSlide key={image.id}>
+                    <Link href={`/product/${image.id}`}>
+                      <div className="relative w-full h-44 rounded-xl overflow-hidden group">
+                        <Image
+                          src={image.src}
+                          alt={image.alt}
+                          fill
+                          className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        />
+                      </div>
+                    </Link>
+                  </SwiperSlide>
+                ))}
+              </SwiperComponent>
+            )}
           </div>
         </div>
-
-   
       </div>
 
-   
+     
     </footer>
   );
 };

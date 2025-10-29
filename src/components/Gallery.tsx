@@ -2,11 +2,16 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { motion, useTransform, AnimatePresence, useScroll } from 'framer-motion';
-import { X,  } from 'lucide-react';
+import { motion, useTransform, useScroll, AnimatePresence } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { getCakes} from '@/lib/action';
 import { mapCakeToGalleryImage, type GalleryImage, formatPrice } from '@/lib/utils';
+import { Swiper as SwiperComponent, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 // Separate component for parallax effects to avoid hydration issues
 const ParallaxBackground = ({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) => {
@@ -61,7 +66,9 @@ const Gallery = () => {
   };
 
   // Show latest added items (already sorted by createdAt desc from getCakes)
-  const filteredImages = galleryImages.slice(0, 4);
+  const filteredImages = galleryImages.slice(0, 8);
+  
+  const swiperRef = useRef<any>(null);
 
 
 
@@ -103,44 +110,106 @@ const Gallery = () => {
           </motion.p>
         </motion.div>
 
-        {/* Gallery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <AnimatePresence mode="wait">
-            {filteredImages.map((image, index) => (
-              <motion.div
-                key={image.id}
-                className="group cursor-pointer"
-              
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <motion.div className="relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:scale-[1.02] h-full">
-                  <div className="relative w-full aspect-[4/5] overflow-hidden">
-                    <Image
-                      src={image.src}
-                      alt={image.alt}
-                      fill
-                      className="object-cover group-hover:scale-110 transition-transform duration-700"
-                      priority={index < 4}
-                    />
+        {/* Carousel */}
+        <div className="relative w-full">
+          {/* Navigation Arrows - Outside carousel */}
+          <button 
+            className="gallery-button-prev absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg cursor-pointer transition-all duration-300 hover:scale-110"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft className="w-6 h-6 text-gray-700" />
+          </button>
+          
+          <button 
+            className="gallery-button-next absolute right-0 md:-right-12 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg cursor-pointer transition-all duration-300 hover:scale-110"
+            aria-label="Next slide"
+          >
+            <ChevronRight className="w-6 h-6 text-gray-700" />
+          </button>
+
+          {/* Swiper Container with padding */}
+          <div className="px-8 md:px-12">
+            <SwiperComponent
+              ref={swiperRef}
+              modules={[Navigation, Pagination]}
+              spaceBetween={20}
+              slidesPerView={1}
+              breakpoints={{
+                640: {
+                  slidesPerView: 2,
+                  spaceBetween: 20,
+                },
+                768: {
+                  slidesPerView: 3,
+                  spaceBetween: 24,
+                },
+                1024: {
+                  slidesPerView: 4,
+                  spaceBetween: 24,
+                },
+              }}
+              navigation={{
+                nextEl: '.gallery-button-next',
+                prevEl: '.gallery-button-prev',
+              }}
+              pagination={{
+                clickable: true,
+                bulletActiveClass: 'gallery-pagination-active',
+                bulletClass: 'gallery-pagination-bullet',
+              }}
+              className="!pb-12"
+            >
+              {filteredImages.map((image, index) => (
+                <SwiperSlide key={image.id}>
+                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-full flex flex-col border border-gray-100">
+                    {/* Image */}
+                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-gray-100">
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        className="object-cover hover:scale-105 transition-transform duration-500"
+                        priority={index < 4}
+                      />
+                    </div>
+                    
+                    {/* Content */}
+                    <div className="p-4 flex flex-col flex-1">
+                      <h3 className="text-base md:text-lg font-bold text-center text-gray-900 mb-2 line-clamp-1">
+                        {image.titleGeorgian}
+                      </h3>
+                      {image.price && (
+                        <p className="text-base md:text-lg font-bold text-center text-gray-900 mb-4">
+                          {formatPrice(image.price)}
+                        </p>
+                      )}
+                      <Link 
+                        href={`/product/${image.id}`}
+                        className="w-full md:w-[200px] mx-auto cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-2 px-4 text-center rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                      >
+                        დეტალები
+                      </Link>
+                    </div>
                   </div>
-                  <div className="p-4 flex flex-col h-44 gap-2">
-                    <h3 className="text-[18px] md:text-[20px] font-semibold text-black  line-clamp-1">
-                      {image.titleGeorgian}
-                    </h3>
-                    {image.price && (
-                      <div className="text-[16px] md:text-[18px] font-bold ">
-                   ფასი:     {formatPrice(image.price)}
-                      </div>
-                    )}
-                    <Link href={`/product/${image.id}`} className="w-full cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">დეტალები</Link>
-                  </div>
-                </motion.div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
+                </SwiperSlide>
+              ))}
+            </SwiperComponent>
+          </div>
+
+          {/* Custom Pagination Styles */}
+          <style jsx global>{`
+            .gallery-pagination-bullet {
+              width: 10px;
+              height: 10px;
+              background: #e5e7eb;
+              opacity: 1;
+              border-radius: 50%;
+              margin: 0 4px;
+            }
+            .gallery-pagination-active {
+              background: #d90b6b;
+            }
+          `}</style>
         </div>
 
         {/* Additional Cakes Link - Centered */}
