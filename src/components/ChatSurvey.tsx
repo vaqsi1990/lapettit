@@ -381,10 +381,30 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
     }
   }, [surveyState.sessionId, isOpen, lastMessageId, isChatEnded]);
 
+  // Auto-select and submit for question 15 (hidden question - always select bot form option 0)
+  useEffect(() => {
+    if (surveyState.question?.id === 15 && !answeredQuestions.has(15) && surveyState.sessionId) {
+      console.log('Question 15 detected - auto-selecting option 0 (bot form)', {
+        questionId: surveyState.question.id,
+        sessionId: surveyState.sessionId,
+        answeredQuestions: Array.from(answeredQuestions)
+      });
+      setSelectedOption(0);
+      // Auto-submit after a short delay to ensure state is set
+      const timer = setTimeout(() => {
+        console.log('Auto-submitting question 15 answer...');
+        submitAnswer();
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyState.question?.id, surveyState.sessionId, answeredQuestions]);
+
   // Auto-submit for multiple choice questions
   useEffect(() => {
     if (selectedOption !== null && surveyState.question?.type === 'multiple_choice' && 
-        surveyState.question && !answeredQuestions.has(surveyState.question.id)) {
+        surveyState.question && !answeredQuestions.has(surveyState.question.id) &&
+        surveyState.question.id !== 15) { // Don't auto-submit for question 15 (handled above)
       const timer = setTimeout(() => {
         submitAnswer();
       }, 300);
@@ -426,13 +446,22 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
       console.log('Chat API response:', data);
       
       if (data.success) {
-        console.log('Setting messages...');
+        console.log('Setting messages...', {
+          questionId: data.question.id,
+          questionText: data.question.text,
+          isQuestion15: data.question.id === 15
+        });
         setSurveyState({
           sessionId: data.session.sessionId,
           currentStep: data.session.currentStep,
           isComplete: false,
           question: data.question
         });
+        
+        // If question 15, log that auto-submit should trigger
+        if (data.question.id === 15) {
+          console.log('Question 15 detected in initializeChat - auto-submit should trigger');
+        }
 
         // Customize welcome message and questions based on product
         const welcomeText = productId && productName 
@@ -454,19 +483,25 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
           }
         }
 
+        // Don't add question 15 to messages (it's hidden and auto-handled)
+        const isQuestion15 = data.question.id === 15;
         const initialMessages: Message[] = [
           {
             type: 'bot',
             text: welcomeText,
             options: undefined,
             imageUrl: productImage
-          },
-          {
+          }
+        ];
+        
+        // Only add question to messages if it's not question 15
+        if (!isQuestion15) {
+          initialMessages.push({
             type: 'bot',
             text: firstQuestionText,
             options: data.question.options
-          }
-        ];
+          });
+        }
 
         setMessages(initialMessages);
 
@@ -484,16 +519,18 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
             })
           });
 
-          // Save first question
-          await fetch('/api/chat-survey/messages', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              sessionId: data.session.sessionId,
-              senderType: 'bot',
-              content: firstQuestionText
-            })
-          });
+          // Save first question only if it's not question 15 (hidden question)
+          if (data.question.id !== 15) {
+            await fetch('/api/chat-survey/messages', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                sessionId: data.session.sessionId,
+                senderType: 'bot',
+                content: firstQuestionText
+              })
+            });
+          }
         } catch (error) {
           console.error('Error saving initial messages:', error);
         }
@@ -1105,7 +1142,12 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
-            {messages.map((message, index) => (
+            {messages.filter((message) => {
+              // Hide question 15 and its answer from messages
+              const isQuestion15 = message.text === "როგორ გსურთ გაგრძელება? 😊";
+              const isQuestion15Answer = message.text === "შეკვეთის ფორმის შევსება ბოტის დახმარებით";
+              return !isQuestion15 && !isQuestion15Answer;
+            }).map((message, index) => (
               <div
                 key={index}
                 className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
@@ -1213,8 +1255,10 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
 
           {/* Input Area - Survey questions */}
         {(() => {
+          // Hide input area for question 15 (auto-handled)
+          const isQuestion15 = surveyState.question?.id === 15;
           const shouldShowInput = !surveyState.isComplete && surveyState.question && 
-           !answeredQuestions.has(surveyState.question.id);
+           !answeredQuestions.has(surveyState.question.id) && !isQuestion15;
           // Only log when question changes or when there's an issue
           if (surveyState.question) {
             const isAnswered = answeredQuestions.has(surveyState.question.id);
