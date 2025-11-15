@@ -51,7 +51,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { sessionId, senderType, content, fileUrl, fileName, imageUrl } = body;
 
+    console.log('Received message request:', { sessionId, senderType, contentLength: content?.length });
+
     if (!sessionId || !senderType || !content) {
+      console.error('Missing required fields:', { sessionId: !!sessionId, senderType: !!senderType, content: !!content });
       return NextResponse.json(
         { success: false, error: 'Session ID, sender type, and content are required' },
         { status: 400 }
@@ -59,6 +62,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!['user', 'admin'].includes(senderType)) {
+      console.error('Invalid sender type:', senderType);
       return NextResponse.json(
         { success: false, error: 'Sender type must be "user" or "admin"' },
         { status: 400 }
@@ -70,11 +74,14 @@ export async function POST(request: NextRequest) {
     });
 
     if (!session) {
+      console.error('Session not found:', sessionId);
       return NextResponse.json(
         { success: false, error: 'Session not found' },
         { status: 404 }
       );
     }
+
+    console.log('Creating message for session:', { sessionId: session.id, senderType, content });
 
     const message = await prisma.chatMessage.create({
       data: {
@@ -88,6 +95,8 @@ export async function POST(request: NextRequest) {
       }
     });
 
+    console.log('Message created successfully:', { messageId: message.id, senderType, content });
+
     return NextResponse.json({
       success: true,
       message
@@ -95,7 +104,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error sending message:', error);
     return NextResponse.json(
-      { success: false, error: 'Internal server error' },
+      { success: false, error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

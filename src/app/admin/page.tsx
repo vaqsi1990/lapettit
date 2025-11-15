@@ -165,8 +165,8 @@ const AdminPage = () => {
 
     if (activeTab === 'live-chat') {
       fetchLiveChatSessions();
-      // Poll for new chat sessions every 5 seconds when on live-chat tab
-      const interval = setInterval(fetchLiveChatSessions, 5000);
+      // Poll for new chat sessions every 10 seconds when on live-chat tab (reduced frequency for better performance)
+      const interval = setInterval(fetchLiveChatSessions, 10000);
       return () => clearInterval(interval);
     }
   }, [activeTab, selectedChatSession?.id]);
@@ -517,8 +517,18 @@ const AdminPage = () => {
         })
       });
 
+      if (!response.ok) {
+        console.error('API request failed:', response.status, response.statusText);
+        const errorData = await response.json().catch(() => ({}));
+        console.error('Error data:', errorData);
+        showToast('error', errorData.error || 'შეცდომა შეტყობინების გაგზავნისას');
+        setAdminMessage(currentMessage);
+        return;
+      }
+
       const data = await response.json();
       console.log('Response from API:', data);
+      
       if (data.success) {
         // Add message to local state
         setChatMessages(prev => [...prev, data.message]);
@@ -547,7 +557,7 @@ const AdminPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-color pt-10">
+    <div className="min-h-screen mb-[250px] bg-color pt-10">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <motion.div
@@ -1270,8 +1280,8 @@ const AdminPage = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl shadow-lg overflow-hidden"
-            style={{ height: 'calc(100vh - 250px)' }}
+            className="bg-white h-screen rounded-2xl shadow-lg overflow-hidden"
+            style={{ height: 'calc(100vh - 180px)' }}
           >
             <div className="flex h-full">
               {/* Left Sidebar - Sessions List */}
@@ -1361,11 +1371,11 @@ const AdminPage = () => {
               </div>
 
               {/* Right Side - Chat Window */}
-              <div className="flex-1 flex flex-col">
+              <div className="flex-1 flex flex-col overflow-hidden h-full">
                 {selectedChatSession ? (
                   <>
                     {/* Chat Header */}
-                    <div className="p-4 border-b border-gray-200 bg-gray-50">
+                    <div className="p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                           <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center">
@@ -1487,7 +1497,7 @@ const AdminPage = () => {
                     </div>
 
                     {/* Survey Info Panel - Uploaded Images, Slices, and Price */}
-                    <div className="p-4 border-b border-gray-200 bg-white">
+                    <div className="p-4 border-b border-gray-200 bg-white flex-shrink-0">
                       <h3 className="font-semibold text-gray-800 mb-3">📋 შეკვეთის ინფორმაცია</h3>
                       
                       {/* Uploaded Images */}
@@ -1560,14 +1570,18 @@ const AdminPage = () => {
                       </div>
                     </div>
 
-                    {/* Messages */}
-                    <div id="chat-messages" className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4">
-                      {chatMessages.length === 0 ? (
-                        <div className="text-center text-gray-500 py-8">
-                          <p>შეტყობინებები არ არის</p>
-                        </div>
-                      ) : (
-                        chatMessages.map((message) => (
+                    {/* Live Chat Messages - Only admin and user messages */}
+                    <div id="chat-messages" className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4 min-h-0 mb-4">
+                      {(() => {
+                        const chatOnlyMessages = chatMessages.filter(m => m.senderType === 'admin' || m.senderType === 'user');
+                        if (chatOnlyMessages.length === 0) {
+                          return (
+                            <div className="text-center text-gray-500 py-8">
+                              <p>შეტყობინებები არ არის</p>
+                            </div>
+                          );
+                        }
+                        return chatOnlyMessages.map((message) => (
                           <div
                             key={message.id}
                             className={`flex ${message.senderType === 'admin' ? 'justify-end' : 'justify-start'}`}
@@ -1576,8 +1590,6 @@ const AdminPage = () => {
                               className={`max-w-[70%] rounded-lg p-3 ${
                                 message.senderType === 'admin'
                                   ? 'bg-blue-500 text-white'
-                                  : message.senderType === 'bot'
-                                  ? 'bg-gray-200 text-gray-800'
                                   : 'bg-white text-gray-800 border border-gray-200'
                               }`}
                             >
@@ -1611,61 +1623,20 @@ const AdminPage = () => {
                               </p>
                             </div>
                           </div>
-                        ))
-                      )}
+                        ));
+                      })()}
                     </div>
 
-                    {/* Price Calculation Area - Always visible when session is selected */}
-                    {!selectedChatSession.isChatEnded && (
-                      <div className={`p-4 border-t ${selectedChatSession.waitingForPrice ? 'border-yellow-200 bg-yellow-50' : 'border-gray-200 bg-gray-50'}`}>
-                        <div className="mb-3">
-                          <h4 className={`font-semibold mb-2 ${selectedChatSession.waitingForPrice ? 'text-yellow-900' : 'text-gray-800'}`}>
-                            💰 ფასის გამოთვლა და გაგზავნა
-                          </h4>
-                          {selectedChatSession.waitingForPrice && (
-                            <p className="text-sm text-yellow-800 mb-3">მომხმარებელი ელოდება ფასის გამოთვლას</p>
-                          )}
-                          
+                    {/* Price Calculation Area - Separate section - Always visible when session is selected - Moved above bot questions */}
+                    <div className={`border-t  flex-shrink-0 bg-white shadow-lg sticky bottom-0 z-30 ${selectedChatSession.waitingForPrice ? 'border-yellow-300 bg-yellow-50' : 'border-gray-300 bg-gray-50'}`}>
+                       
+                        <div className="p-2">
                           {/* Calculate Price Button - Only show if waiting for price and not calculated yet */}
-                          {selectedChatSession.waitingForPrice && !calculatedPrice && (
-                            <button
-                              onClick={async () => {
-                                setIsCalculatingPrice(true);
-                                try {
-                                  const response = await fetch('/api/chat-survey/calculate-price', {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({
-                                      sessionId: selectedChatSession.sessionId
-                                    })
-                                  });
-                                  const data = await response.json();
-                                  if (data.success) {
-                                    setCalculatedPrice(data.priceRange.min);
-                                    setPriceInput(data.priceRange.min.toFixed(2));
-                                    showToast('success', `გამოთვლილი ფასი: ${data.priceRange.min.toFixed(2)} - ${data.priceRange.max.toFixed(2)} ₾`);
-                                  } else {
-                                    showToast('error', 'შეცდომა ფასის გამოთვლისას');
-                                  }
-                                } catch (error) {
-                                  console.error('Error calculating price:', error);
-                                  showToast('error', 'შეცდომა ფასის გამოთვლისას');
-                                } finally {
-                                  setIsCalculatingPrice(false);
-                                }
-                              }}
-                              disabled={isCalculatingPrice}
-                              className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed mb-3"
-                            >
-                              {isCalculatingPrice ? 'გამოთვლა...' : 'ფასის ავტომატური გამოთვლა'}
-                            </button>
-                          )}
+                         
                           
                           {/* Price Input and Send - Always visible */}
                           <div className="space-y-2">
-                            <label className={`block text-sm font-medium mb-1 ${selectedChatSession.waitingForPrice ? 'text-yellow-900' : 'text-gray-700'}`}>
-                              {selectedChatSession.calculatedPrice ? 'ფასის რედაქტირება:' : 'ხელით ფასის შეყვანა:'}
-                            </label>
+                           
                             <div className="flex gap-2">
                               <input
                                 type="number"
@@ -1679,10 +1650,22 @@ const AdminPage = () => {
                               <button
                                 onClick={async () => {
                                   const priceToSend = priceInput || selectedChatSession.calculatedPrice;
-                                  if (!priceToSend || parseFloat(priceToSend.toString()) <= 0) {
+                                  if (!priceToSend) {
+                                    showToast('error', 'გთხოვთ შეიყვანოთ ფასი');
+                                    return;
+                                  }
+                                  
+                                  const priceValue = parseFloat(priceToSend.toString());
+                                  if (isNaN(priceValue) || priceValue <= 0) {
                                     showToast('error', 'გთხოვთ შეიყვანოთ სწორი ფასი');
                                     return;
                                   }
+                                  
+                                  console.log('Sending price from admin:', { 
+                                    sessionId: selectedChatSession.sessionId, 
+                                    price: priceValue 
+                                  });
+                                  
                                   setIsSendingPrice(true);
                                   try {
                                     const response = await fetch('/api/chat-survey/send-price', {
@@ -1690,25 +1673,34 @@ const AdminPage = () => {
                                       headers: { 'Content-Type': 'application/json' },
                                       body: JSON.stringify({
                                         sessionId: selectedChatSession.sessionId,
-                                        price: parseFloat(priceToSend.toString())
+                                        price: priceValue
                                       })
                                     });
                                     const data = await response.json();
+                                    
+                                    console.log('Price send response:', data);
                                     if (data.success) {
-                                      // Refresh messages immediately to show price message
-                                      const messagesResponse = await fetch(`/api/chat-survey/messages/${selectedChatSession.sessionId}`);
-                                      const messagesData = await messagesResponse.json();
-                                      if (messagesData.success) {
-                                        setChatMessages(messagesData.messages || []);
-                                        
-                                        // Scroll to bottom to show new price message
-                                        setTimeout(() => {
-                                          const messagesContainer = document.getElementById('chat-messages');
-                                          if (messagesContainer) {
-                                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                                          }
-                                        }, 100);
+                                      // Add the price message to local state immediately (optimistic update)
+                                      if (data.message) {
+                                        setChatMessages(prev => [...prev, data.message]);
                                       }
+                                      
+                                      // Refresh messages after a short delay to ensure database consistency
+                                      setTimeout(async () => {
+                                        const messagesResponse = await fetch(`/api/chat-survey/messages/${selectedChatSession.sessionId}`);
+                                        const messagesData = await messagesResponse.json();
+                                        if (messagesData.success) {
+                                          setChatMessages(messagesData.messages || []);
+                                        }
+                                      }, 500);
+                                      
+                                      // Scroll to bottom to show new price message
+                                      setTimeout(() => {
+                                        const messagesContainer = document.getElementById('chat-messages');
+                                        if (messagesContainer) {
+                                          messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                                        }
+                                      }, 100);
                                       
                                       // Refresh session data
                                       const sessionResponse = await fetch('/api/chat-survey/responses');
@@ -1737,7 +1729,7 @@ const AdminPage = () => {
                                   }
                                 }}
                                 disabled={(!priceInput && !selectedChatSession.calculatedPrice) || isSendingPrice}
-                                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                className="px-4 py-2 bg-black  text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
                               >
                                 {isSendingPrice ? 'გაგზავნა...' : 'ფასის გაგზავნა'}
                               </button>
@@ -1745,11 +1737,10 @@ const AdminPage = () => {
                           </div>
                         </div>
                       </div>
-                    )}
 
                     {/* Input Area - Always visible when chat is not ended */}
                     {!selectedChatSession.isChatEnded ? (
-                      <div className="p-4 border-t border-gray-200 bg-white sticky bottom-0 z-10">
+                      <div className="p-4 border-t border-gray-200 bg-white flex-shrink-0">
                         <div className="flex gap-2">
                           <input
                             type="text"

@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
       success: true,
       priceRange,
       pieces: { min: minPieces, max: maxPieces },
-      filling: fillingResponse?.selectedOption !== null ? fillingResponse.answerText : null,
+      filling: fillingResponse && fillingResponse.selectedOption !== null ? fillingResponse.answerText : null,
       topping: topping
     });
   } catch (error) {

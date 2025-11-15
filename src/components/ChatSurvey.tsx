@@ -100,7 +100,10 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
       pollingIntervalRef.current = setInterval(async () => {
         try {
           // Check session status for isChatEnded and price updates
-          const sessionResponse = await fetch(`/api/chat-survey/responses`);
+          // Add cache busting to ensure fresh data
+          const sessionResponse = await fetch(`/api/chat-survey/responses?t=${Date.now()}`, {
+            cache: 'no-store'
+          });
           const sessionData = await sessionResponse.json();
           if (sessionData.success && sessionData.sessions) {
             const currentSession = sessionData.sessions.find((s: any) => s.sessionId === surveyState.sessionId);
@@ -115,25 +118,39 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
             
             // Check if price was sent and show continue question
             // We need to check if calculatedPrice exists and waitingForPrice is false
-            const hasCalculatedPrice = currentSession && 
-              (currentSession.calculatedPrice !== null && currentSession.calculatedPrice !== undefined);
-            const isNotWaitingForPrice = currentSession && currentSession.waitingForPrice === false;
-            const shouldShowContinueQuestion = hasCalculatedPrice && isNotWaitingForPrice && 
-              !surveyState.isComplete && 
-              (surveyState.question === null || (surveyState.question as any)?.id !== 16);
+            // IMPORTANT: Don't interfere if we're past question 16 (already answered continue question)
+            const isPastContinueQuestion = answeredQuestions.has(16);
             
-            // Debug logging
-            if (currentSession && surveyState.question === null && !surveyState.isComplete) {
-              console.log('Price check:', {
-                calculatedPrice: currentSession.calculatedPrice,
-                waitingForPrice: currentSession.waitingForPrice,
-                hasCalculatedPrice,
-                isNotWaitingForPrice,
-                shouldShowContinueQuestion
-              });
-            }
+            // Only check for continue question if we haven't passed it yet
+            if (!isPastContinueQuestion) {
+              const hasCalculatedPrice = currentSession && 
+                (currentSession.calculatedPrice !== null && 
+                 currentSession.calculatedPrice !== undefined && 
+                 currentSession.calculatedPrice > 0);
+              const isNotWaitingForPrice = currentSession && currentSession.waitingForPrice === false;
+              const continueQuestionNotShown = !surveyState.question || (surveyState.question as any)?.id !== 16;
+              const shouldShowContinueQuestion = hasCalculatedPrice && isNotWaitingForPrice && 
+                !surveyState.isComplete && 
+                continueQuestionNotShown;
             
-            if (shouldShowContinueQuestion) {
+              // Debug logging - only log when waiting for price or when price is calculated
+              if (currentSession && !surveyState.isComplete) {
+                console.log('Price check:', {
+                  calculatedPrice: currentSession.calculatedPrice,
+                  waitingForPrice: currentSession.waitingForPrice,
+                  hasCalculatedPrice,
+                  isNotWaitingForPrice,
+                  currentQuestionId: (surveyState.question as any)?.id,
+                  continueQuestionNotShown,
+                  shouldShowContinueQuestion,
+                  isComplete: surveyState.isComplete,
+                  sessionId: currentSession.sessionId,
+                  sessionFound: !!currentSession
+                });
+              }
+              
+              if (shouldShowContinueQuestion) {
+              console.log('Should show continue question - proceeding...');
               // Price was sent, show continue question (ID 16 from SURVEY_QUESTIONS)
               const continueQuestion = SURVEY_QUESTIONS.find(q => q.id === 16);
               
@@ -146,15 +163,19 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
               const continueQuestionShown = surveyState.question && (surveyState.question as any).id === 16;
               
               if (!continueQuestionShown) {
+                console.log('Continue question not shown yet, showing it now...');
                 // Load price message from database first
-                const messagesResponse = await fetch(`/api/chat-survey/messages/${surveyState.sessionId}`);
+                const messagesResponse = await fetch(`/api/chat-survey/messages/${surveyState.sessionId}?t=${Date.now()}`, {
+                  cache: 'no-store'
+                });
                 const messagesData = await messagesResponse.json();
                 if (messagesData.success && messagesData.messages) {
-                  const priceMessage = messagesData.messages.find((m: any) => m.content.includes('₾'));
+                  const priceMessage = messagesData.messages.find((m: any) => m.content && m.content.includes('₾'));
                   if (priceMessage) {
                     setMessages(prev => {
                       const exists = prev.some(m => m.text === priceMessage.content);
                       if (!exists) {
+                        console.log('Adding price message to chat:', priceMessage.content);
                         return [...prev, {
                           type: 'bot',
                           text: priceMessage.content,
@@ -163,15 +184,43 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                       }
                       return prev;
                     });
+                  } else {
+                    console.log('Price message not found in database messages');
                   }
+                } else {
+                  console.log('Failed to load messages:', messagesData);
                 }
                 
                 // Show continue question after a short delay to ensure price message is shown first
                 setTimeout(() => {
+                  console.log('Setting continue question in survey state');
+                  // Find question 16 index in SURVEY_QUESTIONS
+                  const question16Index = SURVEY_QUESTIONS.findIndex(q => q.id === 16);
+                  console.log('Setting continue question in survey state:', {
+                    question16Index,
+                    continueQuestionId: continueQuestion.id,
+                    continueQuestionText: continueQuestion.text,
+                    previousQuestionId: surveyState.question?.id
+                  });
                   setSurveyState(prev => ({
                     ...prev,
+                    currentStep: question16Index !== -1 ? question16Index : prev.currentStep,
                     question: continueQuestion
                   }));
+                  console.log('Survey state updated - question should now be:', continueQuestion.id);
+                  
+                  // Add continue question to messages immediately
+                  setMessages(prev => {
+                    const exists = prev.some(m => m.text === continueQuestion.text);
+                    if (!exists) {
+                      return [...prev, {
+                        type: 'bot',
+                        text: continueQuestion.text,
+                        options: continueQuestion.options
+                      }];
+                    }
+                    return prev;
+                  });
                   
                   // Save continue question as bot message
                   fetch('/api/chat-survey/messages', {
@@ -183,24 +232,36 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                       content: continueQuestion.text
                     })
                   }).catch(err => console.error('Error saving continue question:', err));
-                }, 500);
+                }, 300);
+              } else {
+                console.log('Continue question already shown');
               }
             }
+            } // End of !isPastContinueQuestion check
           }
 
           // Also check messages for price message to trigger continue question
-          const response = await fetch(`/api/chat-survey/messages/${surveyState.sessionId}`);
-          const data = await response.json();
+          // IMPORTANT: Don't interfere if we're past question 16 (already answered continue question)
+          const isPastContinueQuestionMessages = answeredQuestions.has(16);
           
-          if (data.success && data.messages) {
-            // Check if there's a price message that we haven't shown yet
-            const priceMessage = data.messages.find((m: any) => m.content && m.content.includes('₾') && m.senderType === 'bot');
-            if (priceMessage && surveyState.question === null && !surveyState.isComplete) {
+          if (!isPastContinueQuestionMessages) {
+            const response = await fetch(`/api/chat-survey/messages/${surveyState.sessionId}?t=${Date.now()}`, {
+              cache: 'no-store'
+            });
+            const data = await response.json();
+            
+            if (data.success && data.messages) {
+              // Check if there's a price message that we haven't shown yet
+              const priceMessage = data.messages.find((m: any) => m.content && m.content.includes('₾') && m.senderType === 'bot');
+              const continueQuestionNotShown = !surveyState.question || (surveyState.question as any)?.id !== 16;
+              if (priceMessage && continueQuestionNotShown && !surveyState.isComplete) {
               // Check if we should show continue question
               const hasPriceInMessage = priceMessage.content.includes('₾');
               if (hasPriceInMessage) {
                 // Check session again to see if calculatedPrice is set
-                const sessionCheckResponse = await fetch(`/api/chat-survey/responses`);
+                const sessionCheckResponse = await fetch(`/api/chat-survey/responses?t=${Date.now()}`, {
+                  cache: 'no-store'
+                });
                 const sessionCheckData = await sessionCheckResponse.json();
                 if (sessionCheckData.success && sessionCheckData.sessions) {
                   const currentSessionCheck = sessionCheckData.sessions.find((s: any) => s.sessionId === surveyState.sessionId);
@@ -223,8 +284,11 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                       
                       // Show continue question after delay
                       setTimeout(() => {
+                        // Find question 16 index in SURVEY_QUESTIONS
+                        const question16Index = SURVEY_QUESTIONS.findIndex(q => q.id === 16);
                         setSurveyState(prev => ({
                           ...prev,
+                          currentStep: question16Index !== -1 ? question16Index : prev.currentStep,
                           question: continueQuestion
                         }));
                       }, 500);
@@ -233,11 +297,18 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                 }
               }
             }
+          } // End of !isPastContinueQuestionMessages check
           }
           
-          if (data.success && data.messages) {
+          // Check for new messages from admin/user (separate from continue question logic)
+          const messagesResponse = await fetch(`/api/chat-survey/messages/${surveyState.sessionId}?t=${Date.now()}`, {
+            cache: 'no-store'
+          });
+          const messagesData = await messagesResponse.json();
+          
+          if (messagesData.success && messagesData.messages) {
             // Convert database messages to Message format
-            const dbMessages: Message[] = data.messages.map((msg: any) => ({
+            const dbMessages: Message[] = messagesData.messages.map((msg: any) => ({
               type: msg.senderType === 'admin' ? 'bot' : msg.senderType as 'bot' | 'user',
               text: msg.content,
               fileUrl: msg.fileUrl || undefined,
@@ -248,7 +319,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
             // Only add new messages (after lastMessageId)
             if (lastMessageId !== null) {
               const newMessages = dbMessages.filter((_, index) => {
-                const dbMsg = data.messages[index];
+                const dbMsg = messagesData.messages[index];
                 return dbMsg.id > lastMessageId;
               });
 
@@ -262,13 +333,13 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                   }
                   return prev;
                 });
-                setLastMessageId(data.messages[data.messages.length - 1]?.id || null);
+                setLastMessageId(messagesData.messages[messagesData.messages.length - 1]?.id || null);
               }
             } else {
               // First load - set all messages
               setMessages(dbMessages);
-              if (data.messages.length > 0) {
-                setLastMessageId(data.messages[data.messages.length - 1].id);
+              if (messagesData.messages.length > 0) {
+                setLastMessageId(messagesData.messages[messagesData.messages.length - 1].id);
               }
             }
           }
@@ -484,43 +555,135 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
 
       if (data.success) {
         // Handle continue question (question ID 16)
-        if (surveyState.question?.id === 16) {
+        // Check both surveyState.question.id and the questionId parameter to handle question 16
+        const isQuestion16 = surveyState.question?.id === 16;
+        console.log('=== Checking if question 16 ===', {
+          surveyStateQuestionId: surveyState.question?.id,
+          isQuestion16,
+          selectedOption
+        });
+        
+        if (isQuestion16) {
           if (selectedOption === 0) {
             // User selected "კი" - continue survey
-            try {
-              const continueResponse = await fetch('/api/chat-survey', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  action: 'get_question',
-                  sessionId: surveyState.sessionId
-                })
+            console.log('=== CONTINUE QUESTION (16) - User selected "კი" ===');
+            console.log('Response data:', {
+              sessionCurrentStep: data.session?.currentStep,
+              questionId: data.question?.id,
+              questionText: data.question?.text,
+              isComplete: data.session?.isComplete,
+              hasQuestion: !!data.question,
+              hasSession: !!data.session
+            });
+            // Use the updated session from submit_response response
+            if (data.session && data.question) {
+              console.log('✅ Continuing survey with next question:', {
+                questionId: data.question.id,
+                questionText: data.question.text,
+                questionType: data.question.type,
+                currentStep: data.session.currentStep,
+                isComplete: data.session.isComplete
               });
-              const continueData = await continueResponse.json();
-              if (continueData.success && continueData.question) {
-                setSurveyState({
-                  sessionId: continueData.session.sessionId,
-                  currentStep: continueData.session.currentStep,
-                  isComplete: continueData.session.isComplete,
-                  question: continueData.question
+              // Reset form state for new question
+              setSelectedOption(null);
+              setTextAnswer('');
+              setUploadedFile(null);
+              
+              // Mark continue question (16) as answered BEFORE setting new question
+              setAnsweredQuestions(prev => {
+                const newSet = new Set(prev);
+                newSet.add(16);
+                console.log('Marked question 16 as answered, answeredQuestions:', Array.from(newSet));
+                return newSet;
+              });
+              
+              setSurveyState({
+                sessionId: data.session.sessionId,
+                currentStep: data.session.currentStep,
+                isComplete: data.session.isComplete,
+                question: data.question
+              });
+              
+              console.log('New question set:', {
+                questionId: data.question.id,
+                questionType: data.question.type,
+                questionText: data.question.text
+              });
+              
+              // Add next question to messages
+              setMessages(prev => {
+                const exists = prev.some(m => m.text === data.question.text);
+                if (!exists) {
+                  return [...prev, {
+                    type: 'bot',
+                    text: data.question.text,
+                    options: data.question.options
+                  }];
+                }
+                return prev;
+              });
+            } else {
+              // Fallback: try to get next question
+              try {
+                const continueResponse = await fetch('/api/chat-survey', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    action: 'get_question',
+                    sessionId: surveyState.sessionId
+                  })
                 });
-                // Mark continue question as answered
-                setAnsweredQuestions(prev => new Set(prev).add(16));
-              } else {
-                // No more questions, complete survey
-                setSurveyState(prev => ({
-                  ...prev,
-                  isComplete: true,
-                  question: null
-                }));
-                setMessages(prev => [...prev, {
-                  type: 'bot',
-                  text: 'გმადლობთ თქვენი დროისთვის! შეკვეთა მიღებულია.',
-                  options: undefined
-                }]);
+                const continueData = await continueResponse.json();
+                console.log('=== FALLBACK: get_question response ===', {
+                  success: continueData.success,
+                  sessionCurrentStep: continueData.session?.currentStep,
+                  questionId: continueData.question?.id,
+                  questionText: continueData.question?.text,
+                  isComplete: continueData.session?.isComplete
+                });
+                if (continueData.success && continueData.question) {
+                  console.log('✅ Got next question from get_question:', {
+                    questionId: continueData.question.id,
+                    questionText: continueData.question.text,
+                    currentStep: continueData.session.currentStep
+                  });
+                  setSurveyState({
+                    sessionId: continueData.session.sessionId,
+                    currentStep: continueData.session.currentStep,
+                    isComplete: continueData.session.isComplete,
+                    question: continueData.question
+                  });
+                  // Add next question to messages
+                  setMessages(prev => {
+                    const exists = prev.some(m => m.text === continueData.question.text);
+                    if (!exists) {
+                      return [...prev, {
+                        type: 'bot',
+                        text: continueData.question.text,
+                        options: continueData.question.options
+                      }];
+                    }
+                    return prev;
+                  });
+                  // Mark continue question as answered
+                  setAnsweredQuestions(prev => new Set(prev).add(16));
+                } else {
+                  // No more questions, complete survey
+                  console.log('No more questions, completing survey');
+                  setSurveyState(prev => ({
+                    ...prev,
+                    isComplete: true,
+                    question: null
+                  }));
+                  setMessages(prev => [...prev, {
+                    type: 'bot',
+                    text: 'გმადლობთ თქვენი დროისთვის! შეკვეთა მიღებულია.',
+                    options: undefined
+                  }]);
+                }
+              } catch (error) {
+                console.error('Error continuing survey:', error);
               }
-            } catch (error) {
-              console.error('Error continuing survey:', error);
             }
           } else if (selectedOption === 1) {
             // User selected "არა" - end survey
@@ -570,6 +733,11 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
 
         // Handle waiting for price
         if (data.waitingForPrice) {
+          // Mark current question as answered
+          if (surveyState.question) {
+            setAnsweredQuestions(prev => new Set(prev).add(surveyState.question!.id));
+          }
+          
           setMessages(prev => [...prev, {
             type: 'bot',
             text: 'დაელოდეთ, გამოვითვლით ფასს და დაგიწერთ. ⏳',
@@ -598,6 +766,12 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
             ...prev,
             question: null
           }));
+          
+          // Reset form state
+          setSelectedOption(null);
+          setTextAnswer('');
+          setUploadedFile(null);
+          
           return; // Don't continue with next question
         }
 
@@ -1020,8 +1194,28 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
           </div>
 
           {/* Input Area - Survey questions */}
-        {!surveyState.isComplete && surveyState.question && 
-         !answeredQuestions.has(surveyState.question.id) && (
+        {(() => {
+          const shouldShowInput = !surveyState.isComplete && surveyState.question && 
+           !answeredQuestions.has(surveyState.question.id);
+          // Only log when question changes or when there's an issue
+          if (surveyState.question) {
+            const isAnswered = answeredQuestions.has(surveyState.question.id);
+            // Log when question changes or when there's a mismatch
+            if (!isAnswered || !shouldShowInput) {
+              console.log('=== Input Area Check ===', {
+                isComplete: surveyState.isComplete,
+                hasQuestion: !!surveyState.question,
+                questionId: surveyState.question?.id,
+                questionType: surveyState.question?.type,
+                questionText: surveyState.question?.text,
+                isAnswered,
+                answeredQuestionsArray: Array.from(answeredQuestions),
+                shouldShowInput
+              });
+            }
+          }
+          return shouldShowInput;
+        })() && surveyState.question && (
           <div className="border-t border-gray-200 p-4 bg-white">
             {surveyState.question.type === 'file' && (
               <div className="mb-3">
@@ -1064,8 +1258,9 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                   value={textAnswer}
                   onChange={(e) => setTextAnswer(e.target.value)}
                   placeholder="ჩაწერეთ თქვენი პასუხი..."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none text-black bg-white"
                   rows={3}
+                  autoFocus
                 />
               </div>
             )}

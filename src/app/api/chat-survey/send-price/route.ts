@@ -15,6 +15,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Validate price
+    const priceValue = parseFloat(price);
+    if (isNaN(priceValue) || priceValue <= 0) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid price value' },
+        { status: 400 }
+      );
+    }
+
     const session = await prisma.chatSession.findUnique({
       where: { sessionId },
       include: { responses: true }
@@ -27,28 +36,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update session with calculated price (don't move to next step yet - wait for user to choose continue or not)
-    // Use raw SQL to update fields that might not be in Prisma schema yet
-    await prisma.$executeRaw`
-      UPDATE "ChatSession"
-      SET "calculatedPrice" = ${parseFloat(price)}::float,
-          "waitingForPrice" = false
-      WHERE "sessionId" = ${sessionId}
-    `;
+    console.log('Sending price:', { sessionId, price: priceValue, currentWaitingForPrice: session.waitingForPrice });
 
-    const updatedSession = await prisma.chatSession.findUnique({
-      where: { sessionId }
+    // Update session with calculated price (don't move to next step yet - wait for user to choose continue or not)
+    const updatedSession = await prisma.chatSession.update({
+      where: { sessionId },
+      data: {
+        calculatedPrice: priceValue,
+        waitingForPrice: false
+      }
     });
 
-    if (!updatedSession) {
-      return NextResponse.json(
-        { success: false, error: 'Session not found after update' },
-        { status: 404 }
-      );
-    }
+    console.log('Price sent successfully:', { 
+      sessionId, 
+      calculatedPrice: updatedSession.calculatedPrice, 
+      waitingForPrice: updatedSession.waitingForPrice 
+    });
 
     // Send price message to user
-    await prisma.chatMessage.create({
+    const priceMessage = await prisma.chatMessage.create({
       data: {
         sessionId: session.id,
         senderType: 'bot',
@@ -59,6 +65,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       session: updatedSession,
+      message: priceMessage, // Return the created message
       question: null, // Don't return next question - user will see continue question
       isComplete: updatedSession.isComplete
     });
