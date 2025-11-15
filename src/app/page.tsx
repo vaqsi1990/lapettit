@@ -6,6 +6,7 @@ import Why from "@/components/Why";
 import Swiper from "@/components/Swiper";
 import Gallery from "@/components/Gallery";
 import About from "@/components/About";
+import Recipes from "@/components/Recipes";
 
 export default function Home() {
   return (
@@ -15,6 +16,7 @@ export default function Home() {
         <Gallery />
         <Services />
         <Swiper />
+        <Recipes />
         <About />
         {/* <SpecialOffers /> */}
       
