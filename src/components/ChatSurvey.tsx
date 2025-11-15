@@ -38,6 +38,26 @@ interface ChatWidgetProps {
   showFloatingButton?: boolean;
 }
 
+interface ChatSession {
+  sessionId: string;
+  currentStep: number;
+  isComplete: boolean;
+  calculatedPrice: number | null;
+  waitingForPrice: boolean;
+  isChatEnded: boolean;
+}
+
+interface ChatMessage {
+  id: number;
+  sessionId: number;
+  senderType: 'admin' | 'user' | 'bot';
+  content: string;
+  fileUrl: string | null;
+  fileName: string | null;
+  imageUrl: string | null;
+  createdAt: string;
+}
+
 const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, isOpen: externalIsOpen, onOpenChange, showFloatingButton = true }: ChatWidgetProps) => {
   const [internalIsOpen, setInternalIsOpen] = useState(defaultOpen);
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
@@ -64,7 +84,6 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set());
   const [userMessage, setUserMessage] = useState(''); // For post-survey chat
   const [lastMessageId, setLastMessageId] = useState<number | null>(null); // Track last message for polling
-  const [uploadedFileChat, setUploadedFileChat] = useState<{ url: string; name: string } | null>(null); // For post-survey file upload
   const [isChatEnded, setIsChatEnded] = useState(false); // Track if chat is ended
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -106,7 +125,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
           });
           const sessionData = await sessionResponse.json();
           if (sessionData.success && sessionData.sessions) {
-            const currentSession = sessionData.sessions.find((s: any) => s.sessionId === surveyState.sessionId);
+            const currentSession = sessionData.sessions.find((s: ChatSession) => s.sessionId === surveyState.sessionId);
             if (currentSession?.isChatEnded) {
               setIsChatEnded(true);
               if (pollingIntervalRef.current) {
@@ -140,7 +159,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                   waitingForPrice: currentSession.waitingForPrice,
                   hasCalculatedPrice,
                   isNotWaitingForPrice,
-                  currentQuestionId: (surveyState.question as any)?.id,
+                  currentQuestionId: surveyState.question?.id,
                   continueQuestionNotShown,
                   shouldShowContinueQuestion,
                   isComplete: surveyState.isComplete,
@@ -160,7 +179,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
               }
               
               // Check if continue question already shown
-              const continueQuestionShown = surveyState.question && (surveyState.question as any).id === 16;
+              const continueQuestionShown = surveyState.question && surveyState.question.id === 16;
               
               if (!continueQuestionShown) {
                 console.log('Continue question not shown yet, showing it now...');
@@ -170,7 +189,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                 });
                 const messagesData = await messagesResponse.json();
                 if (messagesData.success && messagesData.messages) {
-                  const priceMessage = messagesData.messages.find((m: any) => m.content && m.content.includes('₾'));
+                  const priceMessage = messagesData.messages.find((m: ChatMessage) => m.content && m.content.includes('₾'));
                   if (priceMessage) {
                     setMessages(prev => {
                       const exists = prev.some(m => m.text === priceMessage.content);
@@ -252,8 +271,8 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
             
             if (data.success && data.messages) {
               // Check if there's a price message that we haven't shown yet
-              const priceMessage = data.messages.find((m: any) => m.content && m.content.includes('₾') && m.senderType === 'bot');
-              const continueQuestionNotShown = !surveyState.question || (surveyState.question as any)?.id !== 16;
+              const priceMessage = data.messages.find((m: ChatMessage) => m.content && m.content.includes('₾') && m.senderType === 'bot');
+              const continueQuestionNotShown = !surveyState.question || surveyState.question.id !== 16;
               if (priceMessage && continueQuestionNotShown && !surveyState.isComplete) {
               // Check if we should show continue question
               const hasPriceInMessage = priceMessage.content.includes('₾');
@@ -264,7 +283,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                 });
                 const sessionCheckData = await sessionCheckResponse.json();
                 if (sessionCheckData.success && sessionCheckData.sessions) {
-                  const currentSessionCheck = sessionCheckData.sessions.find((s: any) => s.sessionId === surveyState.sessionId);
+                  const currentSessionCheck = sessionCheckData.sessions.find((s: ChatSession) => s.sessionId === surveyState.sessionId);
                   if (currentSessionCheck && currentSessionCheck.calculatedPrice && !currentSessionCheck.waitingForPrice) {
                     // Price was sent, show continue question
                     const continueQuestion = SURVEY_QUESTIONS.find(q => q.id === 16);
@@ -308,7 +327,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
           
           if (messagesData.success && messagesData.messages) {
             // Convert database messages to Message format
-            const dbMessages: Message[] = messagesData.messages.map((msg: any) => ({
+            const dbMessages: Message[] = messagesData.messages.map((msg: ChatMessage) => ({
               type: msg.senderType === 'admin' ? 'bot' : msg.senderType as 'bot' | 'user',
               text: msg.content,
               fileUrl: msg.fileUrl || undefined,
@@ -935,7 +954,6 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
     if (!surveyState.sessionId || isLoading) return;
 
     setIsLoading(true);
-    setUploadedFileChat(null);
 
     // Add user message with file to UI immediately
     // Check if file is an image by URL or filename extension
@@ -1301,7 +1319,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                 onClientUploadComplete={(res) => {
                   if (res && res.length > 0) {
                     const file = { url: res[0].url, name: res[0].name };
-                    setUploadedFileChat(file);
+                    // File upload handled directly
                     // Auto-send file
                     sendFileMessage(file);
                   }
