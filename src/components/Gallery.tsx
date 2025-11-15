@@ -2,16 +2,11 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
-import { motion, useTransform, useScroll } from 'framer-motion';
+import { motion, useTransform, useScroll, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { getCakes } from '@/lib/action';
 import { mapCakeToGalleryImage, type GalleryImage, formatPrice } from '@/lib/utils';
-import { Swiper as SwiperComponent, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 
 // Separate component for parallax effects to avoid hydration issues
 const ParallaxBackground = ({ containerRef }: { containerRef: React.RefObject<HTMLDivElement | null> }) => {
@@ -63,15 +58,50 @@ const Gallery = () => {
     }
   };
 
-  // Show latest added items (already sorted by createdAt desc from getCakes)
-  const filteredImages = galleryImages.slice(0, 8);
+  // Show only SET products (ნაკრები) - latest added items
+  const filteredImages = galleryImages
+    .filter(image => image.productType === 'SET')
+    .slice(0, 8);
 
-  const swiperRef = useRef<React.ComponentRef<typeof SwiperComponent>>(null);
+  // Custom carousel state
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [slidesPerView, setSlidesPerView] = useState(1);
+  const carouselRef = useRef<HTMLDivElement>(null);
 
+  // Calculate slides per view based on screen size
+  useEffect(() => {
+    const updateSlidesPerView = () => {
+      const width = window.innerWidth;
+      if (width >= 1024) {
+        setSlidesPerView(4);
+      } else if (width >= 768) {
+        setSlidesPerView(3);
+      } else if (width >= 640) {
+        setSlidesPerView(2);
+      } else {
+        setSlidesPerView(1);
+      }
+    };
 
+    updateSlidesPerView();
+    window.addEventListener('resize', updateSlidesPerView);
+    return () => window.removeEventListener('resize', updateSlidesPerView);
+  }, []);
 
+  const maxIndex = Math.max(0, filteredImages.length - slidesPerView);
+  const totalPages = Math.ceil(filteredImages.length / slidesPerView);
 
+  const goToNext = () => {
+    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  };
 
+  const goToPrev = () => {
+    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+  };
+
+  const goToPage = (page: number) => {
+    setCurrentIndex(page * slidesPerView);
+  };
 
 
 
@@ -84,7 +114,7 @@ const Gallery = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
+      <div className=" flex items-center justify-center ">
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
           <div className="w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-black">იტვირთევა გალერეა...</p>
@@ -94,7 +124,7 @@ const Gallery = () => {
   }
 
   return (
-    <section ref={containerRef} className="relative min-h-screen mt-20  overflow-hidden">
+    <section ref={containerRef} className="relative  mt-20  overflow-hidden">
       {/* Parallax Background Elements */}
       {isMounted && <ParallaxBackground containerRef={containerRef} />}
 
@@ -108,60 +138,69 @@ const Gallery = () => {
           </motion.p>
         </motion.div>
 
-        {/* Carousel */}
+        {/* Custom Carousel */}
         <div className="relative w-full">
-          {/* Navigation Arrows - Outside carousel */}
-          <button
-            className="gallery-button-prev absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg cursor-pointer transition-all duration-300 hover:scale-110"
-            aria-label="Previous slide"
-          >
-            <ChevronLeft className="w-6 h-6 text-gray-700" />
-          </button>
+          {/* Navigation Arrows */}
+          {filteredImages.length > slidesPerView && (
+            <>
+              <button
+                onClick={goToPrev}
+                className="absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg cursor-pointer transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Previous slide"
+                disabled={currentIndex === 0}
+              >
+                <ChevronLeft className="w-6 h-6 text-gray-700" />
+              </button>
 
-          <button
-            className="gallery-button-next absolute right-0 md:-right-12 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg cursor-pointer transition-all duration-300 hover:scale-110"
-            aria-label="Next slide"
-          >
-            <ChevronRight className="w-6 h-6 text-gray-700" />
-          </button>
+              <button
+                onClick={goToNext}
+                className="absolute right-0 md:-right-12 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg cursor-pointer transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Next slide"
+                disabled={currentIndex >= maxIndex}
+              >
+                <ChevronRight className="w-6 h-6 text-gray-700" />
+              </button>
+            </>
+          )}
 
-          {/* Swiper Container with padding */}
-          <div className="px-0 md:px-10">
-            <SwiperComponent
-              ref={swiperRef}
-              modules={[Navigation, Pagination]}
-              spaceBetween={20}
-              slidesPerView={1}
-              breakpoints={{
-                640: {
-                  slidesPerView: 2,
-                  spaceBetween: 20,
-                },
-                768: {
-                  slidesPerView: 3,
-                  spaceBetween: 24,
-                },
-                1024: {
-                  slidesPerView: 4,
-                  spaceBetween: 24,
-                },
+          {/* Carousel Container */}
+          <div className="px-0 md:px-10 overflow-hidden" ref={carouselRef}>
+            <motion.div
+              className="flex gap-4 md:gap-6"
+              animate={{
+                x: `-${currentIndex * (100 / slidesPerView)}%`,
               }}
-              navigation={{
-                nextEl: '.gallery-button-next',
-                prevEl: '.gallery-button-prev',
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
               }}
-              pagination={{
-                clickable: true,
-                bulletActiveClass: 'gallery-pagination-active',
-                bulletClass: 'gallery-pagination-bullet',
+              drag="x"
+              dragElastic={0.2}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipe = Math.abs(offset.x) * velocity.x;
+
+                if (swipe < -10000 && currentIndex < maxIndex) {
+                  goToNext();
+                } else if (swipe > 10000 && currentIndex > 0) {
+                  goToPrev();
+                }
               }}
-              className="!pb-12"
             >
               {filteredImages.map((image, index) => (
-                <SwiperSlide key={image.id}>
-                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-full md:h-[450px]  flex flex-col border border-gray-100">
+                <motion.div
+                  key={image.id}
+                  className="flex-shrink-0"
+                  style={{
+                    width: `${100 / slidesPerView}%`,
+                  }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-full md:h-[450px] flex flex-col border border-gray-100">
                     {/* Image */}
-                    <div className="relative w-full h-60 sm:h-72 md:h-80 overflow-hidden bg-gray-100 ">
+                    <div className="relative w-full h-60 sm:h-72 md:h-80 overflow-hidden bg-gray-100">
                       <Image
                         src={image.src}
                         alt={image.alt}
@@ -170,7 +209,6 @@ const Gallery = () => {
                         priority={index < 4}
                       />
                     </div>
-
 
                     {/* Content */}
                     <div className="p-4 flex flex-col flex-1">
@@ -194,30 +232,36 @@ const Gallery = () => {
                       </Link>
                     </div>
                   </div>
-                </SwiperSlide>
+                </motion.div>
               ))}
-            </SwiperComponent>
+            </motion.div>
           </div>
 
-          {/* Custom Pagination Styles */}
-          <style jsx global>{`
-            .gallery-pagination-bullet {
-              width: 10px;
-              height: 10px;
-              background: #e5e7eb;
-              opacity: 1;
-              border-radius: 50%;
-              margin: 0 4px;
-            }
-            .gallery-pagination-active {
-              background: #d90b6b;
-            }
-          `}</style>
+          {/* Pagination Dots */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center gap-2 mt-8 pb-4">
+              {Array.from({ length: totalPages }).map((_, index) => {
+                const isActive = Math.floor(currentIndex / slidesPerView) === index;
+                return (
+                  <button
+                    key={index}
+                    onClick={() => goToPage(index)}
+                    className={`transition-all duration-300 rounded-full ${
+                      isActive
+                        ? 'w-10 h-3 bg-[#d90b6b]'
+                        : 'w-3 h-3 bg-gray-300 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Go to page ${index + 1}`}
+                  />
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Additional Cakes Link - Centered */}
         <div className="flex pb-4 justify-center mt-8 md:mt-12">
-          <Link href="/cakes" className="cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-8 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">დამატებითი ტორტები</Link>
+          <Link href="/cakes" className="cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-8 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">დაათვალიერეთ ჩვენი კოლექცია</Link>
         </div>
       </div>
 

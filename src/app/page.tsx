@@ -12,12 +12,12 @@ export default function Home() {
     <>
       <div className="bg-color">
         <Hero />
-        <Services />
         <Gallery />
+        <Services />
         <Swiper />
         <About />
         {/* <SpecialOffers /> */}
-        <Why />
+      
       </div>
     </>
   );

@@ -15,7 +15,7 @@ const Swiper = () => {
     const images = [
         {
             id: 2,
-            src: '/hero/3.png',
+            src: '/swiper/1.jpg',
             title: 'Beach Paradise',
             location: 'Maldives',
             rating: 4.9,
@@ -23,7 +23,7 @@ const Swiper = () => {
         },
         {
             id: 3,
-            src: '/hero/2.png',
+            src: '/swiper/2.jpg',
             title: 'City Exploration',
             location: 'Tokyo, Japan',
             rating: 4.7,
@@ -31,7 +31,7 @@ const Swiper = () => {
         },
         {
             id: 4,
-            src: '/hero/1.png',
+            src: '/swiper/3.jpg',
             title: 'Desert Safari',
             location: 'Dubai, UAE',
             rating: 4.6,
@@ -39,7 +39,7 @@ const Swiper = () => {
         },
         {
             id: 5,
-            src: '/catalog/1.jpg',
+            src: '/swiper/4.jpg',
             title: 'Forest Retreat',
             location: 'Amazon Rainforest',
             rating: 4.5,
@@ -47,16 +47,24 @@ const Swiper = () => {
         },
         {
             id: 6,
-            src: '/catalog/2.jpg',
+            src: '/swiper/5.jpg',
             title: 'Island Hopping',
             location: 'Greek Islands',
             rating: 4.9,
             price: '$499'
-        }
+        },
+        {
+            id: 7,
+            src: '/swiper/6.jpg',
+            title: 'Island Hopping',
+            location: 'Greek Islands',
+            rating: 4.9,
+            price: '$499'
+        },
     ]
 
     return (
-        <div className="w-full mt-15">
+        <div className="w-full mt-20">
             <div className="max-w-7xl mx-auto ">
                 {/* Header */}
                 
@@ -120,10 +128,7 @@ const Swiper = () => {
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
 
                                         {/* Content */}
-                                        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                                            <h3 className="text-xl font-bold mb-2">{image.title}</h3>
-                                            <p className="text-sm opacity-90">{image.location}</p>
-                                        </div>
+                                      
                                     </div>
                                 </div>
                             </SwiperSlide>
