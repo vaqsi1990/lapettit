@@ -10,11 +10,13 @@ export async function POST(request: NextRequest) {
 
     // Create new session
     if (action === 'create') {
+      const { productId } = body;
       const newSession = await prisma.chatSession.create({
         data: {
           sessionId: sessionId || generateSessionId(),
           currentStep: 0,
-          isComplete: false
+          isComplete: false,
+          productId: productId || null
         }
       });
 

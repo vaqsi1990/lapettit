@@ -110,6 +110,7 @@ model ChatSession {
   sessionId   String         @unique
   currentStep Int            @default(0)
   isComplete  Boolean        @default(false)
+  productId   Int?           // Product ID if survey started from product page
   responses   ChatResponse[]
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt

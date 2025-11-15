@@ -5,12 +5,15 @@ import { UploadButton } from '@/utils/uploadthing';
 import { Send, Loader2, MessageCircle, X } from 'lucide-react';
 import { SURVEY_QUESTIONS } from '@/lib/survey-questions';
 import { Cake } from 'lucide-react';
+import Image from 'next/image';
+
 interface Message {
   type: 'bot' | 'user';
   text: string;
   options?: string[];
   fileUrl?: string;
   fileName?: string;
+  imageUrl?: string;
 }
 
 interface SurveyState {
@@ -25,8 +28,28 @@ interface SurveyState {
   } | null;
 }
 
-const ChatWidget = () => {
-  const [isOpen, setIsOpen] = useState(true); // ღიაა სტარტზე
+interface ChatWidgetProps {
+  productId?: number;
+  productImage?: string;
+  productName?: string;
+  defaultOpen?: boolean;
+  isOpen?: boolean;
+  onOpenChange?: (isOpen: boolean) => void;
+  showFloatingButton?: boolean;
+}
+
+const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, isOpen: externalIsOpen, onOpenChange, showFloatingButton = true }: ChatWidgetProps) => {
+  const [internalIsOpen, setInternalIsOpen] = useState(defaultOpen);
+  const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
+  
+  const setIsOpen = (value: boolean) => {
+    if (externalIsOpen === undefined) {
+      setInternalIsOpen(value);
+    }
+    if (onOpenChange) {
+      onOpenChange(value);
+    }
+  };
   const [messages, setMessages] = useState<Message[]>([]);
   const [surveyState, setSurveyState] = useState<SurveyState>({
     sessionId: null,
@@ -38,14 +61,25 @@ const ChatWidget = () => {
   const [textAnswer, setTextAnswer] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<{ url: string; name: string } | null>(null);
+  const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set());
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Handle external open state changes
+  useEffect(() => {
+    if (externalIsOpen !== undefined && externalIsOpen && messages.length === 0) {
+      // If externally opened and no messages, initialize chat
+      initializeChat();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [externalIsOpen, messages.length]);
 
   // Initialize chat
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       initializeChat();
     }
-  }, [isOpen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, messages.length]);
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
@@ -56,23 +90,27 @@ const ChatWidget = () => {
 
   // Auto-submit for multiple choice questions
   useEffect(() => {
-    if (selectedOption !== null && surveyState.question?.type === 'multiple_choice') {
+    if (selectedOption !== null && surveyState.question?.type === 'multiple_choice' && 
+        surveyState.question && !answeredQuestions.has(surveyState.question.id)) {
       const timer = setTimeout(() => {
         submitAnswer();
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, [selectedOption]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOption, surveyState.question]);
 
   // Auto-submit for file uploads
   useEffect(() => {
-    if (uploadedFile && surveyState.question?.type === 'file') {
+    if (uploadedFile && surveyState.question?.type === 'file' && 
+        surveyState.question && !answeredQuestions.has(surveyState.question.id)) {
       const timer = setTimeout(() => {
         submitAnswer();
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [uploadedFile]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [uploadedFile, surveyState.question]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -85,7 +123,10 @@ const ChatWidget = () => {
       const response = await fetch('/api/chat-survey', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'create' })
+        body: JSON.stringify({ 
+          action: 'create',
+          productId: productId || undefined
+        })
       });
 
       const data = await response.json();
@@ -100,19 +141,41 @@ const ChatWidget = () => {
           question: data.question
         });
 
-        // Add welcome message and first question
-        setMessages([
+        // Customize welcome message and questions based on product
+        const welcomeText = productId && productName 
+          ? `გამარჯობა! მე ვარ SweetBot, თქვენი ტორტის ასისტენტი. ვხედავ რომ გაინტერესებთ "${productName}". დავიწყოთ შეკვეთა?`
+          : 'გამარჯობა! მე ვარ SweetBot, თქვენი ტორტის ასისტენტი დავიწყოთ შეკვეთა?';
+
+        // Customize first question if product-specific
+        let firstQuestionText = data.question.text;
+        if (productId && productName) {
+          // Make questions product-specific
+          if (data.question.id === 3) {
+            firstQuestionText = `ამ "${productName}" ტორტისთვის რამდენი ნაჭრიანი გსურთ?`;
+          } else if (data.question.id === 4) {
+            firstQuestionText = `ატვირთეთ თქვენი ტორტის იმიჯი ან ინსპირაციის ფოტო "${productName}" ტორტისთვის`;
+          } else if (data.question.id === 5) {
+            firstQuestionText = `"${productName}" ტორტისთვის აირჩიეთ შიგთავსი:`;
+          } else if (data.question.id === 6) {
+            firstQuestionText = `"${productName}" ტორტისთვის აირჩიეთ დაფარვა:`;
+          }
+        }
+
+        const initialMessages: Message[] = [
           {
             type: 'bot',
-            text: 'გამარჯობა! მე ვარ SweetBot, თქვენი ტორტის ასისტენტი დავიწყოთ შეკვეთა?',
-            options: undefined
+            text: welcomeText,
+            options: undefined,
+            imageUrl: productImage
           },
           {
             type: 'bot',
-            text: data.question.text,
+            text: firstQuestionText,
             options: data.question.options
           }
-        ]);
+        ];
+
+        setMessages(initialMessages);
       }
     } catch (error) {
       console.error('Error initializing chat:', error);
@@ -130,6 +193,11 @@ const ChatWidget = () => {
 
   const submitAnswer = async () => {
     if (!surveyState.sessionId || !surveyState.question) return;
+
+    // Prevent submitting if question is already answered
+    if (answeredQuestions.has(surveyState.question.id)) {
+      return;
+    }
 
     // Validate based on question type
     if (surveyState.question.type === 'multiple_choice' && selectedOption === null) {
@@ -183,6 +251,11 @@ const ChatWidget = () => {
       const data = await response.json();
 
       if (data.success) {
+        // Mark current question as answered
+        if (surveyState.question) {
+          setAnsweredQuestions(prev => new Set(prev).add(surveyState.question!.id));
+        }
+
         setSurveyState({
           sessionId: data.session.sessionId,
           currentStep: data.session.currentStep,
@@ -198,9 +271,23 @@ const ChatWidget = () => {
             options: undefined
           }]);
         } else if (data.question) {
+          // Customize question text for product-specific context
+          let questionText = data.question.text;
+          if (productId && productName) {
+            if (data.question.id === 3) {
+              questionText = `ამ "${productName}" ტორტისთვის რამდენი ნაჭრიანი გსურთ?`;
+            } else if (data.question.id === 4) {
+              questionText = `ატვირთეთ თქვენი ტორტის იმიჯი ან ინსპირაციის ფოტო "${productName}" ტორტისთვის`;
+            } else if (data.question.id === 5) {
+              questionText = `"${productName}" ტორტისთვის აირჩიეთ შიგთავსი:`;
+            } else if (data.question.id === 6) {
+              questionText = `"${productName}" ტორტისთვის აირჩიეთ დაფარვა:`;
+            }
+          }
+          
           setMessages(prev => [...prev, {
             type: 'bot',
-            text: data.question.text,
+            text: questionText,
             options: data.question.options
           }]);
         }
@@ -218,11 +305,19 @@ const ChatWidget = () => {
   };
 
   const handleOptionClick = (index: number) => {
+    // Prevent clicking if question is already answered
+    if (surveyState.question && answeredQuestions.has(surveyState.question.id)) {
+      return;
+    }
     setSelectedOption(index);
     // Auto-submit is handled by useEffect
   };
 
   const handleFileUpload = (res: { url: string; name: string }[]) => {
+    // Prevent uploading if question is already answered
+    if (surveyState.question && answeredQuestions.has(surveyState.question.id)) {
+      return;
+    }
     if (res && res.length > 0) {
       setUploadedFile({
         url: res[0].url,
@@ -233,6 +328,8 @@ const ChatWidget = () => {
 
   const canSubmit = () => {
     if (!surveyState.question) return false;
+    // Prevent submitting if question is already answered
+    if (answeredQuestions.has(surveyState.question.id)) return false;
     if (surveyState.question.type === 'multiple_choice') return selectedOption !== null;
     if (surveyState.question.type === 'file') return uploadedFile !== null;
     if (surveyState.question.type === 'text') return textAnswer.trim().length > 0;
@@ -247,7 +344,7 @@ const ChatWidget = () => {
   return (
     <>
       {/* Floating Chat Button */}
-      {!isOpen && (
+      {!isOpen && showFloatingButton && (
         <button
           onClick={() => setIsOpen(true)}
           className="fixed bottom-6 right-6 bg-gradient-to-r from-pink-500 to-purple-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-50"
@@ -332,6 +429,19 @@ const ChatWidget = () => {
                 >
                   <p>{message.text}</p>
                 
+                {/* Show product image */}
+                {message.imageUrl && (
+                  <div className="mt-2 rounded-lg overflow-hidden">
+                    <Image
+                      src={message.imageUrl}
+                      alt={productName || "Product"}
+                      width={200}
+                      height={200}
+                      className="object-cover rounded-lg"
+                    />
+                  </div>
+                )}
+
                 {/* Show uploaded file */}
                 {message.fileUrl && (
                   <div className="mt-2">
@@ -349,19 +459,30 @@ const ChatWidget = () => {
                 {/* Show options */}
                 {message.options && (
                   <div className="mt-2 space-y-1">
-                    {message.options.map((option, optIndex) => (
-                      <button
-                        key={optIndex}
-                        onClick={() => handleOptionClick(optIndex)}
-                        className={`block w-full text-left p-2 rounded text-xs transition-all ${
-                            selectedOption === optIndex
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
-                        }`}
-                      >
-                        {option}
-                      </button>
-                    ))}
+                    {message.options.map((option, optIndex) => {
+                      const isCurrentQuestion = surveyState.question && 
+                        message.text === surveyState.question.text;
+                      const isAnswered = surveyState.question && 
+                        answeredQuestions.has(surveyState.question.id);
+                      const isDisabled = isCurrentQuestion && isAnswered;
+                      
+                      return (
+                        <button
+                          key={optIndex}
+                          onClick={() => handleOptionClick(optIndex)}
+                          disabled={!!isDisabled}
+                          className={`block w-full text-left p-2 rounded text-xs transition-all ${
+                              isDisabled
+                              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                              : selectedOption === optIndex
+                              ? 'bg-purple-600 text-white'
+                              : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -380,7 +501,8 @@ const ChatWidget = () => {
           </div>
 
           {/* Input Area */}
-        {!surveyState.isComplete && surveyState.question && (
+        {!surveyState.isComplete && surveyState.question && 
+         !answeredQuestions.has(surveyState.question.id) && (
           <div className="border-t border-gray-200 p-4 bg-white">
             {surveyState.question.type === 'file' && (
               <div className="mb-3">

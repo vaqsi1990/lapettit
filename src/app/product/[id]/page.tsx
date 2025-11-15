@@ -8,6 +8,7 @@ import { useParams } from 'next/navigation';
 import { Plus, Minus, } from 'lucide-react';
 import { getCakeById, getCakes } from '@/lib/action';
 import { mapCakeToGalleryImage, type GalleryImage, calculateTotalPrice, formatPrice } from '@/lib/utils';
+import ChatWidget from '@/components/ChatSurvey';
 
 const ProductPage = () => {
     const params = useParams();
@@ -25,6 +26,7 @@ const ProductPage = () => {
 
     const [loading, setLoading] = useState(true);
     const [selectedImage] = useState(0);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     // Dynamic piece size options based on product data
     const getPieceOptions = () => {
@@ -281,6 +283,17 @@ const ProductPage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 pt-20">
+            {/* Chat Widget for Product Page - Only show when explicitly opened */}
+            {product && isChatOpen && (
+                <ChatWidget
+                    productId={product.id}
+                    productImage={product.src}
+                    productName={product.titleGeorgian}
+                    isOpen={isChatOpen}
+                    onOpenChange={setIsChatOpen}
+                    showFloatingButton={false}
+                />
+            )}
             {/* Product Section */}
             <div className="container mx-auto px-4 py-12">
                 <div className="grid lg:grid-cols-2 gap-8">
@@ -331,7 +344,8 @@ const ProductPage = () => {
                         </div>
 
                         {/* Set Information - Only for SET type */}
-                        {product.productType === 'SET' && (
+                        {product.productType === 'SET' && 
+                         ((product.setItems && product.setItems.length > 0) || product.setDescription) && (
                             <div className="bg-[#d90b6b] border border-pink-100 rounded-xl p-4 space-y-3">
                                 {product.setItems && product.setItems.length > 0 && (
                                     <>
@@ -605,22 +619,8 @@ const ProductPage = () => {
                                     <div className="space-y-2">
                                         <button 
                                             onClick={async () => {
-                                                // Store customization data in sessionStorage
-                                                const customizationData = {
-                                                    cakeId: product.id,
-                                                    price: totalPrice,
-                                                    pieces: selectedPieces,
-                                                    topping: selectedTopping,
-                                                    filling: selectedFilling,
-                                                    cakeName: cakeName,
-                                                    age: age,
-                                                    position: position
-                                                };
-                                                
-                                                sessionStorage.setItem(`customization_${product.id}`, JSON.stringify(customizationData));
-                                                
-                                                // Navigate to order page without URL parameters
-                                                window.location.href = `/order/${product.id}`;
+                                                // Open chat widget instead of navigating directly
+                                                setIsChatOpen(true);
                                             }}
                                             className="w-full md:w-[30%] cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block"
                                         >
@@ -631,18 +631,8 @@ const ProductPage = () => {
                                 ) : (
                                     <button 
                                         onClick={async () => {
-                                            // Store standard product data in sessionStorage
-                                            const productData = {
-                                                cakeId: product.id,
-                                                price: totalPrice,
-                                                isStandard: true,
-                                                productType: product.productType
-                                            };
-                                            
-                                            sessionStorage.setItem(`cake_${product.id}`, JSON.stringify(productData));
-                                            
-                                            // Navigate to order page
-                                            window.location.href = `/order/${product.id}`;
+                                            // Open chat widget instead of navigating directly
+                                            setIsChatOpen(true);
                                         }}
                                         className="w-full md:w-[30%]  cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block"
                                     >

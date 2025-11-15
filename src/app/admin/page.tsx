@@ -21,7 +21,7 @@ import {
  
   Mail
 } from 'lucide-react';
-import { getCakes, getOrders, deleteCake, deleteOrder } from '@/lib/action';
+import { getCakes, getOrders, deleteCake, deleteOrder, getCakeById } from '@/lib/action';
 import { formatPrice } from '@/lib/utils';
 
 import AddCakeForm from '@/components/AddCakeForm';
@@ -84,6 +84,7 @@ interface SurveySession {
   sessionId: string;
   currentStep: number;
   isComplete: boolean;
+  productId: number | null;
   createdAt: Date;
   responses: {
     id: number;
@@ -107,6 +108,8 @@ const AdminPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [editingCake, setEditingCake] = useState<Cake | null>(null);
+  const [expandedSessions, setExpandedSessions] = useState<Set<number>>(new Set());
+  const [productImages, setProductImages] = useState<Map<number, string>>(new Map());
   const { showToast } = useToast();
 
 
@@ -130,6 +133,33 @@ const AdminPage = () => {
         const surveyData = await surveyResponse.json();
         if (surveyData.success && surveyData.sessions) {
           setSurveySessions(surveyData.sessions);
+          
+          // Fetch product images for sessions with productId
+          const productIds = surveyData.sessions
+            .filter((s: SurveySession) => s.productId)
+            .map((s: SurveySession) => s.productId)
+            .filter((id: number | null): id is number => id !== null);
+          
+          if (productIds.length > 0) {
+            const uniqueProductIds: number[] = Array.from(new Set<number>(productIds));
+            const productImagesMap = new Map<number, string>();
+            
+            // Fetch each product
+            await Promise.all(
+              uniqueProductIds.map(async (productId: number) => {
+                try {
+                  const productResult = await getCakeById(productId);
+                  if (productResult.success && productResult.data) {
+                    productImagesMap.set(productId, productResult.data.imageUrl || '/catalog/1.jpg');
+                  }
+                } catch (error) {
+                  console.error(`Error fetching product ${productId}:`, error);
+                }
+              })
+            );
+            
+            setProductImages(productImagesMap);
+          }
         }
 
         // Fetch survey questions
@@ -1108,39 +1138,74 @@ const AdminPage = () => {
                     >
                       {/* Session Header */}
                       <div className="flex items-center justify-between mb-4 pb-4 border-b">
-                        <div>
+                        <div className="flex-1">
                           <div className="flex items-center space-x-3">
                             <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center">
                               <span className="text-white font-bold text-sm">#{index + 1}</span>
                             </div>
-                            <div>
-                              <p className="font-semibold text-black">
-                                {(() => {
-                                  const nameResponse = session.responses.find(r => r.questionId === 9);
-                                  return nameResponse?.answerText || 'სესიის ID: ' + session.sessionId.slice(0, 20);
-                                })()}
-                              </p>
-                              <p className="text-sm text-gray-500">
-                                {new Date(session.createdAt).toLocaleDateString('ka-GE', {
-                                  year: 'numeric',
-                                  month: 'long',
-                                  day: 'numeric',
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </p>
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3">
+                                {/* Product Image if productId exists */}
+                                {session.productId && productImages.has(session.productId) && (
+                                  <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                                    <Image
+                                      src={productImages.get(session.productId)!}
+                                      alt="Product"
+                                      fill
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                )}
+                                <div>
+                                  <p className="font-semibold text-black">
+                                    {(() => {
+                                      const nameResponse = session.responses.find(r => r.questionId === 9);
+                                      return nameResponse?.answerText || 'სესიის ID: ' + session.sessionId.slice(0, 20);
+                                    })()}
+                                  </p>
+                                  <p className="text-sm text-gray-500">
+                                    {new Date(session.createdAt).toLocaleDateString('ka-GE', {
+                                      year: 'numeric',
+                                      month: 'long',
+                                      day: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })}
+                                  </p>
+                                  {session.productId && (
+                                    <p className="text-xs text-pink-600 mt-1">
+                                      პროდუქტი ID: {session.productId}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>
-                                <div className="flex items-center space-x-2">
-                                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                    session.isComplete
-                                      ? 'bg-green-100 text-green-800'
-                                      : 'bg-yellow-100 text-yellow-800'
-                                  }`}>
-                                    {session.isComplete ? '✓ დასრულებული' : 'მიმდინარე'}
-                                  </span>
-                                  <button
+                        <div className="flex items-center space-x-2">
+                          <button
+                            onClick={() => {
+                              const newExpanded = new Set(expandedSessions);
+                              if (newExpanded.has(session.id)) {
+                                newExpanded.delete(session.id);
+                              } else {
+                                newExpanded.add(session.id);
+                              }
+                              setExpandedSessions(newExpanded);
+                            }}
+                            className="px-4 py-2 text-sm bg-pink-100 hover:bg-pink-200 text-pink-700 rounded-lg transition-colors flex items-center space-x-2 font-medium"
+                          >
+                            <span>{expandedSessions.has(session.id) ? '▼' : '▶'}</span>
+                            <span>{expandedSessions.has(session.id) ? 'დამალვა' : 'გამოჩენა'}</span>
+                          </button>
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                            session.isComplete
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                            {session.isComplete ? '✓ დასრულებული' : 'მიმდინარე'}
+                          </span>
+                          <button
                             onClick={async () => {
                               if (window.confirm('ნამდვილად გსურთ ამ სესიის წაშლა? ყველა პასუხიც წაიშლება.')) {
                                 try {
@@ -1169,11 +1234,12 @@ const AdminPage = () => {
                       </div>
 
                       {/* Responses */}
-                      <div className="space-y-4">
-                        {session.responses.length === 0 ? (
-                          <p className="text-gray-500 text-sm italic">პასუხები არ არის</p>
-                        ) : (
-                          session.responses.map((response, respIndex) => (
+                      {expandedSessions.has(session.id) && (
+                        <div className="space-y-4">
+                          {session.responses.length === 0 ? (
+                            <p className="text-gray-500 text-sm italic">პასუხები არ არის</p>
+                          ) : (
+                            session.responses.map((response, respIndex) => (
                             <div key={response.id} className="bg-gray-50 rounded-lg p-4">
                               <div className="flex items-start space-x-3">
                                 <div className="flex-shrink-0 w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center">
@@ -1227,10 +1293,11 @@ const AdminPage = () => {
                                   )}
                                         </div>
                                       </div>
-                                    </div>
-                          ))
-                        )}
-                      </div>
+                                     </div>
+                           ))
+                          )}
+                        </div>
+                      )}
                     </motion.div>
                   ))
                 )}
