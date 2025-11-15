@@ -1287,8 +1287,44 @@ const AdminPage = () => {
               {/* Left Sidebar - Sessions List */}
               <div className="w-1/3 border-r border-gray-200 flex flex-col">
                 <div className="p-4 border-b border-gray-200 bg-gray-50">
-                  <h2 className="text-xl font-bold text-black">Live Chat</h2>
-                  <p className="text-sm text-gray-600 mt-1">{liveChatSessions.length} აქტიური ჩატი</p>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h2 className="text-xl font-bold text-black">Live Chat</h2>
+                      <p className="text-sm text-gray-600 mt-1">{liveChatSessions.length} აქტიური ჩატი</p>
+                    </div>
+                    {liveChatSessions.length > 0 && (
+                      <button
+                        onClick={async () => {
+                          if (window.confirm(`ნამდვილად გსურთ ყველა ჩათის წაშლა? (${liveChatSessions.length} ჩატი) ყველა შეტყობინება და პასუხიც წაიშლება.`)) {
+                            try {
+                              const deleteResponse = await fetch('/api/chat-survey/sessions/delete-all', {
+                                method: 'DELETE'
+                              });
+
+                              if (deleteResponse.ok) {
+                                const data = await deleteResponse.json();
+                                setLiveChatSessions([]);
+                                setSelectedChatSession(null);
+                                setChatMessages([]);
+                                setAdminMessage('');
+                                showToast('success', `წარმატებით წაიშალა ${data.deletedCount} ჩატი`);
+                              } else {
+                                showToast('error', 'შეცდომა ჩათების წაშლისას');
+                              }
+                            } catch (error) {
+                              console.error('Error deleting all chats:', error);
+                              showToast('error', 'შეცდომა ჩათების წაშლისას');
+                            }
+                          }
+                        }}
+                        className="px-3 py-1.5 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                        title="ყველა ჩათის წაშლა"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        <span className="hidden sm:inline">ყველას წაშლა</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="flex-1 overflow-y-auto">
@@ -1810,8 +1846,40 @@ const AdminPage = () => {
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-black">კითხვებზე პასუხები</h2>
-                <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
-                  {surveySessions.filter(session => session.responses.length > 0).length} სესია
+                <div className="flex items-center gap-3">
+                  <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                    {surveySessions.filter(session => session.responses.length > 0).length} სესია
+                  </div>
+                  {surveySessions.filter(session => session.responses.length > 0).length > 0 && (
+                    <button
+                      onClick={async () => {
+                        const sessionCount = surveySessions.filter(session => session.responses.length > 0).length;
+                        if (window.confirm(`ნამდვილად გსურთ ყველა სესიის წაშლა? (${sessionCount} სესია) ყველა პასუხიც წაიშლება.`)) {
+                          try {
+                            const deleteResponse = await fetch('/api/chat-survey/sessions/delete-all', {
+                              method: 'DELETE'
+                            });
+
+                            if (deleteResponse.ok) {
+                              const data = await deleteResponse.json();
+                              setSurveySessions([]);
+                              showToast('success', `წარმატებით წაიშალა ${data.deletedCount} სესია`);
+                            } else {
+                              showToast('error', 'შეცდომა სესიების წაშლისას');
+                            }
+                          } catch (error) {
+                            console.error('Error deleting all sessions:', error);
+                            showToast('error', 'შეცდომა სესიების წაშლისას');
+                          }
+                        }
+                      }}
+                      className="px-3 py-1.5 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                      title="ყველა სესიის წაშლა"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      <span className="hidden sm:inline">ყველას წაშლა</span>
+                    </button>
+                  )}
                 </div>
               </div>
 

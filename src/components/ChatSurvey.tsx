@@ -355,10 +355,27 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                 setLastMessageId(messagesData.messages[messagesData.messages.length - 1]?.id || null);
               }
             } else {
-              // First load - set all messages
-              setMessages(dbMessages);
-              if (messagesData.messages.length > 0) {
-                setLastMessageId(messagesData.messages[messagesData.messages.length - 1].id);
+              // First load - only set messages if survey is complete or we don't have active question
+              // This prevents overwriting bot questions that haven't been saved to database yet
+              if (surveyState.isComplete || !surveyState.question) {
+                setMessages(dbMessages);
+                if (messagesData.messages.length > 0) {
+                  setLastMessageId(messagesData.messages[messagesData.messages.length - 1].id);
+                }
+              } else {
+                // Survey is active - merge database messages with existing messages
+                // Don't overwrite, just add missing ones
+                setMessages(prev => {
+                  const existingTexts = new Set(prev.map(m => m.text));
+                  const toAdd = dbMessages.filter(msg => !existingTexts.has(msg.text));
+                  if (toAdd.length > 0) {
+                    return [...prev, ...toAdd];
+                  }
+                  return prev;
+                });
+                if (messagesData.messages.length > 0) {
+                  setLastMessageId(messagesData.messages[messagesData.messages.length - 1].id);
+                }
               }
             }
           }
@@ -383,22 +400,47 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
 
   // Auto-select and submit for question 15 (hidden question - always select bot form option 0)
   useEffect(() => {
-    if (surveyState.question?.id === 15 && !answeredQuestions.has(15) && surveyState.sessionId) {
+    if (surveyState.question?.id === 15 && !answeredQuestions.has(15) && surveyState.sessionId && !isLoading) {
       console.log('Question 15 detected - auto-selecting option 0 (bot form)', {
         questionId: surveyState.question.id,
         sessionId: surveyState.sessionId,
-        answeredQuestions: Array.from(answeredQuestions)
+        answeredQuestions: Array.from(answeredQuestions),
+        isLoading
       });
       setSelectedOption(0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyState.question?.id, surveyState.sessionId, answeredQuestions, isLoading]);
+
+  // Auto-submit question 15 after selectedOption is set
+  useEffect(() => {
+    if (surveyState.question?.id === 15 && 
+        selectedOption === 0 && 
+        !answeredQuestions.has(15) && 
+        surveyState.sessionId && 
+        !isLoading) {
+      console.log('Question 15 - selectedOption is 0, auto-submitting...', {
+        selectedOption,
+        questionId: surveyState.question.id,
+        sessionId: surveyState.sessionId
+      });
       // Auto-submit after a short delay to ensure state is set
       const timer = setTimeout(() => {
         console.log('Auto-submitting question 15 answer...');
-        submitAnswer();
-      }, 800);
+        // Double check before submitting
+        if (surveyState.question?.id === 15 && 
+            surveyState.sessionId && 
+            !answeredQuestions.has(15) && 
+            selectedOption === 0) {
+          submitAnswer();
+        } else {
+          console.log('Question 15 conditions changed, skipping auto-submit');
+        }
+      }, 500);
       return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [surveyState.question?.id, surveyState.sessionId, answeredQuestions]);
+  }, [selectedOption, surveyState.question?.id, surveyState.sessionId, answeredQuestions, isLoading]);
 
   // Auto-submit for multiple choice questions
   useEffect(() => {
