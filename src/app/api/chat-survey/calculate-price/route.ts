@@ -55,11 +55,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Base prices (default values)
-    let marzipanBasePrice = 100;
-    let creamBasePrice = 100;
+    const marzipanBasePrice = 100;
+    const creamBasePrice = 100;
 
     // Calculate price based on pieces and topping
-    let priceRange = { min: 0, max: 0 };
+    const priceRange = { min: 0, max: 0 };
     
     // Get topping (marzipan or cream)
     const topping = toppingResponse?.selectedOption !== null && toppingResponse?.selectedOption !== undefined
