@@ -736,6 +736,8 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                     text: 'გმადლობთ თქვენი დროისთვის! შეკვეთა მიღებულია.',
                     options: undefined
                   }]);
+                  // Mark chat as ended
+                  setIsChatEnded(true);
                 }
               } catch (error) {
                 console.error('Error continuing survey:', error);
@@ -753,6 +755,8 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
               text: 'გმადლობთ თქვენი დროისთვის! შეკვეთა მიღებულია.',
               options: undefined
             }]);
+            // Mark chat as ended
+            setIsChatEnded(true);
             // Mark continue question as answered
             setAnsweredQuestions(prev => new Set(prev).add(999));
             
@@ -834,6 +838,11 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
         // Add next question or completion message
         if (data.isComplete) {
           // Check if user wants admin chat or completed full survey
+          // If normal completion (not wantsAdminChat), end chat
+          if (!data.wantsAdminChat) {
+            setIsChatEnded(true);
+          }
+          
           if (data.wantsAdminChat) {
             // User selected "მინდა დაველოდო ადმინისტრატორს"
             setMessages(prev => [...prev, {
@@ -859,12 +868,15 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
               }
             }
           } else {
-            // Normal survey completion
+            // Normal survey completion - don't allow chat continuation
             setMessages(prev => [...prev, {
               type: 'bot',
-              text: 'გმადლობთ თქვენი პასუხებისთვის! 🙏 ჩვენი გუნდი მალე დაგიკავშირდებათ. თუ გაქვთ კითხვები, შეგიძლიათ გააგრძელოთ ჩატი.',
+              text: 'გმადლობთ თქვენი პასუხებისთვის! 🙏 ჩვენი გუნდი მალე დაგიკავშირდებათ.',
               options: undefined
             }]);
+            
+            // Mark chat as ended to prevent continuation
+            setIsChatEnded(true);
             
             // Save completion message to database
             if (surveyState.sessionId) {
@@ -875,7 +887,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                   body: JSON.stringify({
                     sessionId: surveyState.sessionId,
                     senderType: 'bot',
-                    content: 'გმადლობთ თქვენი პასუხებისთვის! 🙏 ჩვენი გუნდი მალე დაგიკავშირდებათ. თუ გაქვთ კითხვები, შეგიძლიათ გააგრძელოთ ჩატი.'
+                    content: 'გმადლობთ თქვენი პასუხებისთვის! 🙏 ჩვენი გუნდი მალე დაგიკავშირდებათ.'
                   })
                 });
               } catch (error) {
