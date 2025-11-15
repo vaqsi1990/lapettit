@@ -132,6 +132,9 @@ const ProductPage = () => {
             } else {
                 setSelectedTopping(null);
             }
+
+            // Auto-open chat when product loads
+            setIsChatOpen(true);
         }
     }, [product]);
 
@@ -283,15 +286,15 @@ const ProductPage = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50 pt-20">
-            {/* Chat Widget for Product Page - Only show when explicitly opened */}
-            {product && isChatOpen && (
+            {/* Chat Widget for Product Page - Auto-opened when product loads */}
+            {product && (
                 <ChatWidget
                     productId={product.id}
                     productImage={product.src}
                     productName={product.titleGeorgian}
                     isOpen={isChatOpen}
                     onOpenChange={setIsChatOpen}
-                    showFloatingButton={false}
+                    showFloatingButton={true}
                 />
             )}
             {/* Product Section */}
@@ -577,7 +580,8 @@ const ProductPage = () => {
                         <div className="space-y-4">
                            
 
-                            {/* Total Price Display */}
+                            {/* Total Price Display - Only show if totalPrice > 0 */}
+                            {totalPrice > 0 && (
                             <div className=" p-4 ">
                                 <div className="flex justify-between items-center">
                                     <span className="text-[18px] font-semibold text-black">ჯამი:</span>
@@ -611,10 +615,11 @@ const ProductPage = () => {
                                     </>
                                 )}
                             </div>
+                            )}
 
 
                             {/* Action Buttons */}
-                            <div className="space-y-3">
+                            {/* <div className="space-y-3">
                                 {product.productType === 'FULL_CAKE' && product.isCustomizable ? (
                                     <div className="space-y-2">
                                         <button 
@@ -639,7 +644,7 @@ const ProductPage = () => {
                                         შეუკვეთე ახლა
                                     </button>
                                 )}
-                            </div>
+                            </div> */}
                         </div>
 
                     </motion.div>

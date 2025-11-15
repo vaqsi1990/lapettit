@@ -4,7 +4,8 @@ import "./globals.css";
 import Navbar from "../components/navbar";
 import Footer from "@/components/Footer";
 import { ToastProvider } from "@/components/Toast";
-import ChatWidget from "@/components/ChatSurvey";
+
+import ChatWrapper from "@/components/ChatWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,7 +36,7 @@ export default function RootLayout({
           <Navbar />
           {children}
           <Footer />
-          <ChatWidget />
+          <ChatWrapper />
         </ToastProvider>
       </body>
     </html>
