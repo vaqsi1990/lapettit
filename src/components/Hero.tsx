@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import "./slider.css";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 
 interface Slide {
   id: number;
@@ -39,6 +40,14 @@ const ElegantHeroSlider = () => {
       subtitle: "დაბადების დღე, ქორწილი, განსაკუთრებული დღესასწაული"
     },
   ];
+
+  // Preload images for smoother transitions
+  useEffect(() => {
+    slides.forEach((slide) => {
+      const img = document.createElement('img');
+      img.src = slide.leftImage;
+    });
+  }, []);
 
   // Auto-advance slides every 8 seconds
   useEffect(() => {
@@ -82,22 +91,26 @@ const ElegantHeroSlider = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 1, ease: "easeInOut" }}
+            transition={{ duration: 0.5, ease: "easeInOut" }}
             className="absolute inset-0"
           >
             {/* Background Image with Parallax Effect */}
             <motion.div
-              initial={{ scale: 1.1 }}
+              initial={{ scale: 1.05 }}
               animate={{ scale: 1 }}
-              transition={{ duration: 1.5, ease: "easeOut" }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
               className="absolute inset-0"
             >
-              <div
-                className="w-full h-full bg-cover bg-center bg-no-repeat"
-                style={{
-                  backgroundImage: `url('${slides[currentSlide].leftImage}')`,
-                }}
-              />
+              <div className="relative w-full h-full">
+                <Image
+                  src={slides[currentSlide].leftImage}
+                  alt=""
+                  fill
+                  priority
+                  className="object-cover"
+                  sizes="100vw"
+                />
+              </div>
               {/* Subtle gradient overlay */}
               <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
             </motion.div>
@@ -118,7 +131,7 @@ const ElegantHeroSlider = () => {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
                 className="flex flex-col items-start"
               >
                 <h1 className="drop-shadow-2xl md:text-[38px] text-[22px] font-serif font-bold text-white mb-4 sm:mb-6 leading-tight drop-shadow-2xl">
