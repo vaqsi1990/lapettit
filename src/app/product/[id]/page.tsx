@@ -141,8 +141,13 @@ const ProductPage = () => {
     // Update total price when pieces, quantity, or topping changes
     useEffect(() => {
         if (product) {
-            if (product.isCustomizable) {
-                // For customizable cakes, use the piece-based pricing
+            // For SET and INDIVIDUAL_SLICE types, use the standard price
+            if (product.productType === 'SET' || product.productType === 'INDIVIDUAL_SLICE') {
+                if (product.price) {
+                    setTotalPrice(calculateTotalPrice(product.price, quantity));
+                }
+            } else if (product.isCustomizable) {
+                // For customizable FULL_CAKE, use the piece-based pricing
                 const pieceOptions = getPieceOptions();
                 const selectedOption = pieceOptions.find(option => option.pieces === selectedPieces);
                 if (selectedOption) {
@@ -162,7 +167,7 @@ const ProductPage = () => {
                     setTotalPrice(calculateTotalPrice(basePrice, quantity));
                 }
             } else {
-                // For non-customizable cakes, use the standard price
+                // For non-customizable FULL_CAKE, use the standard price
                 if (product.price) {
                     setTotalPrice(calculateTotalPrice(product.price, quantity));
                 }
@@ -619,32 +624,47 @@ const ProductPage = () => {
 
 
                             {/* Action Buttons */}
-                            {/* <div className="space-y-3">
+                            <div className="space-y-3">
                                 {product.productType === 'FULL_CAKE' && product.isCustomizable ? (
                                     <div className="space-y-2">
-                                        <button 
-                                            onClick={async () => {
-                                                // Open chat widget instead of navigating directly
-                                                setIsChatOpen(true);
+                                        <Link
+                                            href={`/order/${product.id}`}
+                                            onClick={() => {
+                                                // Save customization to sessionStorage before navigating
+                                                const customizationData = {
+                                                    cakeId: product.id,
+                                                    price: totalPrice,
+                                                    pieces: selectedPieces,
+                                                    topping: selectedTopping,
+                                                    filling: selectedFilling,
+                                                    cakeName: cakeName,
+                                                    age: age,
+                                                    position: position
+                                                };
+                                                sessionStorage.setItem(`customization_${product.id}`, JSON.stringify(customizationData));
                                             }}
                                             className="w-full md:w-[30%] cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block"
                                         >
                                             შეუკვეთე ახლა
-                                        </button>
-
+                                        </Link>
                                     </div>
                                 ) : (
-                                    <button 
-                                        onClick={async () => {
-                                            // Open chat widget instead of navigating directly
-                                            setIsChatOpen(true);
+                                    <Link
+                                        href={`/order/${product.id}`}
+                                        onClick={() => {
+                                            // Save standard cake data to sessionStorage
+                                            const cakeData = {
+                                                price: totalPrice,
+                                                productType: product.productType
+                                            };
+                                            sessionStorage.setItem(`cake_${product.id}`, JSON.stringify(cakeData));
                                         }}
-                                        className="w-full md:w-[30%]  cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block"
+                                        className="w-full md:w-[30%] cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block"
                                     >
                                         შეუკვეთე ახლა
-                                    </button>
+                                    </Link>
                                 )}
-                            </div> */}
+                            </div>
                         </div>
 
                     </motion.div>

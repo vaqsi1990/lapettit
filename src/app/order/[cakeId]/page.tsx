@@ -80,6 +80,14 @@ const OrderPage = () => {
   const calculatePriceRange = () => {
     if (!cake) return { min: 0, max: 0 };
 
+    // For SET and INDIVIDUAL_SLICE types, use the standard price
+    if (cake.productType === 'SET' || cake.productType === 'INDIVIDUAL_SLICE') {
+      const price = cake.price || 0;
+      const total = calculateTotalPrice(price, quantity);
+      return { min: total, max: total };
+    }
+
+    // For FULL_CAKE type, calculate based on pieces
     // Get minimum pieces required
     const minPieces = cake.pieces || 8;
     
@@ -131,11 +139,13 @@ const OrderPage = () => {
           
           if (sessionData) {
             const customization = JSON.parse(sessionData);
-            setTotalPrice(customization.price);
+            // Store the price per unit (divide by quantity if it was already multiplied)
+            const pricePerUnit = customization.price;
+            setTotalPrice(pricePerUnit * quantity);
             setSelectedPieces(customization.pieces);
             setSelectedTopping(customization.topping);
             setSelectedFilling(customization.filling);
-            setOriginalPrice(customization.price);
+            setOriginalPrice(pricePerUnit); // Store per-unit price
             if (cake.isCustomizable) {
               setCakeName(customization.cakeName || '');
               setAge(customization.age || '');
@@ -143,8 +153,17 @@ const OrderPage = () => {
             }
           } else if (cakeData) {
             const standardCake = JSON.parse(cakeData);
-            setTotalPrice(standardCake.price);
-            setOriginalPrice(standardCake.price);
+            // For SET and INDIVIDUAL_SLICE, use the price directly
+            if (cake.productType === 'SET' || cake.productType === 'INDIVIDUAL_SLICE') {
+              const price = cake.price || standardCake.price || 0;
+              setTotalPrice(calculateTotalPrice(price, quantity));
+              setOriginalPrice(price);
+            } else {
+              // For FULL_CAKE, use the price from sessionStorage or calculate
+              const price = standardCake.price || (cake.price || 0);
+              setTotalPrice(calculateTotalPrice(price, quantity));
+              setOriginalPrice(price);
+            }
           }
         } catch (error) {
           console.error('Error loading customization from sessionStorage:', error);
@@ -158,8 +177,9 @@ const OrderPage = () => {
   // Update price when quantity changes (for loaded customizations)
   useEffect(() => {
     if (originalPrice > 0) {
-      // Use original price to calculate new total
-      setTotalPrice(originalPrice * quantity);
+      // Use original price per unit to calculate new total
+      const pricePerUnit = originalPrice / (quantity > 0 ? quantity : 1);
+      setTotalPrice(calculateTotalPrice(pricePerUnit, quantity));
     }
   }, [quantity, originalPrice]);
 

@@ -153,7 +153,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
           if (data.question.id === 3) {
             firstQuestionText = `ამ "${productName}" ტორტისთვის რამდენი ნაჭრიანი გსურთ?`;
           } else if (data.question.id === 4) {
-            firstQuestionText = `ატვირთეთ თქვენი ტორტის იმიჯი ან ინსპირაციის ფოტო "${productName}" ტორტისთვის`;
+            firstQuestionText = `ატვირთეთ თქვენი ტორტის სურათი ან ინსპირაციის ფოტო "${productName}" ტორტისთვის`;
           } else if (data.question.id === 5) {
             firstQuestionText = `"${productName}" ტორტისთვის აირჩიეთ შიგთავსი:`;
           } else if (data.question.id === 6) {
@@ -278,7 +278,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
             if (data.question.id === 3) {
               questionText = `ამ "${productName}" ტორტისთვის რამდენი ნაჭრიანი გსურთ?`;
             } else if (data.question.id === 4) {
-              questionText = `ატვირთეთ თქვენი ტორტის იმიჯი ან ინსპირაციის ფოტო "${productName}" ტორტისთვის`;
+              questionText = `ატვირთეთ თქვენი ტორტის სურათი ან ინსპირაციის ფოტო "${productName}" ტორტისთვის`;
             } else if (data.question.id === 5) {
               questionText = `"${productName}" ტორტისთვის აირჩიეთ შიგთავსი:`;
             } else if (data.question.id === 6) {
