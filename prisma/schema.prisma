@@ -106,14 +106,18 @@ model OrderItem {
 }
 
 model ChatSession {
-  id          Int            @id @default(autoincrement())
-  sessionId   String         @unique
-  currentStep Int            @default(0)
-  isComplete  Boolean        @default(false)
-  productId   Int?           // Product ID if survey started from product page
-  responses   ChatResponse[]
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
+  id              Int            @id @default(autoincrement())
+  sessionId       String         @unique
+  currentStep     Int            @default(0)
+  isComplete      Boolean        @default(false)  // Survey completion status
+  isChatEnded     Boolean        @default(false)  // Chat conversation ended status
+  waitingForPrice Boolean        @default(false)  // Waiting for admin to calculate and send price
+  calculatedPrice Float?         // Price calculated by admin
+  productId       Int?           // Product ID if survey started from product page
+  responses       ChatResponse[]
+  messages        ChatMessage[]  // All chat messages (bot, user, admin)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 }
 
 model ChatResponse {
@@ -128,4 +132,17 @@ model ChatResponse {
   fileUrl      String?     // For file uploads
   fileName     String?     // Original file name
   createdAt    DateTime    @default(now())
+}
+
+model ChatMessage {
+  id          Int         @id @default(autoincrement())
+  session     ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId   Int
+  senderType  String      // "bot", "user", "admin"
+  content     String      // Message text
+  fileUrl     String?     // For file attachments
+  fileName    String?     // Original file name
+  imageUrl    String?     // For image messages
+  isRead      Boolean     @default(false) // For admin messages
+  createdAt   DateTime    @default(now())
 }

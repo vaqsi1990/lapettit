@@ -1,6 +1,15 @@
 // Survey questions configuration
 export const SURVEY_QUESTIONS = [
   {
+    id: 15,
+    text: "როგორ გსურთ გაგრძელება? 😊",
+    type: "multiple_choice",
+    options: [
+      "შეკვეთის ფორმის შევსება ბოტის დახმარებით",
+      "მინდა დაველოდო ადმინისტრატორს"
+    ]
+  },
+  {
     id: 4,
     text: "ატვირთეთ თქვენი ტორტის სურათი ან ინსპირაციის ფოტო (ფაილის ატვირთვა)",
     type: "file"
@@ -14,6 +23,15 @@ export const SURVEY_QUESTIONS = [
       "10-12 ნაჭრიანი",
       "15-20 ნაჭრიანი",
       "25-30 ნაჭრიანი"
+    ]
+  },
+  {
+    id: 16,
+    text: "გავაგრძელოთ თუ არა?",
+    type: "multiple_choice",
+    options: [
+      "კი",
+      "არა"
     ]
   },
   {

@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
-// Delete entire survey session
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ sessionId: string }> }
-) {
+// End chat conversation
+export async function POST(request: NextRequest) {
   try {
-    const { sessionId } = await params;
+    const body = await request.json();
+    const { sessionId } = body;
 
     if (!sessionId) {
       return NextResponse.json(
@@ -16,7 +14,6 @@ export async function DELETE(
       );
     }
 
-    // Find session by sessionId (string) first
     const session = await prisma.chatSession.findUnique({
       where: { sessionId }
     });
@@ -28,19 +25,22 @@ export async function DELETE(
       );
     }
 
-    // Delete the session (responses and messages will be deleted automatically due to cascade)
-    await prisma.chatSession.delete({
-      where: { id: session.id }
+    // Mark chat as ended
+    const updatedSession = await prisma.chatSession.update({
+      where: { sessionId },
+      data: {
+        isChatEnded: true
+      }
     });
 
     return NextResponse.json({
       success: true,
-      message: 'Session deleted successfully'
+      session: updatedSession
     });
   } catch (error) {
-    console.error('Error deleting session:', error);
+    console.error('Error ending chat:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete session' },
+      { success: false, error: 'Internal server error' },
       { status: 500 }
     );
   }

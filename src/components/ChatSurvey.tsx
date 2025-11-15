@@ -62,7 +62,12 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<{ url: string; name: string } | null>(null);
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set());
+  const [userMessage, setUserMessage] = useState(''); // For post-survey chat
+  const [lastMessageId, setLastMessageId] = useState<number | null>(null); // Track last message for polling
+  const [uploadedFileChat, setUploadedFileChat] = useState<{ url: string; name: string } | null>(null); // For post-survey file upload
+  const [isChatEnded, setIsChatEnded] = useState(false); // Track if chat is ended
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Handle external open state changes
   useEffect(() => {
@@ -87,6 +92,204 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
       scrollToBottom();
     }
   }, [messages, isOpen]);
+
+  // Poll for new admin messages and price updates after survey is complete or waiting for price
+  useEffect(() => {
+    if (surveyState.sessionId && isOpen && !isChatEnded) {
+      // Start polling for admin messages, chat status, and price updates
+      pollingIntervalRef.current = setInterval(async () => {
+        try {
+          // Check session status for isChatEnded and price updates
+          const sessionResponse = await fetch(`/api/chat-survey/responses`);
+          const sessionData = await sessionResponse.json();
+          if (sessionData.success && sessionData.sessions) {
+            const currentSession = sessionData.sessions.find((s: any) => s.sessionId === surveyState.sessionId);
+            if (currentSession?.isChatEnded) {
+              setIsChatEnded(true);
+              if (pollingIntervalRef.current) {
+                clearInterval(pollingIntervalRef.current);
+                pollingIntervalRef.current = null;
+              }
+              return;
+            }
+            
+            // Check if price was sent and show continue question
+            // We need to check if calculatedPrice exists and waitingForPrice is false
+            const hasCalculatedPrice = currentSession && 
+              (currentSession.calculatedPrice !== null && currentSession.calculatedPrice !== undefined);
+            const isNotWaitingForPrice = currentSession && currentSession.waitingForPrice === false;
+            const shouldShowContinueQuestion = hasCalculatedPrice && isNotWaitingForPrice && 
+              !surveyState.isComplete && 
+              (surveyState.question === null || (surveyState.question as any)?.id !== 16);
+            
+            // Debug logging
+            if (currentSession && surveyState.question === null && !surveyState.isComplete) {
+              console.log('Price check:', {
+                calculatedPrice: currentSession.calculatedPrice,
+                waitingForPrice: currentSession.waitingForPrice,
+                hasCalculatedPrice,
+                isNotWaitingForPrice,
+                shouldShowContinueQuestion
+              });
+            }
+            
+            if (shouldShowContinueQuestion) {
+              // Price was sent, show continue question (ID 16 from SURVEY_QUESTIONS)
+              const continueQuestion = SURVEY_QUESTIONS.find(q => q.id === 16);
+              
+              if (!continueQuestion) {
+                console.error('Continue question (ID 16) not found in SURVEY_QUESTIONS');
+                return;
+              }
+              
+              // Check if continue question already shown
+              const continueQuestionShown = surveyState.question && (surveyState.question as any).id === 16;
+              
+              if (!continueQuestionShown) {
+                // Load price message from database first
+                const messagesResponse = await fetch(`/api/chat-survey/messages/${surveyState.sessionId}`);
+                const messagesData = await messagesResponse.json();
+                if (messagesData.success && messagesData.messages) {
+                  const priceMessage = messagesData.messages.find((m: any) => m.content.includes('₾'));
+                  if (priceMessage) {
+                    setMessages(prev => {
+                      const exists = prev.some(m => m.text === priceMessage.content);
+                      if (!exists) {
+                        return [...prev, {
+                          type: 'bot',
+                          text: priceMessage.content,
+                          options: undefined
+                        }];
+                      }
+                      return prev;
+                    });
+                  }
+                }
+                
+                // Show continue question after a short delay to ensure price message is shown first
+                setTimeout(() => {
+                  setSurveyState(prev => ({
+                    ...prev,
+                    question: continueQuestion
+                  }));
+                  
+                  // Save continue question as bot message
+                  fetch('/api/chat-survey/messages', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      sessionId: surveyState.sessionId,
+                      senderType: 'bot',
+                      content: continueQuestion.text
+                    })
+                  }).catch(err => console.error('Error saving continue question:', err));
+                }, 500);
+              }
+            }
+          }
+
+          // Also check messages for price message to trigger continue question
+          const response = await fetch(`/api/chat-survey/messages/${surveyState.sessionId}`);
+          const data = await response.json();
+          
+          if (data.success && data.messages) {
+            // Check if there's a price message that we haven't shown yet
+            const priceMessage = data.messages.find((m: any) => m.content && m.content.includes('₾') && m.senderType === 'bot');
+            if (priceMessage && surveyState.question === null && !surveyState.isComplete) {
+              // Check if we should show continue question
+              const hasPriceInMessage = priceMessage.content.includes('₾');
+              if (hasPriceInMessage) {
+                // Check session again to see if calculatedPrice is set
+                const sessionCheckResponse = await fetch(`/api/chat-survey/responses`);
+                const sessionCheckData = await sessionCheckResponse.json();
+                if (sessionCheckData.success && sessionCheckData.sessions) {
+                  const currentSessionCheck = sessionCheckData.sessions.find((s: any) => s.sessionId === surveyState.sessionId);
+                  if (currentSessionCheck && currentSessionCheck.calculatedPrice && !currentSessionCheck.waitingForPrice) {
+                    // Price was sent, show continue question
+                    const continueQuestion = SURVEY_QUESTIONS.find(q => q.id === 16);
+                    if (continueQuestion) {
+                      // Add price message first
+                      setMessages(prev => {
+                        const exists = prev.some(m => m.text === priceMessage.content);
+                        if (!exists) {
+                          return [...prev, {
+                            type: 'bot',
+                            text: priceMessage.content,
+                            options: undefined
+                          }];
+                        }
+                        return prev;
+                      });
+                      
+                      // Show continue question after delay
+                      setTimeout(() => {
+                        setSurveyState(prev => ({
+                          ...prev,
+                          question: continueQuestion
+                        }));
+                      }, 500);
+                    }
+                  }
+                }
+              }
+            }
+          }
+          
+          if (data.success && data.messages) {
+            // Convert database messages to Message format
+            const dbMessages: Message[] = data.messages.map((msg: any) => ({
+              type: msg.senderType === 'admin' ? 'bot' : msg.senderType as 'bot' | 'user',
+              text: msg.content,
+              fileUrl: msg.fileUrl || undefined,
+              fileName: msg.fileName || undefined,
+              imageUrl: msg.imageUrl || undefined
+            }));
+
+            // Only add new messages (after lastMessageId)
+            if (lastMessageId !== null) {
+              const newMessages = dbMessages.filter((_, index) => {
+                const dbMsg = data.messages[index];
+                return dbMsg.id > lastMessageId;
+              });
+
+              if (newMessages.length > 0) {
+                setMessages(prev => {
+                  // Check if message already exists by text content to avoid duplicates
+                  const existingTexts = new Set(prev.map(m => m.text));
+                  const toAdd = newMessages.filter(msg => !existingTexts.has(msg.text));
+                  if (toAdd.length > 0) {
+                    return [...prev, ...toAdd];
+                  }
+                  return prev;
+                });
+                setLastMessageId(data.messages[data.messages.length - 1]?.id || null);
+              }
+            } else {
+              // First load - set all messages
+              setMessages(dbMessages);
+              if (data.messages.length > 0) {
+                setLastMessageId(data.messages[data.messages.length - 1].id);
+              }
+            }
+          }
+        } catch (error) {
+          console.error('Error polling for messages:', error);
+        }
+      }, 3000); // Poll every 3 seconds
+
+      return () => {
+        if (pollingIntervalRef.current) {
+          clearInterval(pollingIntervalRef.current);
+        }
+      };
+    } else {
+      // Stop polling if survey is not complete, chat is closed, or chat is ended
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    }
+  }, [surveyState.sessionId, isOpen, lastMessageId, isChatEnded]);
 
   // Auto-submit for multiple choice questions
   useEffect(() => {
@@ -143,8 +346,8 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
 
         // Customize welcome message and questions based on product
         const welcomeText = productId && productName 
-          ? `გამარჯობა! მე ვარ SweetBot, თქვენი ტორტის ასისტენტი. ვხედავ რომ გაინტერესებთ "${productName}". დავიწყოთ შეკვეთა?`
-          : 'გამარჯობა! მე ვარ SweetBot, თქვენი ტორტის ასისტენტი დავიწყოთ შეკვეთა?';
+          ? `გამარჯობა! მე ვარ lappetit bot, თქვენი ტორტის ასისტენტი. ვხედავ რომ გაინტერესებთ "${productName}". დავიწყოთ შეკვეთა?`
+          : 'გამარჯობა! მე ვარ lappetit bot, თქვენი ტორტის ასისტენტი დავიწყოთ შეკვეთა?';
 
         // Customize first question if product-specific
         let firstQuestionText = data.question.text;
@@ -176,6 +379,34 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
         ];
 
         setMessages(initialMessages);
+
+        // Save initial messages to database
+        try {
+          // Save welcome message
+          await fetch('/api/chat-survey/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId: data.session.sessionId,
+              senderType: 'bot',
+              content: welcomeText,
+              imageUrl: productImage || undefined
+            })
+          });
+
+          // Save first question
+          await fetch('/api/chat-survey/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId: data.session.sessionId,
+              senderType: 'bot',
+              content: firstQuestionText
+            })
+          });
+        } catch (error) {
+          console.error('Error saving initial messages:', error);
+        }
       }
     } catch (error) {
       console.error('Error initializing chat:', error);
@@ -252,6 +483,79 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
       const data = await response.json();
 
       if (data.success) {
+        // Handle continue question (question ID 16)
+        if (surveyState.question?.id === 16) {
+          if (selectedOption === 0) {
+            // User selected "კი" - continue survey
+            try {
+              const continueResponse = await fetch('/api/chat-survey', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  action: 'get_question',
+                  sessionId: surveyState.sessionId
+                })
+              });
+              const continueData = await continueResponse.json();
+              if (continueData.success && continueData.question) {
+                setSurveyState({
+                  sessionId: continueData.session.sessionId,
+                  currentStep: continueData.session.currentStep,
+                  isComplete: continueData.session.isComplete,
+                  question: continueData.question
+                });
+                // Mark continue question as answered
+                setAnsweredQuestions(prev => new Set(prev).add(16));
+              } else {
+                // No more questions, complete survey
+                setSurveyState(prev => ({
+                  ...prev,
+                  isComplete: true,
+                  question: null
+                }));
+                setMessages(prev => [...prev, {
+                  type: 'bot',
+                  text: 'გმადლობთ თქვენი დროისთვის! შეკვეთა მიღებულია.',
+                  options: undefined
+                }]);
+              }
+            } catch (error) {
+              console.error('Error continuing survey:', error);
+            }
+          } else if (selectedOption === 1) {
+            // User selected "არა" - end survey
+            setSurveyState(prev => ({
+              ...prev,
+              isComplete: true,
+              question: null
+            }));
+            setMessages(prev => [...prev, {
+              type: 'bot',
+              text: 'გმადლობთ თქვენი დროისთვის! შეკვეთა მიღებულია.',
+              options: undefined
+            }]);
+            // Mark continue question as answered
+            setAnsweredQuestions(prev => new Set(prev).add(999));
+            
+            // Update session to complete
+            try {
+              await fetch('/api/chat-survey', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  action: 'complete_survey',
+                  sessionId: surveyState.sessionId
+                })
+              });
+            } catch (error) {
+              console.error('Error completing survey:', error);
+            }
+          }
+          setIsLoading(false);
+          setSelectedOption(null);
+          return;
+        }
+
         // Mark current question as answered
         if (surveyState.question) {
           setAnsweredQuestions(prev => new Set(prev).add(surveyState.question!.id));
@@ -264,13 +568,91 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
           question: data.question
         });
 
-        // Add next question or completion message
-        if (data.isComplete) {
+        // Handle waiting for price
+        if (data.waitingForPrice) {
           setMessages(prev => [...prev, {
             type: 'bot',
-            text: 'გმადლობთ თქვენი პასუხებისთვის! 🙏 ჩვენი გუნდი მალე დაგიკავშირდებათ.',
+            text: 'დაელოდეთ, გამოვითვლით ფასს და დაგიწერთ. ⏳',
             options: undefined
           }]);
+          
+          // Save waiting message to database
+          if (surveyState.sessionId) {
+            try {
+              await fetch('/api/chat-survey/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  sessionId: surveyState.sessionId,
+                  senderType: 'bot',
+                  content: 'დაელოდეთ, გამოვითვლით ფასს და დაგიწერთ. ⏳'
+                })
+              });
+            } catch (error) {
+              console.error('Error saving waiting message:', error);
+            }
+          }
+          
+          // Set question to null to indicate we're waiting for price
+          setSurveyState(prev => ({
+            ...prev,
+            question: null
+          }));
+          return; // Don't continue with next question
+        }
+
+        // Add next question or completion message
+        if (data.isComplete) {
+          // Check if user wants admin chat or completed full survey
+          if (data.wantsAdminChat) {
+            // User selected "მინდა დაველოდო ადმინისტრატორს"
+            setMessages(prev => [...prev, {
+              type: 'bot',
+              text: 'გმადლობთ! ჩვენი ადმინისტრატორი მალე დაგიკავშირდებათ. შეგიძლიათ გააგრძელოთ ჩატი აქ. 💬',
+              options: undefined
+            }]);
+            
+            // Save completion message to database
+            if (surveyState.sessionId) {
+              try {
+                await fetch('/api/chat-survey/messages', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    sessionId: surveyState.sessionId,
+                    senderType: 'bot',
+                    content: 'გმადლობთ! ჩვენი ადმინისტრატორი მალე დაგიკავშირდებათ. შეგიძლიათ გააგრძელოთ ჩატი აქ. 💬'
+                  })
+                });
+              } catch (error) {
+                console.error('Error saving completion message:', error);
+              }
+            }
+          } else {
+            // Normal survey completion
+            setMessages(prev => [...prev, {
+              type: 'bot',
+              text: 'გმადლობთ თქვენი პასუხებისთვის! 🙏 ჩვენი გუნდი მალე დაგიკავშირდებათ. თუ გაქვთ კითხვები, შეგიძლიათ გააგრძელოთ ჩატი.',
+              options: undefined
+            }]);
+            
+            // Save completion message to database
+            if (surveyState.sessionId) {
+              try {
+                await fetch('/api/chat-survey/messages', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    sessionId: surveyState.sessionId,
+                    senderType: 'bot',
+                    content: 'გმადლობთ თქვენი პასუხებისთვის! 🙏 ჩვენი გუნდი მალე დაგიკავშირდებათ. თუ გაქვთ კითხვები, შეგიძლიათ გააგრძელოთ ჩატი.'
+                  })
+                });
+              } catch (error) {
+                console.error('Error saving completion message:', error);
+              }
+            }
+          }
         } else if (data.question) {
           // Customize question text for product-specific context
           let questionText = data.question.text;
@@ -335,6 +717,121 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
     if (surveyState.question.type === 'file') return uploadedFile !== null;
     if (surveyState.question.type === 'text') return textAnswer.trim().length > 0;
     return false;
+  };
+
+  // Send user message after survey completion
+  const sendUserMessage = async () => {
+    if (!userMessage.trim() || !surveyState.sessionId || isLoading) return;
+
+    const messageText = userMessage.trim();
+    setUserMessage('');
+    setIsLoading(true);
+
+    // Add user message to UI immediately
+    setMessages(prev => [...prev, {
+      type: 'user',
+      text: messageText
+    }]);
+
+    try {
+      // Save message to database
+      const response = await fetch('/api/chat-survey/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: surveyState.sessionId,
+          senderType: 'user',
+          content: messageText
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setLastMessageId(data.message.id);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Send file message after survey completion
+  const sendFileMessage = async (file: { url: string; name: string }) => {
+    if (!surveyState.sessionId || isLoading) return;
+
+    setIsLoading(true);
+    setUploadedFileChat(null);
+
+    // Add user message with file to UI immediately
+    // Check if file is an image by URL or filename extension
+    const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file.url) || /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(file.name);
+    setMessages(prev => [...prev, {
+      type: 'user',
+      text: 'ფაილი ატვირთულია',
+      fileUrl: file.url,
+      fileName: file.name,
+      imageUrl: isImage ? file.url : undefined
+    }]);
+
+    try {
+      // Save message to database
+      const response = await fetch('/api/chat-survey/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: surveyState.sessionId,
+          senderType: 'user',
+          content: 'ფაილი ატვირთულია',
+          fileUrl: file.url,
+          fileName: file.name,
+          imageUrl: isImage ? file.url : undefined
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setLastMessageId(data.message.id);
+      }
+    } catch (error) {
+      console.error('Error sending file message:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // End chat conversation
+  const endChat = async () => {
+    if (!surveyState.sessionId) return;
+
+    if (window.confirm('ნამდვილად გსურთ საუბრის დასრულება?')) {
+      setIsChatEnded(true);
+      
+      // Mark chat as ended in database and send ending message
+      try {
+        // Update session to mark chat as ended
+        await fetch('/api/chat-survey/end-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: surveyState.sessionId
+          })
+        });
+
+        // Send ending message to database
+        await fetch('/api/chat-survey/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: surveyState.sessionId,
+            senderType: 'bot',
+            content: 'მომხმარებელმა დაასრულა საუბარი. გმადლობთ თქვენი დროისთვის!'
+          })
+        });
+      } catch (error) {
+        console.error('Error ending chat:', error);
+      }
+    }
   };
 
   // Calculate progress
@@ -430,8 +927,8 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                 >
                   <p>{message.text}</p>
                 
-                {/* Show product image */}
-                {message.imageUrl && (
+                {/* Show product image (only if no fileUrl - to avoid duplicate) */}
+                {message.imageUrl && !message.fileUrl && (
                   <div className="mt-2 rounded-lg overflow-hidden">
                     <Image
                       src={message.imageUrl}
@@ -446,27 +943,35 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                 {/* Show uploaded file */}
                 {message.fileUrl && (
                   <div className="mt-2">
-                    {/* Check if file is an image based on extension */}
-                    {message.fileUrl && /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(message.fileUrl) ? (
-                      <div className="rounded-lg overflow-hidden border-2 border-white/30">
-                        <Image
-                          src={message.fileUrl}
-                          alt={message.fileName || "Uploaded image"}
-                          width={200}
-                          height={200}
-                          className="object-cover rounded-lg w-full h-auto"
-                        />
-                      </div>
-                    ) : (
-                      <a
-                        href={message.fileUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs underline flex items-center gap-1"
-                      >
-                        {message.fileName}
-                      </a>
-                    )}
+                    {/* Check if file is an image - check imageUrl first, then fileUrl extension, then fileName extension */}
+                    {(() => {
+                      const hasImageUrl = !!message.imageUrl;
+                      const fileUrlIsImage = message.fileUrl && /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(message.fileUrl);
+                      const fileNameIsImage = message.fileName && /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(message.fileName);
+                      const isImage = hasImageUrl || fileUrlIsImage || fileNameIsImage;
+                      
+                      return isImage ? (
+                        <div className="rounded-lg overflow-hidden border-2 border-white/30">
+                          <Image
+                            src={message.imageUrl || message.fileUrl}
+                            alt={message.fileName || "Uploaded image"}
+                            width={200}
+                            height={200}
+                            className="object-cover rounded-lg w-full h-auto max-w-[200px]"
+                            unoptimized={message.fileUrl?.includes('uploadthing') || message.fileUrl?.includes('utfs.io')}
+                          />
+                        </div>
+                      ) : (
+                        <a
+                          href={message.fileUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs underline flex items-center gap-1"
+                        >
+                          {message.fileName || 'ფაილი'}
+                        </a>
+                      );
+                    })()}
                   </div>
                 )}
 
@@ -514,7 +1019,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
           <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Area */}
+          {/* Input Area - Survey questions */}
         {!surveyState.isComplete && surveyState.question && 
          !answeredQuestions.has(surveyState.question.id) && (
           <div className="border-t border-gray-200 p-4 bg-white">
@@ -587,6 +1092,88 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                   </>
                 )}
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Input Area - Post-survey chat */}
+        {surveyState.isComplete && surveyState.sessionId && !isChatEnded && (
+          <div className="border-t border-gray-200 p-4 bg-white">
+            {/* File Upload */}
+            <div className="mb-3">
+              <UploadButton
+                endpoint="chatSurveyUploader"
+                onClientUploadComplete={(res) => {
+                  if (res && res.length > 0) {
+                    const file = { url: res[0].url, name: res[0].name };
+                    setUploadedFileChat(file);
+                    // Auto-send file
+                    sendFileMessage(file);
+                  }
+                }}
+                onUploadError={(error) => {
+                  alert(`შეცდომა! ${error.message}`);
+                }}
+                className=""
+                content={{
+                  button: "📎 ფაილის ატვირთვა",
+                  allowedContent: "ატვირთეთ ფაილი"
+                }}
+              />
+              {/* Preview removed - file will appear in chat messages after upload */}
+            </div>
+
+            {/* Message Input */}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={userMessage}
+                onChange={(e) => setUserMessage(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey && userMessage.trim() && !isLoading) {
+                    e.preventDefault();
+                    sendUserMessage();
+                  }
+                }}
+                placeholder="ჩაწერეთ თქვენი შეტყობინება..."
+                className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+                disabled={isLoading}
+              />
+              <button
+                onClick={sendUserMessage}
+                disabled={!userMessage.trim() || isLoading}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                  userMessage.trim() && !isLoading
+                    ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600'
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
+              >
+                {isLoading ? (
+                  <Loader2 className="animate-spin" size={20} />
+                ) : (
+                  <>
+                    გაგზავნა
+                    <Send size={20} />
+                  </>
+                )}
+              </button>
+              <button
+                onClick={endChat}
+                className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-200 text-gray-700 hover:bg-gray-300"
+                title="საუბრის დასრულება"
+              >
+                <X size={20} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Chat Ended Message */}
+        {isChatEnded && (
+          <div className="border-t border-gray-200 p-4 bg-gray-50">
+            <div className="text-center text-gray-600">
+              <p className="font-medium">საუბარი დასრულებულია</p>
+              <p className="text-sm mt-1">გმადლობთ თქვენი დროისთვის!</p>
             </div>
           </div>
         )}

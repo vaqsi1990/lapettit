@@ -10,7 +10,7 @@ import {
   ShoppingCart, 
   Users, 
   DollarSign, 
-
+ 
   Edit,
   Trash2,
   Plus,
@@ -18,7 +18,7 @@ import {
   Phone,
   MapPin,
   Cake,
- 
+  MessageCircle,
   Mail
 } from 'lucide-react';
 import { getCakes, getOrders, deleteCake, deleteOrder, getCakeById } from '@/lib/action';
@@ -84,6 +84,9 @@ interface SurveySession {
   sessionId: string;
   currentStep: number;
   isComplete: boolean;
+  isChatEnded?: boolean;  // Chat conversation ended status
+  waitingForPrice?: boolean;  // Waiting for admin to calculate and send price
+  calculatedPrice?: number | null;  // Price calculated by admin
   productId: number | null;
   createdAt: Date;
   responses: {
@@ -97,6 +100,19 @@ interface SurveySession {
     fileName: string | null;
     createdAt: Date;
   }[];
+  messages?: ChatMessage[];
+}
+
+interface ChatMessage {
+  id: number;
+  sessionId: number;
+  senderType: 'bot' | 'user' | 'admin';
+  content: string;
+  fileUrl: string | null;
+  fileName: string | null;
+  imageUrl: string | null;
+  isRead: boolean;
+  createdAt: Date;
 }
 
 const AdminPage = () => {
@@ -105,13 +121,87 @@ const AdminPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [surveySessions, setSurveySessions] = useState<SurveySession[]>([]);
   const [surveyQuestions, setSurveyQuestions] = useState<{ id: number; text: string; type: string; options?: string[] }[]>([]);
+  const [selectedChatSession, setSelectedChatSession] = useState<SurveySession | null>(null);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [adminMessage, setAdminMessage] = useState('');
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
+  const [liveChatSessions, setLiveChatSessions] = useState<SurveySession[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
   const [editingCake, setEditingCake] = useState<Cake | null>(null);
   const [expandedSessions, setExpandedSessions] = useState<Set<number>>(new Set());
   const [productImages, setProductImages] = useState<Map<number, string>>(new Map());
+  const [calculatedPrice, setCalculatedPrice] = useState<number | null>(null);
+  const [priceInput, setPriceInput] = useState<string>('');
+  const [isCalculatingPrice, setIsCalculatingPrice] = useState(false);
+  const [isSendingPrice, setIsSendingPrice] = useState(false);
   const { showToast } = useToast();
 
+  // Fetch live chat sessions (sessions with messages or completed)
+  useEffect(() => {
+    const fetchLiveChatSessions = async () => {
+      try {
+        const response = await fetch('/api/chat-survey/responses');
+        const data = await response.json();
+        if (data.success && data.sessions) {
+          // Filter sessions that are complete (ready for live chat), waiting for price, or have messages
+          const sessionsWithChat = data.sessions.filter((session: SurveySession) => {
+            return session.isComplete || session.waitingForPrice || (session.messages && session.messages.length > 0);
+          });
+          setLiveChatSessions(sessionsWithChat);
+          
+          // Update selected session if it exists
+          if (selectedChatSession) {
+            const updatedSession = data.sessions.find((s: SurveySession) => s.id === selectedChatSession.id);
+            if (updatedSession) {
+              setSelectedChatSession(updatedSession);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching live chat sessions:', error);
+      }
+    };
+
+    if (activeTab === 'live-chat') {
+      fetchLiveChatSessions();
+      // Poll for new chat sessions every 5 seconds when on live-chat tab
+      const interval = setInterval(fetchLiveChatSessions, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [activeTab, selectedChatSession?.id]);
+
+  // Poll for new messages when a chat session is selected
+  useEffect(() => {
+    if (!selectedChatSession || activeTab !== 'live-chat') return;
+
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(`/api/chat-survey/messages/${selectedChatSession.sessionId}`);
+        const data = await response.json();
+        if (data.success && data.messages) {
+          setChatMessages(data.messages || []);
+          
+          // Scroll to bottom after loading messages
+          setTimeout(() => {
+            const messagesContainer = document.getElementById('chat-messages');
+            if (messagesContainer) {
+              messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
+          }, 100);
+        }
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    // Fetch messages immediately
+    fetchMessages();
+    
+    // Poll for new messages every 3 seconds
+    const interval = setInterval(fetchMessages, 3000);
+    return () => clearInterval(interval);
+  }, [selectedChatSession?.sessionId, activeTab]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -388,6 +478,74 @@ const AdminPage = () => {
   const pendingOrders = orders.filter(order => order.status === 'PENDING').length;
   const totalCustomers = new Set(orders.map(order => order.customerPhone)).size;
 
+  // Send admin message
+  const sendAdminMessage = async () => {
+    console.log('sendAdminMessage called', { 
+      adminMessage, 
+      hasSelectedSession: !!selectedChatSession, 
+      isSendingMessage 
+    });
+    
+    if (!adminMessage || !adminMessage.trim()) {
+      console.log('Admin message is empty');
+      return;
+    }
+    if (!selectedChatSession) {
+      console.log('No chat session selected');
+      showToast('error', 'გთხოვთ აირჩიოთ ჩათი');
+      return;
+    }
+    if (isSendingMessage) {
+      console.log('Already sending message');
+      return;
+    }
+
+    const messageText = adminMessage.trim();
+    const currentMessage = messageText; // Save before clearing
+    setAdminMessage('');
+    setIsSendingMessage(true);
+
+    try {
+      console.log('Sending admin message:', messageText, 'to session:', selectedChatSession.sessionId);
+      const response = await fetch('/api/chat-survey/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: selectedChatSession.sessionId,
+          senderType: 'admin',
+          content: messageText
+        })
+      });
+
+      const data = await response.json();
+      console.log('Response from API:', data);
+      if (data.success) {
+        // Add message to local state
+        setChatMessages(prev => [...prev, data.message]);
+        showToast('success', 'შეტყობინება გაიგზავნა');
+        // Scroll to bottom after sending message
+        setTimeout(() => {
+          const messagesContainer = document.getElementById('chat-messages');
+          if (messagesContainer) {
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+          }
+        }, 100);
+      } else {
+        console.error('API returned error:', data);
+        showToast('error', data.error || 'შეცდომა შეტყობინების გაგზავნისას');
+        // Restore message if failed
+        setAdminMessage(currentMessage);
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+      showToast('error', 'შეცდომა შეტყობინების გაგზავნისას');
+      // Restore message if failed
+      setAdminMessage(currentMessage);
+    } finally {
+      setIsSendingMessage(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-color pt-10">
       <div className="container mx-auto px-4 py-8">
@@ -410,7 +568,8 @@ const AdminPage = () => {
               { id: 'cakes', label: 'ტორტები', icon: Cake },
               { id: 'add-cake', label: 'ახალი ტორტი', icon: Plus },
               { id: 'customers', label: 'კლიენტები', icon: Users },
-              { id: 'survey-responses', label: 'კითხვებზე პასუხები', icon: Package }
+              { id: 'survey-responses', label: 'კითხვებზე პასუხები', icon: Package },
+              { id: 'live-chat', label: 'Live Chat', icon: MessageCircle }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -1106,6 +1265,550 @@ const AdminPage = () => {
           </motion.div>
         )}
 
+        {/* Live Chat Tab */}
+        {activeTab === 'live-chat' && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-2xl shadow-lg overflow-hidden"
+            style={{ height: 'calc(100vh - 250px)' }}
+          >
+            <div className="flex h-full">
+              {/* Left Sidebar - Sessions List */}
+              <div className="w-1/3 border-r border-gray-200 flex flex-col">
+                <div className="p-4 border-b border-gray-200 bg-gray-50">
+                  <h2 className="text-xl font-bold text-black">Live Chat</h2>
+                  <p className="text-sm text-gray-600 mt-1">{liveChatSessions.length} აქტიური ჩატი</p>
+                </div>
+                
+                <div className="flex-1 overflow-y-auto">
+                  {liveChatSessions.length === 0 ? (
+                    <div className="text-center py-12 px-4 text-gray-500">
+                      <MessageCircle className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                      <p className="text-sm">აქტიური ჩატები არ არის</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-gray-200">
+                      {liveChatSessions.map((session: SurveySession) => {
+                        const nameResponse = session.responses.find((r: { questionId: number }) => r.questionId === 9);
+                        const userName = nameResponse?.answerText || `Session: ${session.sessionId.slice(0, 10)}...`;
+                        const isSelected = selectedChatSession?.id === session.id;
+                        
+                        return (
+                          <div
+                            key={session.id}
+                            className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
+                              isSelected ? 'bg-pink-50 border-l-4 border-pink-500' : ''
+                            }`}
+                            onClick={async () => {
+                              try {
+                                const messagesResponse = await fetch(`/api/chat-survey/messages/${session.sessionId}`);
+                                const messagesData = await messagesResponse.json();
+                                if (messagesData.success) {
+                                  setChatMessages(messagesData.messages || []);
+                                  setSelectedChatSession(session);
+                                  // Reset price calculation state
+                                  if (session.waitingForPrice) {
+                                    setCalculatedPrice(null);
+                                    setPriceInput('');
+                                  } else {
+                                    setCalculatedPrice(session.calculatedPrice || null);
+                                    if (session.calculatedPrice) {
+                                      setPriceInput(session.calculatedPrice.toFixed(2));
+                                    }
+                                  }
+                                  // Clear admin message input
+                                  setAdminMessage('');
+                                }
+                              } catch (error) {
+                                console.error('Error loading messages:', error);
+                                showToast('error', 'შეცდომა შეტყობინებების ჩატვირთვისას');
+                              }
+                            }}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                                isSelected 
+                                  ? 'bg-pink-500' 
+                                  : 'bg-gradient-to-r from-pink-500 to-purple-500'
+                              }`}>
+                                <span className="text-white font-semibold text-sm">
+                                  {userName.charAt(0).toUpperCase()}
+                                </span>
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className={`font-semibold truncate ${
+                                  isSelected ? 'text-pink-600' : 'text-black'
+                                }`}>
+                                  {userName}
+                                </p>
+                                <p className="text-xs text-gray-500 truncate">
+                                  {new Date(session.createdAt).toLocaleDateString('ka-GE', {
+                                    month: 'short',
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                  })}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Side - Chat Window */}
+              <div className="flex-1 flex flex-col">
+                {selectedChatSession ? (
+                  <>
+                    {/* Chat Header */}
+                    <div className="p-4 border-b border-gray-200 bg-gray-50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center">
+                            <span className="text-white font-semibold text-sm">
+                              {(() => {
+                                const nameResponse = selectedChatSession.responses.find((r: { questionId: number }) => r.questionId === 9);
+                                const userName = nameResponse?.answerText || 'User';
+                                return userName.charAt(0).toUpperCase();
+                              })()}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-semibold text-black">
+                              {(() => {
+                                const nameResponse = selectedChatSession.responses.find((r: { questionId: number }) => r.questionId === 9);
+                                return nameResponse?.answerText || `Session: ${selectedChatSession.sessionId.slice(0, 15)}...`;
+                              })()}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {new Date(selectedChatSession.createdAt).toLocaleDateString('ka-GE', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                          selectedChatSession.isChatEnded
+                            ? 'bg-gray-100 text-gray-800'
+                            : selectedChatSession.isComplete
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-blue-100 text-blue-800'
+                        }`}>
+                          {selectedChatSession.isChatEnded 
+                            ? 'დასრულებული' 
+                            : selectedChatSession.isComplete 
+                            ? 'Survey დასრულებული' 
+                            : 'მიმდინარე'}
+                        </span>
+                        <div className="flex gap-2">
+                          {!selectedChatSession.isChatEnded && (
+                            <button
+                              onClick={async () => {
+                                if (window.confirm('ნამდვილად გსურთ ამ ჩათის დასრულება?')) {
+                                  try {
+                                    const response = await fetch('/api/chat-survey/end-chat', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({
+                                        sessionId: selectedChatSession.sessionId
+                                      })
+                                    });
+
+                                    const data = await response.json();
+                                    if (data.success) {
+                                      // Send ending message
+                                      await fetch('/api/chat-survey/messages', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                          sessionId: selectedChatSession.sessionId,
+                                          senderType: 'bot',
+                                          content: 'ადმინისტრატორმა დაასრულა საუბარი. გმადლობთ თქვენი დროისთვის!'
+                                        })
+                                      });
+
+                                      // Update local state
+                                      setSelectedChatSession({ ...selectedChatSession, isChatEnded: true });
+                                      showToast('success', 'ჩათი დასრულებულია');
+                                    }
+                                  } catch (error) {
+                                    console.error('Error ending chat:', error);
+                                    showToast('error', 'შეცდომა ჩათის დასრულებისას');
+                                  }
+                                }
+                              }}
+                              className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+                              title="ჩათის დასრულება"
+                            >
+                              დასრულება
+                            </button>
+                          )}
+                          <button
+                            onClick={async () => {
+                              if (window.confirm('ნამდვილად გსურთ ამ ჩათის წაშლა? ყველა შეტყობინება და პასუხიც წაიშლება.')) {
+                                try {
+                                  const deleteResponse = await fetch(`/api/chat-survey/sessions/${selectedChatSession.sessionId}`, {
+                                    method: 'DELETE'
+                                  });
+
+                                  if (deleteResponse.ok) {
+                                    // Remove from live chat sessions list
+                                    setLiveChatSessions(prev => prev.filter(s => s.id !== selectedChatSession.id));
+                                    // Close chat modal
+                                    setSelectedChatSession(null);
+                                    setChatMessages([]);
+                                    setAdminMessage('');
+                                    showToast('success', 'ჩათი წაიშლა');
+                                  } else {
+                                    showToast('error', 'შეცდომა ჩათის წაშლისას');
+                                  }
+                                } catch (error) {
+                                  console.error('Error deleting chat:', error);
+                                  showToast('error', 'შეცდომა ჩათის წაშლისას');
+                                }
+                              }
+                            }}
+                            className="px-3 py-1 text-sm bg-red-200 hover:bg-red-300 text-red-700 rounded-lg transition-colors flex items-center gap-1"
+                            title="ჩათის წაშლა"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                            წაშლა
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Survey Info Panel - Uploaded Images, Slices, and Price */}
+                    <div className="p-4 border-b border-gray-200 bg-white">
+                      <h3 className="font-semibold text-gray-800 mb-3">📋 შეკვეთის ინფორმაცია</h3>
+                      
+                      {/* Uploaded Images */}
+                      {(() => {
+                        const imageResponses = selectedChatSession.responses.filter((r) => r.questionId === 4 && r.fileUrl);
+                        if (imageResponses.length > 0) {
+                          return (
+                            <div className="mb-4">
+                              <p className="text-sm font-medium text-gray-700 mb-2">🖼️ ატვირთული სურათები:</p>
+                              <div className="grid grid-cols-2 gap-2">
+                                {imageResponses.map((response) => {
+                                  if (!response.fileUrl) return null;
+                                  return (
+                                    <div key={response.id} className="relative">
+                                      {(response.fileUrl.includes('.jpg') || response.fileUrl.includes('.jpeg') || response.fileUrl.includes('.png') || response.fileUrl.includes('.gif') || response.fileUrl.includes('uploadthing') || response.fileUrl.includes('utfs.io')) ? (
+                                        <Image
+                                          src={response.fileUrl}
+                                          alt={response.fileName || 'ატვირთული სურათი'}
+                                          width={200}
+                                          height={200}
+                                          className="rounded-lg object-cover w-full h-32"
+                                          unoptimized={response.fileUrl.includes('uploadthing') || response.fileUrl.includes('utfs.io')}
+                                        />
+                                      ) : (
+                                        <a
+                                          href={response.fileUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="block p-2 bg-gray-100 rounded-lg text-sm text-blue-600 hover:underline"
+                                        >
+                                          {response.fileName || 'ფაილი'}
+                                        </a>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+
+                      {/* Number of Slices */}
+                      {(() => {
+                        const slicesResponse = selectedChatSession.responses.find((r: { questionId: number }) => r.questionId === 3);
+                        if (slicesResponse) {
+                          const slicesOptions = ["8-10 ნაჭრიანი", "10-12 ნაჭრიანი", "15-20 ნაჭრიანი", "25-30 ნაჭრიანი"];
+                          const slicesText = slicesResponse.selectedOption !== null ? slicesOptions[slicesResponse.selectedOption] : 'არ არის მითითებული';
+                          return (
+                            <div className="mb-4">
+                              <p className="text-sm font-medium text-gray-700 mb-1">🍰 ნაჭრების რაოდენობა:</p>
+                              <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">{slicesText}</p>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+
+                      {/* Price Display/Input */}
+                      <div className="mb-2">
+                        <p className="text-sm font-medium text-gray-700 mb-2">💰 ფასი:</p>
+                        {selectedChatSession.calculatedPrice ? (
+                          <p className="text-sm text-green-600 font-semibold bg-green-50 p-2 rounded-lg">
+                            {selectedChatSession.calculatedPrice.toFixed(2)} ₾
+                          </p>
+                        ) : (
+                          <p className="text-sm text-gray-500 bg-gray-50 p-2 rounded-lg">ფასი არ არის გამოთვლილი</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Messages */}
+                    <div id="chat-messages" className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4">
+                      {chatMessages.length === 0 ? (
+                        <div className="text-center text-gray-500 py-8">
+                          <p>შეტყობინებები არ არის</p>
+                        </div>
+                      ) : (
+                        chatMessages.map((message) => (
+                          <div
+                            key={message.id}
+                            className={`flex ${message.senderType === 'admin' ? 'justify-end' : 'justify-start'}`}
+                          >
+                            <div
+                              className={`max-w-[70%] rounded-lg p-3 ${
+                                message.senderType === 'admin'
+                                  ? 'bg-blue-500 text-white'
+                                  : message.senderType === 'bot'
+                                  ? 'bg-gray-200 text-gray-800'
+                                  : 'bg-white text-gray-800 border border-gray-200'
+                              }`}
+                            >
+                              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                              {message.imageUrl && (
+                                <div className="mt-2">
+                                  <Image
+                                    src={message.imageUrl}
+                                    alt="Message image"
+                                    width={200}
+                                    height={200}
+                                    className="rounded-lg"
+                                  />
+                                </div>
+                              )}
+                              {message.fileUrl && (
+                                <a
+                                  href={message.fileUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-xs underline mt-2 block"
+                                >
+                                  {message.fileName || 'ფაილი'}
+                                </a>
+                              )}
+                              <p className="text-xs opacity-70 mt-1">
+                                {new Date(message.createdAt).toLocaleTimeString('ka-GE', {
+                                  hour: '2-digit',
+                                  minute: '2-digit'
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Price Calculation Area - Always visible when session is selected */}
+                    {!selectedChatSession.isChatEnded && (
+                      <div className={`p-4 border-t ${selectedChatSession.waitingForPrice ? 'border-yellow-200 bg-yellow-50' : 'border-gray-200 bg-gray-50'}`}>
+                        <div className="mb-3">
+                          <h4 className={`font-semibold mb-2 ${selectedChatSession.waitingForPrice ? 'text-yellow-900' : 'text-gray-800'}`}>
+                            💰 ფასის გამოთვლა და გაგზავნა
+                          </h4>
+                          {selectedChatSession.waitingForPrice && (
+                            <p className="text-sm text-yellow-800 mb-3">მომხმარებელი ელოდება ფასის გამოთვლას</p>
+                          )}
+                          
+                          {/* Calculate Price Button - Only show if waiting for price and not calculated yet */}
+                          {selectedChatSession.waitingForPrice && !calculatedPrice && (
+                            <button
+                              onClick={async () => {
+                                setIsCalculatingPrice(true);
+                                try {
+                                  const response = await fetch('/api/chat-survey/calculate-price', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                      sessionId: selectedChatSession.sessionId
+                                    })
+                                  });
+                                  const data = await response.json();
+                                  if (data.success) {
+                                    setCalculatedPrice(data.priceRange.min);
+                                    setPriceInput(data.priceRange.min.toFixed(2));
+                                    showToast('success', `გამოთვლილი ფასი: ${data.priceRange.min.toFixed(2)} - ${data.priceRange.max.toFixed(2)} ₾`);
+                                  } else {
+                                    showToast('error', 'შეცდომა ფასის გამოთვლისას');
+                                  }
+                                } catch (error) {
+                                  console.error('Error calculating price:', error);
+                                  showToast('error', 'შეცდომა ფასის გამოთვლისას');
+                                } finally {
+                                  setIsCalculatingPrice(false);
+                                }
+                              }}
+                              disabled={isCalculatingPrice}
+                              className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed mb-3"
+                            >
+                              {isCalculatingPrice ? 'გამოთვლა...' : 'ფასის ავტომატური გამოთვლა'}
+                            </button>
+                          )}
+                          
+                          {/* Price Input and Send - Always visible */}
+                          <div className="space-y-2">
+                            <label className={`block text-sm font-medium mb-1 ${selectedChatSession.waitingForPrice ? 'text-yellow-900' : 'text-gray-700'}`}>
+                              {selectedChatSession.calculatedPrice ? 'ფასის რედაქტირება:' : 'ხელით ფასის შეყვანა:'}
+                            </label>
+                            <div className="flex gap-2">
+                              <input
+                                type="number"
+                                value={priceInput || selectedChatSession.calculatedPrice?.toFixed(2) || ''}
+                                onChange={(e) => setPriceInput(e.target.value)}
+                                placeholder="შეიყვანეთ ფასი (₾)"
+                                className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black"
+                                step="0.01"
+                                min="0"
+                              />
+                              <button
+                                onClick={async () => {
+                                  const priceToSend = priceInput || selectedChatSession.calculatedPrice;
+                                  if (!priceToSend || parseFloat(priceToSend.toString()) <= 0) {
+                                    showToast('error', 'გთხოვთ შეიყვანოთ სწორი ფასი');
+                                    return;
+                                  }
+                                  setIsSendingPrice(true);
+                                  try {
+                                    const response = await fetch('/api/chat-survey/send-price', {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({
+                                        sessionId: selectedChatSession.sessionId,
+                                        price: parseFloat(priceToSend.toString())
+                                      })
+                                    });
+                                    const data = await response.json();
+                                    if (data.success) {
+                                      // Refresh messages immediately to show price message
+                                      const messagesResponse = await fetch(`/api/chat-survey/messages/${selectedChatSession.sessionId}`);
+                                      const messagesData = await messagesResponse.json();
+                                      if (messagesData.success) {
+                                        setChatMessages(messagesData.messages || []);
+                                        
+                                        // Scroll to bottom to show new price message
+                                        setTimeout(() => {
+                                          const messagesContainer = document.getElementById('chat-messages');
+                                          if (messagesContainer) {
+                                            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                                          }
+                                        }, 100);
+                                      }
+                                      
+                                      // Refresh session data
+                                      const sessionResponse = await fetch('/api/chat-survey/responses');
+                                      const sessionData = await sessionResponse.json();
+                                      if (sessionData.success && sessionData.sessions) {
+                                        const updatedSession = sessionData.sessions.find((s: SurveySession) => s.sessionId === selectedChatSession.sessionId);
+                                        if (updatedSession) {
+                                          setSelectedChatSession(updatedSession);
+                                          setCalculatedPrice(updatedSession.calculatedPrice || null);
+                                          if (updatedSession.calculatedPrice) {
+                                            setPriceInput(updatedSession.calculatedPrice.toFixed(2));
+                                          } else {
+                                            setPriceInput('');
+                                          }
+                                        }
+                                      }
+                                      showToast('success', 'ფასი გაიგზავნა მომხმარებელს');
+                                    } else {
+                                      showToast('error', 'შეცდომა ფასის გაგზავნისას');
+                                    }
+                                  } catch (error) {
+                                    console.error('Error sending price:', error);
+                                    showToast('error', 'შეცდომა ფასის გაგზავნისას');
+                                  } finally {
+                                    setIsSendingPrice(false);
+                                  }
+                                }}
+                                disabled={(!priceInput && !selectedChatSession.calculatedPrice) || isSendingPrice}
+                                className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                              >
+                                {isSendingPrice ? 'გაგზავნა...' : 'ფასის გაგზავნა'}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Input Area - Always visible when chat is not ended */}
+                    {!selectedChatSession.isChatEnded ? (
+                      <div className="p-4 border-t border-gray-200 bg-white sticky bottom-0 z-10">
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={adminMessage}
+                            onChange={(e) => {
+                              setAdminMessage(e.target.value);
+                            }}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && !e.shiftKey && adminMessage.trim() && !isSendingMessage) {
+                                e.preventDefault();
+                                sendAdminMessage();
+                              }
+                            }}
+                            placeholder="ჩაწერეთ პასუხი..."
+                            className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black bg-white"
+                            disabled={isSendingMessage}
+                            autoFocus={false}
+                          />
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              if (adminMessage.trim() && !isSendingMessage && selectedChatSession) {
+                                sendAdminMessage();
+                              }
+                            }}
+                            disabled={!adminMessage.trim() || isSendingMessage || !selectedChatSession}
+                            className={`px-6 py-3 rounded-lg font-medium transition-all ${
+                              adminMessage.trim() && !isSendingMessage && selectedChatSession
+                                ? 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
+                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                            }`}
+                            type="button"
+                          >
+                            {isSendingMessage ? 'გაგზავნა...' : 'გაგზავნა'}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-4 border-t border-gray-200 bg-gray-50">
+                        <div className="text-center text-gray-600">
+                          <p className="font-medium">ჩათი დასრულებულია</p>
+                          <p className="text-sm mt-1">საუბარი დასრულებულია</p>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center bg-gray-50">
+                    <div className="text-center text-gray-500">
+                      <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                      <p className="text-lg">აირჩიეთ სესია ჩათის დასაწყებად</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Survey Responses Tab */}
         {activeTab === 'survey-responses' && (
           <motion.div
@@ -1199,17 +1902,23 @@ const AdminPage = () => {
                             <span>{expandedSessions.has(session.id) ? 'დამალვა' : 'გამოჩენა'}</span>
                           </button>
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            session.isComplete
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
+                            session.isChatEnded
+                              ? 'bg-gray-100 text-gray-800'
+                              : session.isComplete
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-blue-100 text-blue-800'
                           }`}>
-                            {session.isComplete ? '✓ დასრულებული' : 'მიმდინარე'}
+                            {session.isChatEnded 
+                              ? 'დასრულებული' 
+                              : session.isComplete 
+                              ? 'Survey დასრულებული' 
+                              : 'მიმდინარე'}
                           </span>
                           <button
                             onClick={async () => {
                               if (window.confirm('ნამდვილად გსურთ ამ სესიის წაშლა? ყველა პასუხიც წაიშლება.')) {
                                 try {
-                                  const deleteResponse = await fetch(`/api/chat-survey/sessions/${session.id}`, {
+                                  const deleteResponse = await fetch(`/api/chat-survey/sessions/${session.sessionId}`, {
                                     method: 'DELETE'
                                   });
                                   if (deleteResponse.ok) {
@@ -1313,6 +2022,7 @@ const AdminPage = () => {
           </motion.div>
         )}
       </div>
+
     </div>
   );
 };
