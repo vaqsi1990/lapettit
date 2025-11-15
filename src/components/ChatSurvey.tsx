@@ -221,6 +221,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
         const userMessage: Message = {
           type: 'user',
           text: 'ფაილი ატვირთულია',
+          imageUrl: uploadedFile.url,  
           fileUrl: uploadedFile.url,
           fileName: uploadedFile.name
         };
@@ -445,14 +446,27 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                 {/* Show uploaded file */}
                 {message.fileUrl && (
                   <div className="mt-2">
-                    <a
-                      href={message.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs underline flex items-center gap-1"
-                    >
-                       {message.fileName}
-                    </a>
+                    {/* Check if file is an image based on extension */}
+                    {message.fileUrl && /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(message.fileUrl) ? (
+                      <div className="rounded-lg overflow-hidden border-2 border-white/30">
+                        <Image
+                          src={message.fileUrl}
+                          alt={message.fileName || "Uploaded image"}
+                          width={200}
+                          height={200}
+                          className="object-cover rounded-lg w-full h-auto"
+                        />
+                      </div>
+                    ) : (
+                      <a
+                        href={message.fileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs underline flex items-center gap-1"
+                      >
+                        {message.fileName}
+                      </a>
+                    )}
                   </div>
                 )}
 
@@ -523,8 +537,17 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                   }}
                 />
                 {uploadedFile && (
-                  <div className="mt-2 text-sm text-green-600">
-                    ✓ ფაილი ატვირთულია: {uploadedFile.name}
+                  <div className="mt-2">
+                   
+                    <div className="rounded-lg overflow-hidden border-2 border-green-200">
+                      <Image
+                        src={uploadedFile.url}
+                        alt={uploadedFile.name}
+                        width={200}
+                        height={200}
+                        className="object-cover w-full h-auto"
+                      />
+                    </div>
                   </div>
                 )}
               </div>

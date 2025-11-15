@@ -1287,7 +1287,14 @@ const AdminPage = () => {
                                         className="text-sm text-blue-600 hover:text-blue-800 flex items-center space-x-2"
                                       >
                                         <span>📎</span>
-                                        <span>{response.fileName || 'ატვირთული ფაილი'}</span>
+                                        <Image
+                                          src={response.fileUrl}
+                                          alt="Uploaded"
+                                          width={200}
+                                          height={200}
+                                          className="object-cover rounded-lg"
+                                        />
+                                       
                                       </a>
                                     </div>
                                   )}
