@@ -147,7 +147,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                  currentSession.calculatedPrice !== undefined && 
                  currentSession.calculatedPrice > 0);
               const isNotWaitingForPrice = currentSession && currentSession.waitingForPrice === false;
-              const continueQuestionNotShown = !surveyState.question || (surveyState.question as any)?.id !== 16;
+              const continueQuestionNotShown = !surveyState.question || surveyState.question.id !== 16;
               const shouldShowContinueQuestion = hasCalculatedPrice && isNotWaitingForPrice && 
                 !surveyState.isComplete && 
                 continueQuestionNotShown;
