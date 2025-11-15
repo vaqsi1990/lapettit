@@ -26,7 +26,7 @@
 }
 
 body {
-  background: var(--background);
+  background: #FDE2E4;
   color: var(--foreground);
   font-family: "Poppins", sans-serif;
 }
@@ -719,4 +719,24 @@ input[type="range"]::-moz-range-track {
     );
   background-blend-mode: multiply;
   box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+/* Testimonials Carousel Styles - Bellaria Style */
+.testimonials-swiper .swiper-pagination {
+  position: relative;
+  margin-top: 3rem;
+}
+
+.testimonials-swiper .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 1;
+  transition: all 0.3s ease;
+}
+
+.testimonials-swiper .swiper-pagination-bullet-active {
+  background: rgba(255, 255, 255, 1);
+  width: 30px;
+  border-radius: 5px;
 }
