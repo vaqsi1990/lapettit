@@ -3,13 +3,14 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import "./slider.css";
-
 import { useParams } from "next/navigation";
 import Link from "next/link";
 
 interface Slide {
   id: number;
   leftImage: string;
+  title?: string;
+  subtitle?: string;
 }
 
 const ElegantHeroSlider = () => {
@@ -21,22 +22,22 @@ const ElegantHeroSlider = () => {
   const slides: Slide[] = [
     {
       id: 1,
-      leftImage: "/hero/1.png"
-
+      leftImage: "/hero/1.png",
+      title: "გემო, რომელიც გახდის დღეს განსაკუთრებულს",
+      subtitle: "ხელნაკეთ, გემრიელ ტორტები ნებისმიერი შემთხვევისთვის"
     },
     {
       id: 2,
-      leftImage: "/hero/2.png"
-
-
+      leftImage: "/hero/2.png",
+      title: "შექმენი შენი ოცნების ტორტი",
+      subtitle: "პერსონალიზებული დიზაინი და უნიკალური გემო"
     },
     {
       id: 3,
-      leftImage: "/hero/3.png"
-
+      leftImage: "/hero/3.png",
+      title: "სპეციალური დღეებისთვის",
+      subtitle: "დაბადების დღე, ქორწილი, განსაკუთრებული დღესასწაული"
     },
-
-
   ];
 
   // Auto-advance slides every 8 seconds
@@ -45,7 +46,7 @@ const ElegantHeroSlider = () => {
 
     const interval = setInterval(() => {
       setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
-    }, 10000);
+    }, 8000);
 
     return () => clearInterval(interval);
   }, [isAutoPlaying, slides.length]);
@@ -53,61 +54,60 @@ const ElegantHeroSlider = () => {
   // Pause auto-play on user interaction
   const pauseAutoPlay = () => {
     setIsAutoPlaying(false);
-    // Resume auto-play after 15 seconds of inactivity
     setTimeout(() => setIsAutoPlaying(true), 15000);
   };
-
-
-
-
- 
 
   const goToSlide = (index: number) => {
     pauseAutoPlay();
     setCurrentSlide(index);
   };
 
+  const goToPrev = () => {
+    pauseAutoPlay();
+    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+  };
 
+  const goToNext = () => {
+    pauseAutoPlay();
+    setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+  };
 
   return (
-    <section className="relative 
-     min-h-[500px]  md:min-h-[600px]  overflow-hidden ">
-
-      {/* Main Slider Container */}
-      <div className="relative  mx-auto h-full min-h-[500px]  md:h-[700px] ">
+    <section className="relative min-h-[70vh] md:min-h-[80vh] overflow-hidden">
+      {/* Main Slider Container - Reduced Height */}
+      <div className="relative w-full h-[70vh] md:h-[86vh]">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSlide}
-
-            transition={{ duration: 0.6, ease: "easeInOut" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1, ease: "easeInOut" }}
             className="absolute inset-0"
           >
-            {/* Shutters Overlay */}
-            <div className="shutters-animate" />
-
-            {/* Single Large Image */}
+            {/* Background Image with Parallax Effect */}
             <motion.div
-
-              transition={{ duration: 1.2, ease: "easeOut" }}
-              className="w-full h-full sm relative overflow-hidden"
+              initial={{ scale: 1.1 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className="absolute inset-0"
             >
               <div
-                className="w-full h-full bg-cover bg-center bg-no-repeat "
+                className="w-full h-full bg-cover bg-center bg-no-repeat"
                 style={{
                   backgroundImage: `url('${slides[currentSlide].leftImage}')`,
                 }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
+              {/* Subtle gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/60" />
             </motion.div>
           </motion.div>
         </AnimatePresence>
 
-
-
-
-        {/* Enhanced Central Promotional Overlay */}
+        {/* Content Overlay - Left aligned like before */}
         <motion.div
-
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 0.4 }}
           className="absolute inset-0 flex items-start justify-start z-20 px-4 sm:px-6 md:px-8 lg:px-12 pt-16 sm:pt-20 md:pt-24"
         >
@@ -115,25 +115,25 @@ const ElegantHeroSlider = () => {
             <AnimatePresence mode="wait">
               <motion.div
                 key={`${currentSlide}-${locale}`}
-
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.6 }}
                 className="flex flex-col items-start"
               >
-                <h1 className="drop-shadow-2xl md:text-[38px] text-[22px]  font-serif font-bold text-white mb-4 sm:mb-6 leading-tight drop-shadow-2xl">
+                <h1 className="drop-shadow-2xl md:text-[38px] text-[22px] font-serif font-bold text-white mb-4 sm:mb-6 leading-tight drop-shadow-2xl">
                   გემო, რომელიც გახდის დღეს განსაკუთრებულს
                 </h1>
 
-                <p className=" md:text-[20px] text-[16px] font-serif italic text-white mb-8 sm:mb-10 max-w-lg leading-relaxed drop-shadow-lg">
+                <p className="md:text-[20px] text-[16px] font-serif italic text-white mb-8 sm:mb-10 max-w-lg leading-relaxed drop-shadow-lg">
                   გთავაზობთ ხელნაკეთ, გემრიელ ტორტებს ნებისმიერი შემთხვევისთვის – დაბადების დღე, ქორწილი, განსაკუთრებული დღესასწაული. შეუკვეთე ტორტი ონლაინ და მიიღე სწრაფად
                 </p>
-                <div className="bg-gradient-to-br rounded-xl from-pink-50 via-rose-50 to-purple-50 ">
-
+                <div className="bg-gradient-to-br rounded-xl from-pink-50 via-rose-50 to-purple-50">
                   <Link
                     href="/cakes"
-                    className=" text-center    md:text-[20px] text-[18px] w-full w-full bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl md:w-[70%] border-radius:20px  px-4 sm:px-6 md:px-8 py-2 text-white rounded-xl font-bold  transition-all duration-300 transform shadow-lg    "
+                    className="text-center md:text-[20px] text-[18px] w-full bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl md:w-[70%]"
                   >
-                    საუკეთესო ტორტი შენთვის
-
+                   დაათვალიერეთ ჩვენი ტორტები
                   </Link>
                 </div>
               </motion.div>
@@ -141,27 +141,33 @@ const ElegantHeroSlider = () => {
           </div>
         </motion.div>
 
-        {/* Slide Indicators */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+
+        {/* Slide Indicators - Bottom Center */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3">
           {slides.map((_, index) => (
             <motion.button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-3 cursor-pointer h-3 rounded-full transition-all duration-300 ${index === currentSlide
-                ? 'bg-[#d90b6b] scale-110'
-                : 'bg-white/50 hover:bg-white/80'
-                }`}
+              className={`h-2 rounded-full transition-all duration-300 ${
+                index === currentSlide
+                  ? 'bg-[#d90b6b] w-8'
+                  : 'bg-white/50 hover:bg-white/80 w-2'
+              }`}
               whileHover={{ scale: 1.2 }}
               whileTap={{ scale: 0.9 }}
+              aria-label={`Go to slide ${index + 1}`}
             />
           ))}
         </div>
       </div>
 
-      {/* Enhanced Floating Accent Elements */}
+      {/* Decorative Elements */}
       <motion.div
-        className="absolute top-16 sm:top-20 md:top-24 right-8 sm:right-16 md:right-24 w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 bg-[#f3983e]/20 rounded-full blur-3xl"
-
+        className="absolute top-20 right-20 w-32 h-32 bg-[#f3983e]/10 rounded-full blur-3xl hidden md:block"
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
         transition={{
           duration: 8,
           repeat: Infinity,
@@ -170,13 +176,16 @@ const ElegantHeroSlider = () => {
       />
 
       <motion.div
-        className="absolute bottom-16 sm:bottom-20 md:bottom-24 left-8 sm:left-16 md:left-24 w-16  sm:h-20 md:w-28 md:h-28 bg-[#f3983e]/15 rounded-full blur-3xl"
-
+        className="absolute bottom-20 left-20 w-24 h-24 bg-[#d90b6b]/10 rounded-full blur-3xl hidden md:block"
+        animate={{
+          scale: [1, 1.3, 1],
+          opacity: [0.2, 0.4, 0.2],
+        }}
         transition={{
           duration: 10,
           repeat: Infinity,
           ease: "easeInOut",
-          delay: 3,
+          delay: 2,
         }}
       />
     </section>

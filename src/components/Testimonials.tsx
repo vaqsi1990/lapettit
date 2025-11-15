@@ -44,7 +44,7 @@ const Testimonials = () => {
     <section className="relative overflow-hidden mt-20 mb-20 md:py-32">
       {/* Background decorative elements - same as Services */}
       <div className="shape_wrapper shape_one">
-        <div className="shape_inner shape_two" style={{ backgroundImage: `url(${'/serv/1.jpg'})` }}>
+        <div className="shape_inner shape_two" style={{ backgroundImage: `url(${'napoleon.jpg'})` }}>
           <div className="overlay"></div>
         </div>
       </div>
