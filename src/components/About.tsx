@@ -18,12 +18,12 @@ const About = () => {
                     {/* <p className="tracking-widest text-sm text-rose-400/80 mb-4">
                 EMBRACING EXCELLENCE
             </p> */}
-                    <h2 className="font-[Cormorant_Garamond] text-[20px] md:text-[30px] leading-tight text-[#d90b6b] mb-6">
+                    <h2 className="font-[Cormorant_Garamond] font-bold text-[20px] md:text-[30px] leading-tight text-[#d90b6b] mb-6">
                         მოგზაურობა ჩვენს ხედვაში,
                         <br /> ღირებულებებსა და
                         <br /> ტკბილ ერთგულებაში
                     </h2>
-                    <p className="text-[18px] md:text-[20px text-black leading-relaxed mb-6">
+                    <p className="text-[18px] md:text-[20px] text-black leading-relaxed mb-6">
                         ჩვენი გზა ბევრ წლის წინ დაიწყო და მას შემდეგ, უამრავი კლიენტის უნიკალური საჭიროებებისა
                         და სურვილების განხორციელება ჩვენს დიდი სიამოვნებად იქცა. წარმატებას ვაღწევთ არა მხოლოდ
                         გამოცდილებით, არამედ იმ ზრუნვით, რომელსაც თითოეული შეკვეთის მიმართ ვაკეთებთ.

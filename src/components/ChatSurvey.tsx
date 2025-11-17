@@ -1186,7 +1186,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                   })}
                 </div>
                 <div className="mt-2 text-center">
-                  <p className="text-xs opacity-90 font-medium">
+                  <p className="text-[16px] opacity-90 font-medium">
                     {completedQuestions} / {totalQuestions} შეკითხვა უპასუხებია
                   </p>
                 </div>
@@ -1207,7 +1207,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                 className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-lg p-3 text-sm ${
+                  className={`max-w-[85%] rounded-lg p-3 text-[16px] ${
                     message.type === 'user'
                       ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
                       : 'bg-white text-gray-800 shadow-sm'
@@ -1254,7 +1254,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                           href={message.fileUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs underline flex items-center gap-1"
+                          className="text-[18px] underline flex items-center gap-1"
                         >
                           {message.fileName || 'ფაილი'}
                         </a>
@@ -1278,7 +1278,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                           key={optIndex}
                           onClick={() => handleOptionClick(optIndex)}
                           disabled={!!isDisabled}
-                          className={`block w-full text-left p-2 rounded text-xs transition-all ${
+                          className={`block w-full text-left p-2 rounded text-[16px] transition-all ${
                               isDisabled
                               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                               : selectedOption === optIndex
@@ -1299,7 +1299,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
           {isLoading && (
             <div className="flex justify-start">
               <div className="bg-white rounded-lg p-2">
-                <Loader2 className="animate-spin text-gray-600" size={16} />
+                <Loader2 className="animate-spin text-black" size={16} />
               </div>
             </div>
           )}
@@ -1345,7 +1345,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                   onUploadError={(error) => {
                     alert(`შეცდომა! ${error.message}`);
                   }}
-                  className=""
+                  className="text-[18px] font-bold"
                   content={{
                     button: "აირჩიეთ ფაილი",
                     allowedContent: "ფაილი არ არის არჩეული"
@@ -1394,11 +1394,11 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                 {isLoading ? (
                   <>
                     <Loader2 className="animate-spin" size={20} />
-                    გაგზავნა...
+                    <span className="text-[18px] font-bold">გაგზავნა...</span>
                   </>
                 ) : (
                   <>
-                    გაგზავნა
+                    <span className="text-[18px] font-bold">გაგზავნა</span>
                     <Send size={20} />
                   </>
                 )}
@@ -1482,7 +1482,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
         {/* Chat Ended Message */}
         {isChatEnded && (
           <div className="border-t border-gray-200 p-4 bg-gray-50">
-            <div className="text-center text-gray-600">
+            <div className="text-center text-black">
               <p className="font-medium">საუბარი დასრულებულია</p>
               <p className="text-sm mt-1">გმადლობთ თქვენი დროისთვის!</p>
             </div>

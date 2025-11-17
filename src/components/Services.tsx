@@ -32,7 +32,7 @@ const Services = () => {
             className="font-[Cormorant_Garamond] text-[20px] md:text-[30px] font-bold text-white mb-4 relative z-30"
             style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}
           >
-            რატომ ჩვენ ?
+            რატომ ჩვენ?
           </motion.h2>
         </motion.div>
         
@@ -65,7 +65,7 @@ const Services = () => {
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
               viewport={{ once: true }}
-              className="text-white md:text-[18px] text-[16px] leading-relaxed px-2 relative z-30"
+              className="text-white md:text-[20px] text-[18px] leading-relaxed px-2 relative z-30"
               style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}
             >
               ჩვენი ტრადიციები და რეცეპტები თაობიდან თაობამდე გადაეცემა, რაც გვაძლევს უნიკალურ გემოს და ხარისხს.
@@ -98,7 +98,7 @@ const Services = () => {
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.5 }}
               viewport={{ once: true }}
-              className="text-white md:text-[18px] text-[16px] leading-relaxed px-2 relative z-30"
+              className="text-white md:text-[20px] text-[16px] leading-relaxed px-2 relative z-30"
               style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}
             >
               ჩვენ ვიყენებთ მხოლოდ უმაღლესი ხარისხის ინგრედიენტებს
@@ -131,7 +131,7 @@ const Services = () => {
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.6 }}
               viewport={{ once: true }}
-              className="text-white md:text-[18px] text-[16px] leading-relaxed px-2 relative z-30"
+              className="text-white md:text-[20px] text-[18px] leading-relaxed px-2 relative z-30"
               style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}
             >
               თითოეული ტორტი არის ხელოვნების ნამუშევარი, რომელიც შექმნილია თქვენი უნიკალური ოცნებების შესაბამისად
@@ -164,7 +164,7 @@ const Services = () => {
               whileInView={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.7 }}
               viewport={{ once: true }}
-              className="text-white md:text-[18px] text-[16px] leading-relaxed px-2 relative z-30"
+              className="text-white md:text-[20px] text-[18px] leading-relaxed px-2 relative z-30"
               style={{ textShadow: '1px 1px 3px rgba(0,0,0,0.7)' }}
             >
               ყველა ტორტი მზადდება სიყვარულით და ზრუნვით, რათა თქვენი სპეციალური დღე გახდეს უვივი

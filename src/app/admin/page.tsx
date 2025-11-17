@@ -897,26 +897,24 @@ const AdminPage = () => {
                       fill
                       className="object-cover"
                     />
-                    <div className="absolute top-3 right-3 bg-black/50 text-white px-2 py-1 rounded-lg text-xs">
-                      {cake.category}
-                    </div>
+                   
 
                   </div>
                   <div className="p-6">
-                    <h3 className="md:text-[18px] text-[16px] font-semibold text-black mb-2">{cake.name}</h3>
+                    <h3 className="md:text-[20px] text-[18px] font-semibold text-black mb-2">{cake.name}</h3>
                     <div className="space-y-2">
-                      <div className="text-sm text-gray-600">
+                      <div className="md:text-[20px] text-[18px] text-black">
                         {cake.pieces && <span>{cake.pieces} ნაჭერი</span>}
                         {cake.hasMarzipan && <span className="ml-2">• მარცეპანი</span>}
                         {cake.hasCream && <span className="ml-2">• კრემი</span>}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="md:text-[20px] text-[18px] text-black">
                         {cake.price && <span className="font-bold text-[#d90b6b]">ფასი: {formatPrice(cake.price)}</span>}
                         {cake.marzipanPrice && <span className="ml-2">მარცეპანი: {formatPrice(cake.marzipanPrice)}</span>}
                         {cake.creamPrice && <span className="ml-2">კრემი: {formatPrice(cake.creamPrice)}</span>}
                       </div>
                       <div className="flex justify-between items-center mt-4">
-                        <div className="text-xs text-gray-400">
+                        <div className="md:text-[16px] text-[15px] text-black">
                           {cake.isCustomizable ? 'შესაძლებელია კასტომიზაცია' : 'სტანდარტული ტორტი'}
                         </div>
                         <div className="flex space-x-2">
@@ -1084,7 +1082,7 @@ const AdminPage = () => {
             <div className="bg-white text-black placeholder:text-black rounded-2xl shadow-lg p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-black">კლიენტების სია</h2>
-                <div className="text-sm text-gray-600 bg-gray-100 px-3 py-1 rounded-full">
+                <div className="text-[16px] text-black bg-gray-100 px-3 py-1 rounded-full">
                   {(() => {
                     const customerMap = new Map<string, boolean>();
                     orders.forEach((order: Order) => {
@@ -1534,7 +1532,7 @@ const AdminPage = () => {
 
                     {/* Survey Info Panel - Uploaded Images, Slices, and Price */}
                     <div className="p-4 border-b border-gray-200 bg-white flex-shrink-0">
-                      <h3 className="font-semibold text-gray-800 mb-3">📋 შეკვეთის ინფორმაცია</h3>
+                      <h3 className="font-semibold text-gray-800 mb-3"> შეკვეთის ინფორმაცია</h3>
                       
                       {/* Uploaded Images */}
                       {(() => {
@@ -1542,7 +1540,7 @@ const AdminPage = () => {
                         if (imageResponses.length > 0) {
                           return (
                             <div className="mb-4">
-                              <p className="text-sm font-medium text-gray-700 mb-2">🖼️ ატვირთული სურათები:</p>
+                              <p className="text-sm font-medium text-gray-700 mb-2"> ატვირთული სურათები:</p>
                               <div className="grid grid-cols-2 gap-2">
                                 {imageResponses.map((response) => {
                                   if (!response.fileUrl) return null;
@@ -1585,7 +1583,7 @@ const AdminPage = () => {
                           const slicesText = slicesResponse.selectedOption !== null ? slicesOptions[slicesResponse.selectedOption] : 'არ არის მითითებული';
                           return (
                             <div className="mb-4">
-                              <p className="text-sm font-medium text-gray-700 mb-1">🍰 ნაჭრების რაოდენობა:</p>
+                              <p className="text-sm font-medium text-gray-700 mb-1"> ნაჭრების რაოდენობა:</p>
                               <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">{slicesText}</p>
                             </div>
                           );
@@ -1595,7 +1593,7 @@ const AdminPage = () => {
 
                       {/* Price Display/Input */}
                       <div className="mb-2">
-                        <p className="text-sm font-medium text-gray-700 mb-2">💰 ფასი:</p>
+                        <p className="text-sm font-medium text-gray-700 mb-2"> ფასი:</p>
                         {selectedChatSession.calculatedPrice ? (
                           <p className="text-sm text-green-600 font-semibold bg-green-50 p-2 rounded-lg">
                             {selectedChatSession.calculatedPrice.toFixed(2)} ₾
@@ -1679,7 +1677,7 @@ const AdminPage = () => {
                                 value={priceInput || selectedChatSession.calculatedPrice?.toFixed(2) || ''}
                                 onChange={(e) => setPriceInput(e.target.value)}
                                 placeholder="შეიყვანეთ ფასი (₾)"
-                                className="flex-1 p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-black"
+                                className="flex-1 p-2 border border-black rounded-lg  text-black"
                                 step="0.01"
                                 min="0"
                               />
@@ -1765,7 +1763,7 @@ const AdminPage = () => {
                                   }
                                 }}
                                 disabled={(!priceInput && !selectedChatSession.calculatedPrice) || isSendingPrice}
-                                className="px-4 py-2 bg-black  text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+                                className="px-4 py-2 bg-black  text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed text-[18px] font-bold"
                               >
                                 {isSendingPrice ? 'გაგზავნა...' : 'ფასის გაგზავნა'}
                               </button>

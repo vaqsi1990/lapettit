@@ -338,7 +338,7 @@ const ProductPage = () => {
 
                         {/* Product Title */}
                         <div>
-                            <h1 className="text-[24px] md:text-[32px] font-bold text-black mb-3 leading-tight">
+                            <h1 className="text-[24px] md:text-[30px] font-bold text-black mb-3 leading-tight">
                                 {product.titleGeorgian}
                             </h1>
                             {/* Product Type Badge */}
@@ -354,15 +354,15 @@ const ProductPage = () => {
                         {/* Set Information - Only for SET type */}
                         {product.productType === 'SET' && 
                          ((product.setItems && product.setItems.length > 0) || product.setDescription) && (
-                            <div className="bg-[#d90b6b] border border-pink-100 rounded-xl p-4 space-y-3">
+                            <div className=" rounded-xl p-4 space-y-3">
                                 {product.setItems && product.setItems.length > 0 && (
                                     <>
-                                        <h3 className="text-[18px] md:text-[20px] font-semibold text-white">ნაკრების შემადგენლობა:</h3>
+                                        <h3 className="text-[18px] md:text-[24px] font-semibold text-black">ნაკრების შემადგენლობა:</h3>
                                         <ul className="space-y-2">
                                             {product.setItems.map((item, index) => (
-                                                <li key={index} className="flex items-start">
-                                                    <span className="text-white mr-2">✓</span>
-                                                    <span className="text-white text-[16px]">{item}</span>
+                                                <li key={index} className="flex md:text-[20px] text-[18px] items-start">
+                                                    <span className="text-black mr-2">✓</span>
+                                                    <span className="text-black md:text-[20px] text-[18px]">{item}</span>
                                                 </li>
                                             ))}
                                         </ul>

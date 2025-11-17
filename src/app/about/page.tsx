@@ -90,28 +90,28 @@ const AboutPage = () => {
                       <Heart className="w-8 h-8 text-pink-600" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2">სიყვარული</h3>
-                    <p className="text-gray-600">ყოველი ტორტი იქმნება სიყვარულით</p>
+                    <p className="text-black">ყოველი ტორტი იქმნება სიყვარულით</p>
                   </div>
                   <div className="bg-white rounded-2xl p-6 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-pink-100 text-pink-600  group-hover:scale-110 transition-transform duration-300">
                       <Star className="w-8 h-8 text-pink-600" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2">ხარისხი</h3>
-                    <p className="text-gray-600">მხოლოდ საუკეთესო ინგრედიენტები</p>
+                    <p className="text-black">მხოლოდ საუკეთესო ინგრედიენტები</p>
                   </div>
                   <div className="bg-white rounded-2xl p-6 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center  bg-pink-100 text-pink-600 group-hover:scale-110 transition-transform duration-300">
                       <Award className="w-8 h-8 text-pink-600" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2">ცნობადობა</h3>
-                    <p className="text-gray-600">ქალაქის საუკეთესო კონდიტერი</p>
+                    <p className="text-black">ქალაქის საუკეთესო კონდიტერი</p>
                   </div>
                   <div className="bg-white rounded-2xl p-6 text-center">
                     <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center bg-pink-100 text-pink-600 group-hover:scale-110 transition-transform duration-300">
                       <Users className="w-8 h-8 text-pink-600" />
                     </div>
                     <h3 className="text-xl font-bold text-gray-800 mb-2">გუნდი</h3>
-                    <p className="text-gray-600">პროფესიონალები თავიანთ საქმეში</p>
+                    <p className="text-black">პროფესიონალები თავიანთ საქმეში</p>
                   </div>
                 </div>
               </div>
