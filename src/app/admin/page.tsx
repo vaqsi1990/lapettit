@@ -146,7 +146,16 @@ const AdminPage = () => {
         if (data.success && data.sessions) {
           // Filter sessions that are complete (ready for live chat), waiting for price, or have messages
           const sessionsWithChat = data.sessions.filter((session: SurveySession) => {
-            return session.isComplete || session.waitingForPrice || (session.messages && session.messages.length > 0);
+            const hasStarted =
+              (session.responses && session.responses.length > 0) ||
+              (session.messages && session.messages.some((message: ChatMessage) => message.senderType === 'user'));
+
+            const shouldDisplay =
+              session.isComplete ||
+              session.waitingForPrice ||
+              (session.messages && session.messages.length > 0);
+
+            return hasStarted && shouldDisplay;
           });
           setLiveChatSessions(sessionsWithChat);
           

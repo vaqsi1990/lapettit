@@ -14,6 +14,7 @@ interface Message {
   fileUrl?: string;
   fileName?: string;
   imageUrl?: string;
+  isStartPrompt?: boolean;
 }
 
 interface SurveyState {
@@ -85,6 +86,8 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
   const [userMessage, setUserMessage] = useState(''); // For post-survey chat
   const [lastMessageId, setLastMessageId] = useState<number | null>(null); // Track last message for polling
   const [isChatEnded, setIsChatEnded] = useState(false); // Track if chat is ended
+  const [startDecision, setStartDecision] = useState<'pending' | 'accepted' | 'declined'>('pending');
+  const [pendingFirstQuestion, setPendingFirstQuestion] = useState<{ question: NonNullable<SurveyState['question']>; step: number } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -474,6 +477,8 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
   const initializeChat = async () => {
     console.log('Initializing chat...');
     setIsLoading(true);
+    setStartDecision('pending');
+    setPendingFirstQuestion(null);
     try {
       const response = await fetch('/api/chat-survey', {
         method: 'POST',
@@ -497,7 +502,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
           sessionId: data.session.sessionId,
           currentStep: data.session.currentStep,
           isComplete: false,
-          question: data.question
+          question: null
         });
         
         // If question 15, log that auto-submit should trigger
@@ -527,25 +532,23 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
 
         // Don't add question 15 to messages (it's hidden and auto-handled)
         const isQuestion15 = data.question.id === 15;
-        const initialMessages: Message[] = [
+        setPendingFirstQuestion({
+          question: {
+            ...data.question,
+            text: firstQuestionText
+          },
+          step: data.session.currentStep
+        });
+
+        setMessages([
           {
             type: 'bot',
             text: welcomeText,
-            options: undefined,
-            imageUrl: productImage
+            options: ['კი', 'არა'],
+            imageUrl: productImage,
+            isStartPrompt: true
           }
-        ];
-        
-        // Only add question to messages if it's not question 15
-        if (!isQuestion15) {
-          initialMessages.push({
-            type: 'bot',
-            text: firstQuestionText,
-            options: data.question.options
-          });
-        }
-
-        setMessages(initialMessages);
+        ]);
 
         // Save initial messages to database
         try {
@@ -561,18 +564,6 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
             })
           });
 
-          // Save first question only if it's not question 15 (hidden question)
-          if (data.question.id !== 15) {
-            await fetch('/api/chat-survey/messages', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                sessionId: data.session.sessionId,
-                senderType: 'bot',
-                content: firstQuestionText
-              })
-            });
-          }
         } catch (error) {
           console.error('Error saving initial messages:', error);
         }
@@ -971,6 +962,98 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
     }
   };
 
+  const handleStartPromptSelection = async (optionIndex: number, optionLabel: string) => {
+    if (!surveyState.sessionId || startDecision !== 'pending') return;
+
+    const decision = optionIndex === 0 ? 'accepted' : 'declined';
+    setStartDecision(decision);
+
+    // Show user choice immediately
+    setMessages(prev => [...prev, { type: 'user', text: optionLabel }]);
+
+    try {
+      await fetch('/api/chat-survey/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: surveyState.sessionId,
+          senderType: 'user',
+          content: optionLabel
+        })
+      });
+    } catch (error) {
+      console.error('Error saving start decision message:', error);
+    }
+
+    if (decision === 'accepted') {
+      if (pendingFirstQuestion) {
+        const { question, step } = pendingFirstQuestion;
+        setSurveyState(prev => ({
+          ...prev,
+          currentStep: step,
+          question
+        }));
+
+        // Only show the question if it's not the hidden auto-handled question (id 15)
+        if (question.id !== 15) {
+          setMessages(prev => [...prev, {
+            type: 'bot',
+            text: question.text,
+            options: question.options
+          }]);
+
+          try {
+            await fetch('/api/chat-survey/messages', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                sessionId: surveyState.sessionId,
+                senderType: 'bot',
+                content: question.text
+              })
+            });
+          } catch (error) {
+            console.error('Error saving first question message:', error);
+          }
+        }
+
+        setPendingFirstQuestion(null);
+      }
+    } else {
+      const closingText = 'გასაგებია! როდესაც გადაწყვეტთ შეკვეთის დაწყებას, უბრალოდ მომწერეთ და სიამოვნებით დაგეხმარებით 😊';
+      setSurveyState(prev => ({
+        ...prev,
+        isComplete: true
+      }));
+      setIsChatEnded(true);
+      setMessages(prev => [...prev, { type: 'bot', text: closingText }]);
+
+      try {
+        await fetch('/api/chat-survey/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: surveyState.sessionId,
+            senderType: 'bot',
+            content: closingText
+          })
+        });
+      } catch (error) {
+        console.error('Error saving closing message:', error);
+      }
+
+      try {
+        await fetch('/api/chat-survey/end-chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId: surveyState.sessionId })
+        });
+      } catch (error) {
+        console.error('Error ending chat after decline:', error);
+      }
+    }
+  };
+
   const handleOptionClick = (index: number) => {
     // Prevent clicking if question is already answered
     if (surveyState.question && answeredQuestions.has(surveyState.question.id)) {
@@ -1267,16 +1350,25 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
                 {message.options && (
                   <div className="mt-2 space-y-1">
                     {message.options.map((option, optIndex) => {
-                      const isCurrentQuestion = surveyState.question && 
+                      const isStartPrompt = message.isStartPrompt;
+                      const isCurrentQuestion = !isStartPrompt && surveyState.question && 
                         message.text === surveyState.question.text;
-                      const isAnswered = surveyState.question && 
+                      const isAnswered = !isStartPrompt && surveyState.question && 
                         answeredQuestions.has(surveyState.question.id);
-                      const isDisabled = isCurrentQuestion && isAnswered;
+                      const isDisabled = isStartPrompt
+                        ? startDecision !== 'pending'
+                        : isCurrentQuestion && isAnswered;
                       
                       return (
                         <button
                           key={optIndex}
-                          onClick={() => handleOptionClick(optIndex)}
+                          onClick={() => {
+                            if (isStartPrompt) {
+                              handleStartPromptSelection(optIndex, option);
+                            } else {
+                              handleOptionClick(optIndex);
+                            }
+                          }}
                           disabled={!!isDisabled}
                           className={`block w-full text-left p-2 rounded text-[16px] transition-all ${
                               isDisabled
