@@ -571,7 +571,7 @@ const AdminPage = () => {
 
         {/* Navigation Tabs */}
         <div className="bg-white rounded-2xl shadow-lg p-2 mb-8">
-          <div className="flex space-x-2">
+          <div className="flex flex-wrap gap-2 md:flex-nowrap overflow-x-auto md:gap-2">
             {[
        
               { id: 'orders', label: 'შეკვეთები', icon: ShoppingCart },
@@ -584,7 +584,7 @@ const AdminPage = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex cursor-pointer items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 md:text-[20px] text-[18px] ${
+                className={`flex flex-shrink-0 cursor-pointer whitespace-nowrap items-center space-x-2 px-6 py-3 rounded-xl font-medium transition-all duration-300 md:text-[20px] text-[18px] ${
                   activeTab === tab.id
                     ? 'bg-[#d90b6b] text-white shadow-lg'
                     : 'text-gray-600 hover:text-[#d90b6b] hover:bg-pink-50'
@@ -1409,129 +1409,13 @@ const AdminPage = () => {
                 {selectedChatSession ? (
                   <>
                     {/* Chat Header */}
-                    <div className="p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center">
-                            <span className="text-white font-semibold text-sm">
-                              {(() => {
-                                const nameResponse = selectedChatSession.responses.find((r: { questionId: number }) => r.questionId === 9);
-                                const userName = nameResponse?.answerText || 'User';
-                                return userName.charAt(0).toUpperCase();
-                              })()}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="font-semibold text-black">
-                              {(() => {
-                                const nameResponse = selectedChatSession.responses.find((r: { questionId: number }) => r.questionId === 9);
-                                return nameResponse?.answerText || `Session: ${selectedChatSession.sessionId.slice(0, 15)}...`;
-                              })()}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {new Date(selectedChatSession.createdAt).toLocaleDateString('ka-GE', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                hour: '2-digit',
-                                minute: '2-digit'
-                              })}
-                            </p>
-                          </div>
-                        </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          selectedChatSession.isChatEnded
-                            ? 'bg-gray-100 text-gray-800'
-                            : selectedChatSession.isComplete
-                            ? 'bg-yellow-100 text-yellow-800'
-                            : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {selectedChatSession.isChatEnded 
-                            ? 'დასრულებული' 
-                            : selectedChatSession.isComplete 
-                            ? 'Survey დასრულებული' 
-                            : 'მიმდინარე'}
-                        </span>
-                        <div className="flex gap-2">
-                          {!selectedChatSession.isChatEnded && (
-                            <button
-                              onClick={async () => {
-                                if (window.confirm('ნამდვილად გსურთ ამ ჩათის დასრულება?')) {
-                                  try {
-                                    const response = await fetch('/api/chat-survey/end-chat', {
-                                      method: 'POST',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify({
-                                        sessionId: selectedChatSession.sessionId
-                                      })
-                                    });
-
-                                    const data = await response.json();
-                                    if (data.success) {
-                                      // Send ending message
-                                      await fetch('/api/chat-survey/messages', {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                          sessionId: selectedChatSession.sessionId,
-                                          senderType: 'bot',
-                                          content: 'ადმინისტრატორმა დაასრულა საუბარი. გმადლობთ თქვენი დროისთვის!'
-                                        })
-                                      });
-
-                                      // Update local state
-                                      setSelectedChatSession({ ...selectedChatSession, isChatEnded: true });
-                                      showToast('success', 'ჩათი დასრულებულია');
-                                    }
-                                  } catch (error) {
-                                    console.error('Error ending chat:', error);
-                                    showToast('error', 'შეცდომა ჩათის დასრულებისას');
-                                  }
-                                }
-                              }}
-                              className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
-                              title="ჩათის დასრულება"
-                            >
-                              დასრულება
-                            </button>
-                          )}
-                          <button
-                            onClick={async () => {
-                              if (window.confirm('ნამდვილად გსურთ ამ ჩათის წაშლა? ყველა შეტყობინება და პასუხიც წაიშლება.')) {
-                                try {
-                                  const deleteResponse = await fetch(`/api/chat-survey/sessions/${selectedChatSession.sessionId}`, {
-                                    method: 'DELETE'
-                                  });
-
-                                  if (deleteResponse.ok) {
-                                    // Remove from live chat sessions list
-                                    setLiveChatSessions(prev => prev.filter(s => s.id !== selectedChatSession.id));
-                                    // Close chat modal
-                                    setSelectedChatSession(null);
-                                    setChatMessages([]);
-                                    setAdminMessage('');
-                                    showToast('success', 'ჩათი წაიშლა');
-                                  } else {
-                                    showToast('error', 'შეცდომა ჩათის წაშლისას');
-                                  }
-                                } catch (error) {
-                                  console.error('Error deleting chat:', error);
-                                  showToast('error', 'შეცდომა ჩათის წაშლისას');
-                                }
-                              }
-                            }}
-                            className="px-3 py-1 text-sm bg-red-200 hover:bg-red-300 text-red-700 rounded-lg transition-colors flex items-center gap-1"
-                            title="ჩათის წაშლა"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                            წაშლა
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                
 
                     {/* Survey Info Panel - Uploaded Images, Slices, and Price */}
-                    <div className="p-4 border-b border-gray-200 bg-white flex-shrink-0">
+                    <div
+                      className="p-4 border-b h-screen border-gray-200 bg-white flex-shrink-0 overflow-y-auto"
+                      style={{ maxHeight: 'calc(100vh - 240px)' }}
+                    >
                       <h3 className="font-semibold text-gray-800 mb-3"> შეკვეთის ინფორმაცია</h3>
                       
                       {/* Uploaded Images */}
@@ -1547,14 +1431,14 @@ const AdminPage = () => {
                                   return (
                                     <div key={response.id} className="relative">
                                       {(response.fileUrl.includes('.jpg') || response.fileUrl.includes('.jpeg') || response.fileUrl.includes('.png') || response.fileUrl.includes('.gif') || response.fileUrl.includes('uploadthing') || response.fileUrl.includes('utfs.io')) ? (
-                                        <Image
-                                          src={response.fileUrl}
-                                          alt={response.fileName || 'ატვირთული სურათი'}
-                                          width={200}
-                                          height={200}
-                                          className="rounded-lg object-cover w-full h-32"
-                                          unoptimized={response.fileUrl.includes('uploadthing') || response.fileUrl.includes('utfs.io')}
-                                        />
+                                      <Image
+                                        src={response.fileUrl}
+                                        alt={response.fileName || 'ატვირთული სურათი'}
+                                        width={400}
+                                        height={300}
+                                        className="rounded-lg w-full max-h-92 object-contain bg-gray-100 p-1"
+                                        unoptimized={response.fileUrl.includes('uploadthing') || response.fileUrl.includes('utfs.io')}
+                                      />
                                       ) : (
                                         <a
                                           href={response.fileUrl}
@@ -1604,62 +1488,7 @@ const AdminPage = () => {
                       </div>
                     </div>
 
-                    {/* Live Chat Messages - Only admin and user messages */}
-                    <div id="chat-messages" className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4 min-h-0 mb-4">
-                      {(() => {
-                        const chatOnlyMessages = chatMessages.filter(m => m.senderType === 'admin' || m.senderType === 'user');
-                        if (chatOnlyMessages.length === 0) {
-                          return (
-                            <div className="text-center text-gray-500 py-8">
-                              <p>შეტყობინებები არ არის</p>
-                            </div>
-                          );
-                        }
-                        return chatOnlyMessages.map((message) => (
-                          <div
-                            key={message.id}
-                            className={`flex ${message.senderType === 'admin' ? 'justify-end' : 'justify-start'}`}
-                          >
-                            <div
-                              className={`max-w-[70%] rounded-lg p-3 ${
-                                message.senderType === 'admin'
-                                  ? 'bg-blue-500 text-white'
-                                  : 'bg-white text-gray-800 border border-gray-200'
-                              }`}
-                            >
-                              <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                              {message.imageUrl && (
-                                <div className="mt-2">
-                                  <Image
-                                    src={message.imageUrl}
-                                    alt="Message image"
-                                    width={200}
-                                    height={200}
-                                    className="rounded-lg"
-                                  />
-                                </div>
-                              )}
-                              {message.fileUrl && (
-                                <a
-                                  href={message.fileUrl}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-xs underline mt-2 block"
-                                >
-                                  {message.fileName || 'ფაილი'}
-                                </a>
-                              )}
-                              <p className="text-xs opacity-70 mt-1">
-                                {new Date(message.createdAt).toLocaleTimeString('ka-GE', {
-                                  hour: '2-digit',
-                                  minute: '2-digit'
-                                })}
-                              </p>
-                            </div>
-                          </div>
-                        ));
-                      })()}
-                    </div>
+                
 
                     {/* Price Calculation Area - Separate section - Always visible when session is selected - Moved above bot questions */}
                     <div className={`border-t  flex-shrink-0 bg-white shadow-lg sticky bottom-0 z-30 ${selectedChatSession.waitingForPrice ? 'border-yellow-300 bg-yellow-50' : 'border-gray-300 bg-gray-50'}`}>
@@ -1765,7 +1594,7 @@ const AdminPage = () => {
                                 disabled={(!priceInput && !selectedChatSession.calculatedPrice) || isSendingPrice}
                                 className="px-4 py-2 bg-black  text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed text-[18px] font-bold"
                               >
-                                {isSendingPrice ? 'გაგზავნა...' : 'ფასის გაგზავნა'}
+                                {isSendingPrice ? 'გაგზავნა...' : 'გაგზავნა'}
                               </button>
                             </div>
                           </div>
@@ -1773,53 +1602,7 @@ const AdminPage = () => {
                       </div>
 
                     {/* Input Area - Always visible when chat is not ended */}
-                    {!selectedChatSession.isChatEnded ? (
-                      <div className="p-4 border-t border-gray-200 bg-white flex-shrink-0">
-                        <div className="flex gap-2">
-                          <input
-                            type="text"
-                            value={adminMessage}
-                            onChange={(e) => {
-                              setAdminMessage(e.target.value);
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && !e.shiftKey && adminMessage.trim() && !isSendingMessage) {
-                                e.preventDefault();
-                                sendAdminMessage();
-                              }
-                            }}
-                            placeholder="ჩაწერეთ პასუხი..."
-                            className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black bg-white"
-                            disabled={isSendingMessage}
-                            autoFocus={false}
-                          />
-                          <button
-                            onClick={(e) => {
-                              e.preventDefault();
-                              if (adminMessage.trim() && !isSendingMessage && selectedChatSession) {
-                                sendAdminMessage();
-                              }
-                            }}
-                            disabled={!adminMessage.trim() || isSendingMessage || !selectedChatSession}
-                            className={`px-6 py-3 rounded-lg font-medium transition-all ${
-                              adminMessage.trim() && !isSendingMessage && selectedChatSession
-                                ? 'bg-blue-500 text-white hover:bg-blue-600 cursor-pointer'
-                                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                            }`}
-                            type="button"
-                          >
-                            {isSendingMessage ? 'გაგზავნა...' : 'გაგზავნა'}
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="p-4 border-t border-gray-200 bg-gray-50">
-                        <div className="text-center text-gray-600">
-                          <p className="font-medium">ჩათი დასრულებულია</p>
-                          <p className="text-sm mt-1">საუბარი დასრულებულია</p>
-                        </div>
-                      </div>
-                    )}
+             
                   </>
                 ) : (
                   <div className="flex-1 flex items-center justify-center bg-gray-50">
