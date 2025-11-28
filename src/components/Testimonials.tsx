@@ -57,7 +57,7 @@ const Testimonials = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center md:mt-0 mt-10 mb-16"
         >
           <motion.h2
             initial={{ opacity: 0 }}
@@ -90,7 +90,7 @@ const Testimonials = () => {
               nextEl: '.testimonials-button-next',
               prevEl: '.testimonials-button-prev',
             }}
-            className="testimonials-swiper relative z-30"
+            className="testimonials-swiper mb-12 md:mb-0 relative z-30"
           >
             {testimonials.map((testimonial, index) => (
               <SwiperSlide key={testimonial.id}>

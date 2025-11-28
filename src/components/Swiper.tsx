@@ -68,7 +68,7 @@ const Swiper = () => {
 
     return (
         <div className="w-full mt-20 mb-20">
-            <div className="max-w-7xl mx-auto px-4">
+            <div className="container mx-auto px-4">
                 {/* Instagram-like Grid Gallery */}
                 <motion.h2 className="text-[20px] md:text-[30px] text-center mb-10 font-bold text-[#d90b6b] mb-4">გალერია</motion.h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
@@ -167,7 +167,7 @@ const Swiper = () => {
                             animate={{ scale: 1, opacity: 1 }}
                             exit={{ scale: 0.8, opacity: 0 }}
                             transition={{ duration: 0.3 }}
-                            className="relative w-full h-full max-w-7xl max-h-[90vh]"
+                            className="relative w-full h-full  max-h-[90vh]"
                             onClick={(e) => e.stopPropagation()}
                         >
                             {selectedImage && (
