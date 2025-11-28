@@ -60,17 +60,76 @@ interface ChatMessage {
 }
 
 const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, isOpen: externalIsOpen, onOpenChange, showFloatingButton = true }: ChatWidgetProps) => {
-  const [internalIsOpen, setInternalIsOpen] = useState(defaultOpen);
+  // Initialize with safe defaults for SSR (no window access)
+  // Start closed to avoid flash on mobile, will open on desktop in useEffect
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   
   const setIsOpen = (value: boolean) => {
     if (externalIsOpen === undefined) {
       setInternalIsOpen(value);
+      // Track manual close
+      if (!value) {
+        setManuallyClosed(true);
+      } else {
+        // Reset manual close flag when opened
+        setManuallyClosed(false);
+      }
     }
     if (onOpenChange) {
       onOpenChange(value);
     }
   };
+
+  // Track screen size for responsive behavior (start with safe default for SSR)
+  const [isDesktop, setIsDesktop] = useState(true); // Default to desktop for SSR
+
+  // Track if user manually closed the chat (to prevent auto-opening on resize)
+  const [manuallyClosed, setManuallyClosed] = useState(false);
+
+  // Initialize and handle responsive behavior on client side only
+  useEffect(() => {
+    // Set initial state based on actual screen size (client-side only)
+    const checkScreenSize = () => {
+      const desktop = window.innerWidth >= 768; // md breakpoint
+      setIsDesktop(desktop);
+      
+      if (externalIsOpen === undefined && !manuallyClosed) {
+        // Set initial open state based on screen size
+        setInternalIsOpen(desktop);
+      }
+    };
+
+    // Set initial state
+    checkScreenSize();
+
+    const handleResize = () => {
+      const desktop = window.innerWidth >= 768; // md breakpoint
+      const wasDesktop = isDesktop;
+      setIsDesktop(desktop);
+      
+      // Reset manuallyClosed when switching to mobile (so it can auto-open when back to desktop)
+      if (!desktop && wasDesktop) {
+        setManuallyClosed(false);
+      }
+      
+      if (externalIsOpen === undefined) {
+        // Only auto-manage if not externally controlled
+        if (desktop && !manuallyClosed) {
+          // Open on desktop if not manually closed
+          setInternalIsOpen(true);
+        } else if (!desktop) {
+          // Close on mobile
+          setInternalIsOpen(false);
+        }
+        // If desktop and manuallyClosed, don't change state (stay closed)
+      }
+    };
+
+    // Listen for resize events
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [externalIsOpen, manuallyClosed, isDesktop]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [surveyState, setSurveyState] = useState<SurveyState>({
     sessionId: null,
@@ -1207,7 +1266,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
 
   return (
     <>
-      {/* Floating Chat Button */}
+      {/* Floating Chat Button - Show when closed (both mobile and desktop) */}
       {!isOpen && showFloatingButton && (
         <button
           onClick={() => setIsOpen(true)}
@@ -1228,6 +1287,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
               
                 <p className="text-lg text-white">გთხოვთ, უპასუხოთ შეკითხვებს</p>
               </div>
+              {/* Close button */}
               <button
                 onClick={() => setIsOpen(false)}
                 className="hover:bg-white/20 rounded-full p-1 transition-colors"
