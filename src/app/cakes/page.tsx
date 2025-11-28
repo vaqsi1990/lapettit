@@ -245,88 +245,7 @@ const CakesPage = () => {
                   </div>
                 </div>
 
-                {/* Price Filter */}
-                {/* {minPrice > 0 && maxPrice > minPrice && (
-                  <div className="mb-8">
-                    <h3 className="md:text-[20px] text-[18px] font-semibold text-black mb-4">ფასი</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-[14px] text-black">₾{priceRange[0]}</span>
-                          <span className="text-[14px] text-black">₾{priceRange[1]}</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 mb-3">
-                          <input
-                            type="number"
-                            min={minPrice}
-                            max={maxPrice}
-                            value={priceRange[0]}
-                            onChange={(e) => {
-                              const value = Math.max(minPrice, Math.min(Number(e.target.value) || minPrice, priceRange[1]))
-                              setPriceRange([value, priceRange[1]])
-                            }}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500 text-black text-[14px]"
-                            placeholder="მინ"
-                          />
-                          <input
-                            type="number"
-                            min={minPrice}
-                            max={maxPrice}
-                            value={priceRange[1]}
-                            onChange={(e) => {
-                              const value = Math.min(maxPrice, Math.max(Number(e.target.value) || maxPrice, priceRange[0]))
-                              setPriceRange([priceRange[0], value])
-                            }}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-pink-500 text-black text-[14px]"
-                            placeholder="მაქს"
-                          />
-                        </div>
-                        <div className="relative h-4 py-1">
-                          <div
-                            className="absolute h-2 bg-gray-200 rounded-lg w-full top-1/2 -translate-y-1/2"
-                            style={{
-                              background: maxPrice > minPrice ? `linear-gradient(to right, #e5e7eb 0%, #e5e7eb ${((priceRange[0] - minPrice) / (maxPrice - minPrice)) * 100}%, #ec4899 ${((priceRange[0] - minPrice) / (maxPrice - minPrice)) * 100}%, #ec4899 ${((priceRange[1] - minPrice) / (maxPrice - minPrice)) * 100}%, #e5e7eb ${((priceRange[1] - minPrice) / (maxPrice - minPrice)) * 100}%, #e5e7eb 100%)` : '#e5e7eb'
-                            }}
-                          />
-                          <input
-                            type="range"
-                            min={minPrice}
-                            max={maxPrice}
-                            step={1}
-                            value={priceRange[0]}
-                            onChange={(e) => {
-                              const min = Math.max(minPrice, Math.min(Number(e.target.value), priceRange[1] - 1))
-                              setPriceRange([min, priceRange[1]])
-                            }}
-                            className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer z-20 top-1/2 -translate-y-1/2"
-                          />
-                          <input
-                            type="range"
-                            min={minPrice}
-                            max={maxPrice}
-                            step={1}
-                            value={priceRange[1]}
-                            onChange={(e) => {
-                              const max = Math.min(maxPrice, Math.max(Number(e.target.value), priceRange[0] + 1))
-                              setPriceRange([priceRange[0], max])
-                            }}
-                            className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer z-30 top-1/2 -translate-y-1/2"
-                          />
-                        </div>
-                      </div>
-                      {priceRange[0] !== minPrice || priceRange[1] !== maxPrice ? (
-                        <button
-                          onClick={() => {
-                            setPriceRange([minPrice, maxPrice])
-                          }}
-                          className="w-full text-[14px] text-[#d90b6b] hover:text-pink-700 font-medium"
-                        >
-                          ფილტრის გასუფთავება
-                        </button>
-                      ) : null}
-                    </div>
-                  </div>
-                )} */}
+             
 
              
               </div>
@@ -368,12 +287,16 @@ const CakesPage = () => {
                     </div>
 
                     {/* Product Info */}
-                    <div className="p-4 flex flex-col flex-grow">
+                    <div className="p-4 flex text-center gap-3 flex-col flex-grow">
                      
-                      <h3 className="md:text-[18px] text-[16px] font-semibold text-black mb-2 min-h-[3.5rem] flex items-start leading-tight">
+                      <h3 className="md:text-[18px] text-[16px] font-semibold text-black   flex mx-auto leading-tight">
                         {cake.titleGeorgian}
                       </h3>
-                      <div className="mt-auto">
+                      <h3 className="md:text-[18px] mb-3 text-[16px] font-semibold text-black   flex mx-auto leading-tight">
+                     ფასი:   {cake.price}
+                      </h3>
+
+                      <div className="mt-auto mb-3 mt-3">
                        
                         <Link href={`/product/${cake.id}`} className="text-center cursor-pointer md:text-[20px] text-[18px] w-full bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                         დაათვალიერეთ
@@ -404,10 +327,14 @@ const CakesPage = () => {
                 {getPageNumbers().map((page, index) => (
                   <button
                     key={index}
-                    className={`px-4 py-2 bg-white text-black border border-gray-300 rounded-lg hover:bg-gray-50 ${
+                    onClick={() => typeof page === 'number' && handlePageChange(page)}
+                    disabled={typeof page !== 'number'}
+                    className={`px-4 py-2 border border-gray-300 rounded-lg transition-colors ${
                       typeof page === 'number' && page === currentPage
-                        ? 'bg-pink-500 text-black font-medium'
-                        : 'text-black'
+                        ? 'bg-black text-white font-medium cursor-pointer'
+                        : typeof page === 'number'
+                        ? 'bg-white text-black hover:bg-gray-50 cursor-pointer'
+                        : 'bg-white text-black cursor-default'
                     }`}
                   >
                     {page}
