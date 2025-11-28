@@ -166,6 +166,27 @@ const CakesPage = () => {
     ))
   }
 
+  // Format price display with per-slice information
+  const formatPriceDisplay = (cake: GalleryImage) => {
+    if (!cake.price) {
+      return 'ფასი: ნაჭრების რაოდენობის მიხედვით'
+    }
+
+    // For FULL_CAKE with pieces, show total price and price per slice
+    if (cake.productType === 'FULL_CAKE' && cake.pieces && cake.pieces > 0) {
+      const pricePerSlice = cake.price / cake.pieces
+      return `ფასი: ${cake.price}₾ (${pricePerSlice.toFixed(2)}₾ ნაჭერზე)`
+    }
+
+    // For INDIVIDUAL_SLICE, show just the price (already per slice)
+    if (cake.productType === 'INDIVIDUAL_SLICE') {
+      return `ფასი: ${cake.price}₾`
+    }
+
+    // For SET or other types, show the price
+    return `ფასი: ${cake.price}₾`
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-rose-50 to-purple-50">
@@ -293,7 +314,7 @@ const CakesPage = () => {
                         {cake.titleGeorgian}
                       </h3>
                       <h3 className="md:text-[18px] mb-3 text-[16px] font-semibold text-black   flex mx-auto leading-tight">
-                     ფასი:   {cake.price}
+                        {formatPriceDisplay(cake)}
                       </h3>
 
                       <div className="mt-auto mb-3 mt-3">
