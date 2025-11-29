@@ -138,15 +138,15 @@ const ElegantHeroSlider = () => {
                   გემო, რომელიც გახდის დღეს განსაკუთრებულს
                 </h1>
 
-                <p className="md:text-[20px] text-[16px] font-serif italic text-white mb-8 sm:mb-10 max-w-lg leading-relaxed drop-shadow-lg">
+                <p className="md:text-[20px] text-[16px] font-serif italic text-white mb-6 sm:mb-8 md:mb-10 max-w-lg leading-relaxed drop-shadow-lg">
                   გთავაზობთ ხელნაკეთ, გემრიელ ტორტებს ნებისმიერი შემთხვევისთვის – დაბადების დღე, ქორწილი, განსაკუთრებული დღესასწაული. შეუკვეთე ტორტი ონლაინ და მიიღე სწრაფად
                 </p>
-                <div className="bg-gradient-to-br rounded-xl from-pink-50 via-rose-50 to-purple-50">
+                <div className="w-full mb-20 sm:mb-24 md:mb-14 md:w-[70%]">
                   <Link
                     href="/cakes"
-                    className="text-center md:text-[20px] text-[18px] w-full bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl md:w-[70%]"
+                    className="block text-center md:text-[20px] text-[18px] w-full bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
                   >
-                   დაათვალიერეთ ჩვენი ტორტები
+                    დაათვალიერეთ ჩვენი ტორტები
                   </Link>
                 </div>
               </motion.div>
@@ -156,7 +156,7 @@ const ElegantHeroSlider = () => {
 
 
         {/* Slide Indicators - Bottom Center */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+        <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3">
           {slides.map((_, index) => (
             <motion.button
               key={index}
