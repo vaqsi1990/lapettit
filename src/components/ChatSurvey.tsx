@@ -156,6 +156,7 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
   const [textAnswer, setTextAnswer] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<{ url: string; name: string } | null>(null);
+  const [isUploading, setIsUploading] = useState(false); // Track file upload state
   const [answeredQuestions, setAnsweredQuestions] = useState<Set<number>>(new Set());
   const [userMessage, setUserMessage] = useState(''); // For post-survey chat
   const [lastMessageId, setLastMessageId] = useState<number | null>(null); // Track last message for polling
@@ -1754,14 +1755,25 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
                 <div className="mb-3 text-gray-800 text-[16px] font-medium">
                   {surveyState.question.text}
                 </div>
+                {isUploading && (
+                  <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
+                    <Loader2 className="animate-spin text-blue-600" size={20} />
+                    <span className="text-[16px] text-blue-700 font-medium">ფაილი იტვირთება...</span>
+                  </div>
+                )}
                 <UploadButton
                   endpoint="chatSurveyUploader"
+                  onUploadBegin={() => {
+                    setIsUploading(true);
+                  }}
                   onClientUploadComplete={(res) => {
+                    setIsUploading(false);
                     if (res) {
                       handleFileUpload(res.map(f => ({ url: f.url, name: f.name })));
                     }
                   }}
                   onUploadError={(error) => {
+                    setIsUploading(false);
                     alert(`შეცდომა! ${error.message}`);
                   }}
                   className="text-[18px] font-bold"
@@ -1831,9 +1843,19 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
           <div className="border-t border-gray-200 p-4 bg-white">
             {/* File Upload */}
             <div className="mb-3">
+              {isUploading && (
+                <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
+                  <Loader2 className="animate-spin text-blue-600" size={20} />
+                  <span className="text-[16px] text-blue-700 font-medium">ფაილი იტვირთება...</span>
+                </div>
+              )}
               <UploadButton
                 endpoint="chatSurveyUploader"
+                onUploadBegin={() => {
+                  setIsUploading(true);
+                }}
                 onClientUploadComplete={(res) => {
+                  setIsUploading(false);
                   if (res && res.length > 0) {
                     const file = { url: res[0].url, name: res[0].name };
                     // File upload handled directly
@@ -1842,6 +1864,7 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
                   }
                 }}
                 onUploadError={(error) => {
+                  setIsUploading(false);
                   alert(`შეცდომა! ${error.message}`);
                 }}
                 className=""
