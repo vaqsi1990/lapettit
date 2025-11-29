@@ -137,8 +137,14 @@ const ProductPage = () => {
                 setSelectedTopping(null);
             }
 
-            // Auto-open chat when product loads
-            setIsChatOpen(true);
+            // Auto-open chat when product loads (only on desktop, not mobile)
+            if (typeof window !== 'undefined') {
+                const isDesktop = window.innerWidth >= 768; // md breakpoint
+                setIsChatOpen(isDesktop);
+            } else {
+                // SSR fallback - start closed
+                setIsChatOpen(false);
+            }
         }
     }, [product]);
 
@@ -290,10 +296,13 @@ const ProductPage = () => {
                     const mappedProduct = mapCakeToGalleryImage(result.data);
                     setProduct(mappedProduct);
 
-                    // Auto-open chat on product detail page (only once)
-                    if (!isChatOpen && !chatOpenedRef.current) {
-                        setIsChatOpen(true);
-                        chatOpenedRef.current = true;
+                    // Auto-open chat on product detail page (only on desktop, not mobile)
+                    if (!chatOpenedRef.current) {
+                        if (typeof window !== 'undefined') {
+                            const isDesktop = window.innerWidth >= 768; // md breakpoint
+                            setIsChatOpen(isDesktop);
+                            chatOpenedRef.current = true;
+                        }
                     }
 
                     // Fetch related products

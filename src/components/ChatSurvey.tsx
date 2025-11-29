@@ -86,9 +86,21 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
       // Track manual close
       if (!value) {
         setManuallyClosed(true);
+        setManuallyOpened(false);
       } else {
         // Reset manual close flag when opened
         setManuallyClosed(false);
+        // Track manual open (especially on mobile)
+        if (typeof window !== 'undefined' && window.innerWidth < 768) {
+          setManuallyOpened(true);
+        }
+      }
+    } else {
+      // If externally controlled, track manual open on mobile
+      if (value && typeof window !== 'undefined' && window.innerWidth < 768) {
+        setManuallyOpened(true);
+      } else if (!value) {
+        setManuallyOpened(false);
       }
     }
     if (onOpenChange) {
@@ -101,6 +113,8 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
 
   // Track if user manually closed the chat (to prevent auto-opening on resize)
   const [manuallyClosed, setManuallyClosed] = useState(false);
+  // Track if user manually opened the chat (to prevent auto-closing on mobile)
+  const [manuallyOpened, setManuallyOpened] = useState(false);
 
   // Initialize and handle responsive behavior on client side only
   useEffect(() => {
@@ -112,6 +126,11 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
       if (externalIsOpen === undefined && !manuallyClosed) {
         // Set initial open state based on screen size
         setInternalIsOpen(desktop);
+      } else if (externalIsOpen !== undefined && onOpenChange) {
+        // If externally controlled and on mobile, close it only if not manually opened
+        if (!desktop && externalIsOpen && !manuallyOpened) {
+          onOpenChange(false);
+        }
       }
     };
 
@@ -138,13 +157,20 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
           setInternalIsOpen(false);
         }
         // If desktop and manuallyClosed, don't change state (stay closed)
+      } else if (externalIsOpen !== undefined && onOpenChange) {
+        // If externally controlled, close on mobile only if not manually opened
+        if (!desktop && externalIsOpen && !manuallyOpened) {
+          onOpenChange(false);
+        } else if (desktop && !externalIsOpen && wasDesktop === false) {
+          // If switching from mobile to desktop, don't auto-open (let user control)
+        }
       }
     };
 
     // Listen for resize events
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [externalIsOpen, manuallyClosed, isDesktop]);
+  }, [externalIsOpen, manuallyClosed, isDesktop, onOpenChange]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [surveyState, setSurveyState] = useState<SurveyState>({
     sessionId: null,
