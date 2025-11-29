@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import type { CakeCategory } from '@prisma/client';
 
 // Get all products for chatbot knowledge base
 export async function GET(request: NextRequest) {
@@ -67,7 +68,7 @@ export async function GET(request: NextRequest) {
       const products = await prisma.cake.findMany({
         where: {
           available: true,
-          category: category as any
+          category: category as CakeCategory
         },
         orderBy: {
           createdAt: 'desc'
