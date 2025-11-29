@@ -90,13 +90,28 @@ const Gallery = () => {
 
   const maxIndex = Math.max(0, filteredImages.length - slidesPerView);
   const totalPages = Math.ceil(filteredImages.length / slidesPerView);
+  
+  // Check if we're on mobile (slidesPerView === 1) for loop behavior
+  const isMobile = slidesPerView === 1;
 
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    if (isMobile) {
+      // Loop on mobile
+      setCurrentIndex((prev) => (prev >= filteredImages.length - 1 ? 0 : prev + 1));
+    } else {
+      // Normal behavior on larger screens
+      setCurrentIndex((prev) => (prev >= maxIndex ? 0 : prev + 1));
+    }
   };
 
   const goToPrev = () => {
-    setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+    if (isMobile) {
+      // Loop on mobile
+      setCurrentIndex((prev) => (prev <= 0 ? filteredImages.length - 1 : prev - 1));
+    } else {
+      // Normal behavior on larger screens
+      setCurrentIndex((prev) => (prev <= 0 ? maxIndex : prev - 1));
+    }
   };
 
   const goToPage = (page: number) => {
@@ -147,7 +162,7 @@ const Gallery = () => {
                 onClick={goToPrev}
                 className="absolute left-0 md:-left-4 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg cursor-pointer transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Previous slide"
-                disabled={currentIndex === 0}
+                disabled={!isMobile && currentIndex === 0}
               >
                 <ChevronLeft className="w-6 h-6 text-gray-700" />
               </button>
@@ -156,7 +171,7 @@ const Gallery = () => {
                 onClick={goToNext}
                 className="absolute right-0 md:-right-12 top-1/2 -translate-y-1/2 z-20 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg cursor-pointer transition-all duration-300 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Next slide"
-                disabled={currentIndex >= maxIndex}
+                disabled={!isMobile && currentIndex >= maxIndex}
               >
                 <ChevronRight className="w-6 h-6 text-gray-700" />
               </button>
@@ -180,10 +195,20 @@ const Gallery = () => {
               onDragEnd={(e, { offset, velocity }) => {
                 const swipe = Math.abs(offset.x) * velocity.x;
 
-                if (swipe < -10000 && currentIndex < maxIndex) {
-                  goToNext();
-                } else if (swipe > 10000 && currentIndex > 0) {
-                  goToPrev();
+                if (isMobile) {
+                  // Loop on mobile - always allow swipe
+                  if (swipe < -10000) {
+                    goToNext();
+                  } else if (swipe > 10000) {
+                    goToPrev();
+                  }
+                } else {
+                  // Normal behavior on larger screens
+                  if (swipe < -10000 && currentIndex < maxIndex) {
+                    goToNext();
+                  } else if (swipe > 10000 && currentIndex > 0) {
+                    goToPrev();
+                  }
                 }
               }}
             >
