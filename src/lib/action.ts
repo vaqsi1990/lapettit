@@ -113,15 +113,26 @@ export async function searchCakes(query: string) {
 
 export async function getOrders() {
   try {
-    const response = await fetch(`${process.env.BASE_URL || 'http://localhost:3000'}/api/orders`, {
-      cache: 'no-store'
+    // Use relative URL for server-side fetch
+    const baseUrl = process.env.BASE_URL || (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000');
+    const url = `${baseUrl}/api/orders`;
+    console.log('Fetching orders from:', url);
+    
+    const response = await fetch(url, {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+      }
     });
     
     if (!response.ok) {
-      throw new Error('Failed to fetch orders');
+      const errorText = await response.text();
+      console.error('Failed to fetch orders:', response.status, errorText);
+      throw new Error(`Failed to fetch orders: ${response.status}`);
     }
     
     const result = await response.json();
+    console.log('Orders API response:', result);
     return result;
   } catch (error) {
     console.error('Error fetching orders:', error);

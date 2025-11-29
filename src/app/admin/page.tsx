@@ -127,7 +127,7 @@ const AdminPage = () => {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [liveChatSessions, setLiveChatSessions] = useState<SurveySession[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
+  const [filterStatus, setFilterStatus] = useState('PENDING'); // Default to PENDING to show pending orders first
   const [editingCake, setEditingCake] = useState<Cake | null>(null);
   const [expandedSessions, setExpandedSessions] = useState<Set<number>>(new Set());
   const [productImages, setProductImages] = useState<Map<number, string>>(new Map());
@@ -221,10 +221,35 @@ const AdminPage = () => {
           setCakes(cakesResult.data);
         }
 
-        // Fetch orders
-        const ordersResult = await getOrders();
-        if (ordersResult.success && ordersResult.data) {
-          setOrders(ordersResult.data);
+        // Fetch orders directly from API (client-side)
+        try {
+          const ordersResponse = await fetch('/api/orders', {
+            cache: 'no-store',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          
+          if (ordersResponse.ok) {
+            const ordersData = await ordersResponse.json();
+            console.log('Orders fetch result:', ordersData);
+            if (ordersData.success && ordersData.data) {
+              console.log('Orders data:', ordersData.data);
+              console.log('Pending orders count:', ordersData.data.filter((o: Order) => o.status === 'PENDING').length);
+              setOrders(ordersData.data);
+            } else {
+              console.error('Failed to fetch orders:', ordersData.error);
+            }
+          } else {
+            console.error('Failed to fetch orders:', ordersResponse.status, ordersResponse.statusText);
+          }
+        } catch (error) {
+          console.error('Error fetching orders:', error);
+          // Fallback to server action
+          const ordersResult = await getOrders();
+          if (ordersResult.success && ordersResult.data) {
+            setOrders(ordersResult.data);
+          }
         }
 
         // Fetch survey responses
@@ -273,6 +298,33 @@ const AdminPage = () => {
     };
 
     fetchData();
+    
+    // Refresh orders every 30 seconds to show new pending orders
+    const interval = setInterval(() => {
+      const refreshOrders = async () => {
+        try {
+          const ordersResponse = await fetch('/api/orders', {
+            cache: 'no-store',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+          
+          if (ordersResponse.ok) {
+            const ordersData = await ordersResponse.json();
+            if (ordersData.success && ordersData.data) {
+              console.log('Orders refreshed:', ordersData.data.length, 'total orders');
+              setOrders(ordersData.data);
+            }
+          }
+        } catch (error) {
+          console.error('Error refreshing orders:', error);
+        }
+      };
+      refreshOrders();
+    }, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
   // Handle cake deletion
@@ -364,12 +416,23 @@ const AdminPage = () => {
 
         if (result.success) {
           showToast('success', 'შეკვეთა წარმატებით დადასტურდა! კლიენტს გაიგზავნა მეილი.');
-          // Update the order in the local state
-          setOrders(orders.map(order => 
-            order.id === orderId 
-              ? { ...order, status: 'APPROVED' }
-              : order
-          ));
+          // Refresh orders from server to get updated data
+          try {
+            const ordersResponse = await fetch('/api/orders', {
+              cache: 'no-store',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+            if (ordersResponse.ok) {
+              const ordersData = await ordersResponse.json();
+              if (ordersData.success && ordersData.data) {
+                setOrders(ordersData.data);
+              }
+            }
+          } catch (error) {
+            console.error('Error refreshing orders after approval:', error);
+          }
         } else {
           showToast('error', `შეცდომა: ${result.error}`);
         }
@@ -400,12 +463,23 @@ const AdminPage = () => {
 
         if (result.success) {
           showToast('success', 'შეკვეთა უარყოფილია! კლიენტს გაიგზავნა უარყოფის მეილი.');
-          // Update the order in the local state
-          setOrders(orders.map(order => 
-            order.id === orderId 
-              ? { ...order, status: 'REJECTED' }
-              : order
-          ));
+          // Refresh orders from server to get updated data
+          try {
+            const ordersResponse = await fetch('/api/orders', {
+              cache: 'no-store',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+            if (ordersResponse.ok) {
+              const ordersData = await ordersResponse.json();
+              if (ordersData.success && ordersData.data) {
+                setOrders(ordersData.data);
+              }
+            }
+          } catch (error) {
+            console.error('Error refreshing orders after rejection:', error);
+          }
         } else {
           showToast('error', `შეცდომა: ${result.error}`);
         }
@@ -480,6 +554,17 @@ const AdminPage = () => {
     const matchesFilter = filterStatus === 'all' || order.status === filterStatus;
     return matchesSearch && matchesFilter;
   });
+
+  // Debug logging
+  useEffect(() => {
+    console.log('Orders state:', {
+      totalOrders: orders.length,
+      pendingOrders: orders.filter(o => o.status === 'PENDING').length,
+      filterStatus,
+      filteredOrdersCount: filteredOrders.length,
+      ordersStatuses: orders.map(o => ({ id: o.id, status: o.status, customerName: o.customerName }))
+    });
+  }, [orders, filterStatus, filteredOrders.length]);
 
   const pendingOrdersCount = orders.filter(order => order.status === 'PENDING').length;
 
@@ -715,7 +800,24 @@ const AdminPage = () => {
 
             {/* Orders List - Detailed Cards */}
             <div className="space-y-6">
-              {filteredOrders.map((order) => (
+              {filteredOrders.length === 0 ? (
+                <div className="bg-white text-black placeholder:text-black rounded-2xl shadow-lg p-12 text-center">
+                  <ShoppingCart className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                    {filterStatus === 'PENDING' 
+                      ? 'დასამტკიცებელი შეკვეთები არ არის' 
+                      : filterStatus === 'all'
+                      ? 'შეკვეთები არ არის'
+                      : `${getStatusText(filterStatus)} სტატუსის შეკვეთები არ არის`}
+                  </h3>
+                  <p className="text-gray-500">
+                    {filterStatus === 'PENDING' 
+                      ? 'ყველა შეკვეთა დადასტურებულია ან დამუშავებულია' 
+                      : 'შეკვეთები ჯერ არ შექმნილა'}
+                  </p>
+                </div>
+              ) : (
+                filteredOrders.map((order) => (
                 <motion.div
                   key={order.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -823,7 +925,7 @@ const AdminPage = () => {
                   
                     {/* Action Buttons */}
                     <div className="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
-                      {order.status === 'PENDING' && (
+                      {/* {order.status === 'PENDING' && (
                         <>
                           <button 
                             onClick={() => handleApproveOrder(order.id)}
@@ -840,8 +942,8 @@ const AdminPage = () => {
                             <span>უარყოფა</span>
                           </button>
                         </>
-                      )}
-                      {order.status !== 'PENDING' && (
+                      )} */}
+                      {/* {order.status !== 'PENDING' && (
                         <button 
                           onClick={() => {
                             const newStatus = order.status === 'APPROVED' ? 'IN_PROGRESS' : 
@@ -858,18 +960,19 @@ const AdminPage = () => {
                              'რედაქტირება'}
                           </span>
                         </button>
-                      )}
+                      )} */}
                       <button 
                         onClick={() => handleDeleteOrder(order.id)}
                         className="px-4 py-2 text-red-600 hover:text-red-900 hover:bg-red-50 rounded-lg transition-colors flex items-center space-x-2 md:text-[18px] text-[16px]"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-7 h-7" />
                         <span>წაშლა</span>
                       </button>
                     </div>
                   </div>
                 </motion.div>
-              ))}
+                ))
+              )}
             </div>
           </motion.div>
         )}

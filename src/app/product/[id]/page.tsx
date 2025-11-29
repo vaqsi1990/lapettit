@@ -5,10 +5,11 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { Plus, Minus, } from 'lucide-react';
+import { Plus, Minus, ShoppingCart } from 'lucide-react';
 import { getCakeById, getCakes } from '@/lib/action';
 import { mapCakeToGalleryImage, type GalleryImage, calculateTotalPrice, formatPrice } from '@/lib/utils';
 import ChatWidget from '@/components/ChatSurvey';
+import { addToCart as addToCartLocalStorage } from '@/lib/cartUtils';
 
 const ProductPage = () => {
     const params = useParams();
@@ -28,6 +29,8 @@ const ProductPage = () => {
     const [selectedImage] = useState(0);
     const [isChatOpen, setIsChatOpen] = useState(false);
     const chatOpenedRef = useRef(false); // Prevent multiple chat opens
+    const [addingToCart, setAddingToCart] = useState(false);
+    const [cartMessage, setCartMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
     // Dynamic piece size options based on product data
     const getPieceOptions = () => {
@@ -213,6 +216,67 @@ const ProductPage = () => {
             console.error('Error saving customization:', error);
         }
         return null;
+    };
+
+    // Add to Cart function
+    const addToCart = async () => {
+        if (!product || totalPrice <= 0) {
+            setCartMessage({ type: 'error', text: 'გთხოვთ აირჩიოთ პროდუქტის პარამეტრები' });
+            setTimeout(() => setCartMessage(null), 3000);
+            return;
+        }
+
+        try {
+            setAddingToCart(true);
+            
+            // Validate product exists via API
+            const validateResponse = await fetch('/api/cart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ cakeId: product.id }),
+            });
+
+            if (!validateResponse.ok) {
+                const result = await validateResponse.json();
+                if (!result.success) {
+                    setCartMessage({ type: 'error', text: 'პროდუქტი ვერ მოიძებნა' });
+                    setTimeout(() => setCartMessage(null), 3000);
+                    return;
+                }
+            }
+
+            const validateResult = await validateResponse.json();
+            const productDetails = validateResult.data;
+
+            // Add to localStorage cart
+            const cartItem = {
+                cakeId: product.id,
+                quantity: quantity,
+                price: totalPrice / quantity, // Price per unit
+                pieces: product.productType === 'FULL_CAKE' && product.isCustomizable ? selectedPieces : undefined,
+                topping: product.productType === 'FULL_CAKE' && product.isCustomizable ? selectedTopping : undefined,
+                filling: product.productType === 'FULL_CAKE' && product.isCustomizable ? selectedFilling : undefined,
+                cakeName: product.productType === 'FULL_CAKE' && product.isCustomizable ? cakeName : undefined,
+                age: product.productType === 'FULL_CAKE' && product.isCustomizable ? age : undefined,
+                position: product.productType === 'FULL_CAKE' && product.isCustomizable ? position : undefined,
+                productName: productDetails?.productName || product.titleGeorgian,
+                productImage: productDetails?.productImage || product.src,
+                productType: productDetails?.productType || product.productType,
+            };
+
+            addToCartLocalStorage(cartItem);
+            
+            setCartMessage({ type: 'success', text: 'პროდუქტი დაემატა კალათაში!' });
+            setTimeout(() => setCartMessage(null), 3000);
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            setCartMessage({ type: 'error', text: 'შეცდომა კალათაში დამატებისას' });
+            setTimeout(() => setCartMessage(null), 3000);
+        } finally {
+            setAddingToCart(false);
+        }
     };
 
     // Fetch product and related products
@@ -630,47 +694,28 @@ const ProductPage = () => {
                             )}
 
 
+                            {/* Cart Message */}
+                            {cartMessage && (
+                                <div className={`p-4 rounded-lg ${
+                                    cartMessage.type === 'success' 
+                                        ? 'bg-green-100 text-green-800 border border-green-300' 
+                                        : 'bg-red-100 text-red-800 border border-red-300'
+                                }`}>
+                                    <p className="text-[16px] font-medium">{cartMessage.text}</p>
+                                </div>
+                            )}
+
                             {/* Action Buttons */}
                             <div className="space-y-3">
-                                {product.productType === 'FULL_CAKE' && product.isCustomizable ? (
-                                    <div className="space-y-2">
-                                        <Link
-                                            href={`/order/${product.id}`}
-                                            onClick={() => {
-                                                // Save customization to sessionStorage before navigating
-                                                const customizationData = {
-                                                    cakeId: product.id,
-                                                    price: totalPrice,
-                                                    pieces: selectedPieces,
-                                                    topping: selectedTopping,
-                                                    filling: selectedFilling,
-                                                    cakeName: cakeName,
-                                                    age: age,
-                                                    position: position
-                                                };
-                                                sessionStorage.setItem(`customization_${product.id}`, JSON.stringify(customizationData));
-                                            }}
-                                            className="w-full md:w-[30%] cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block"
-                                        >
-                                            შეუკვეთე ახლა
-                                        </Link>
-                                    </div>
-                                ) : (
-                                    <Link
-                                        href={`/order/${product.id}`}
-                                        onClick={() => {
-                                            // Save standard cake data to sessionStorage
-                                            const cakeData = {
-                                                price: totalPrice,
-                                                productType: product.productType
-                                            };
-                                            sessionStorage.setItem(`cake_${product.id}`, JSON.stringify(cakeData));
-                                        }}
-                                        className="w-full md:w-[30%] cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl text-center block"
-                                    >
-                                        შეუკვეთე ახლა
-                                    </Link>
-                                )}
+                                {/* Add to Cart Button */}
+                                <button
+                                    onClick={addToCart}
+                                    disabled={addingToCart || totalPrice <= 0}
+                                    className="w-full cursor-pointer md:w-[50%] flex items-center justify-center gap-2 md:text-[20px] text-[18px] bg-pink-600 hover:bg-pink-700 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                                >
+                                    <ShoppingCart className="w-7 h-7" />
+                                    {addingToCart ? 'დამატება...' : 'კალათაში დამატება'}
+                                </button>
                             </div>
                         </div>
 

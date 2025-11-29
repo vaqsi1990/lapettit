@@ -1,15 +1,80 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { ShoppingCart } from "lucide-react";
+import { getCartCount } from "@/lib/cartUtils";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  }; 
+
+  // Update cart count
+  const updateCartCount = () => {
+    const count = getCartCount();
+    setCartCount(count);
   };
+console.log("cartCount", cartCount);
+  // Fetch cart count from localStorage
+  useEffect(() => {
+    // Initial load - use setTimeout to ensure localStorage is available
+    const initCount = () => {
+      updateCartCount();
+    };
+    
+    // Immediate check
+    initCount();
+    
+    // Also check after a small delay to ensure everything is loaded
+    const initTimeout = setTimeout(initCount, 100);
+    
+    // Listen for cart updates
+    const handleCartUpdate = () => {
+      updateCartCount();
+    };
+    
+    // Listen for custom cartUpdated event
+    window.addEventListener('cartUpdated', handleCartUpdate);
+    
+    // Listen for storage changes (for multiple tabs)
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'lapettit_cart' || !e.key) {
+        updateCartCount();
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for focus event (when user returns to tab)
+    const handleFocus = () => {
+      updateCartCount();
+    };
+    window.addEventListener('focus', handleFocus);
+    
+    // Listen for page visibility changes
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        updateCartCount();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Refresh cart count periodically (in case of multiple tabs)
+    const interval = setInterval(updateCartCount, 500);
+    
+    return () => {
+      clearTimeout(initTimeout);
+      window.removeEventListener('cartUpdated', handleCartUpdate);
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <>
@@ -31,7 +96,7 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-8">
+            <div className="ml-10 flex items-baseline items-center text-center space-x-8">
             
               <Link 
                 href="/cakes" 
@@ -46,6 +111,18 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               კონტაქტი
+            </Link>
+
+            <Link 
+              href="/cart" 
+              className="relative text-white px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200 hover:text-pink-300 flex items-center justify-center"
+            >
+              <ShoppingCart className="w-7 h-7" />
+              {cartCount > 0 ? (
+                <span className="absolute -top-1 -right-1 bg-pink-600 text-white text-[10px] font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1 z-10 shadow-lg">
+                  {cartCount > 9 ? '9+' : cartCount}
+                </span>
+              ) : null}
             </Link>
         
             
@@ -96,6 +173,22 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               კონტაქტი
+            </Link>
+
+            <Link 
+              href="/cart" 
+              className="relative text-white block px-3 py-2 rounded-md text-[18px] font-bold transition-colors duration-200"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <div className="flex items-center justify-center gap-2">
+                <ShoppingCart className="w-5 h-5" />
+                <span>კალათა</span>
+                {cartCount > 0 && (
+                  <span className="bg-pink-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartCount > 9 ? '9+' : cartCount}
+                  </span>
+                )}
+              </div>
             </Link>
         
           </div>
