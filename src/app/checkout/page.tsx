@@ -5,10 +5,11 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Upload, X } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { getCart, getCartTotal, getCartCount, clearCart, type CartItem } from '@/lib/cartUtils';
 import { useToast } from '@/components/Toast';
+import { UploadButton } from '@/utils/uploadthing';
 
 interface CartData {
   items: CartItem[];
@@ -32,6 +33,9 @@ const CheckoutPage = () => {
     city: '',
     notes: ''
   });
+  const [receiptImage, setReceiptImage] = useState<string | null>(null);
+  const [isUploadingReceipt, setIsUploadingReceipt] = useState(false);
+  const [orderIds, setOrderIds] = useState<number[]>([]);
 
   // Fetch cart items from localStorage and enrich with product details
   useEffect(() => {
@@ -91,7 +95,7 @@ const CheckoutPage = () => {
     e.preventDefault();
     
     if (cartData.items.length === 0) {
-      alert('კალათა ცარიელია');
+      showToast('error', 'კალათა ცარიელია', 3000);
       return;
     }
 
@@ -131,17 +135,18 @@ const CheckoutPage = () => {
       const allSuccess = results.every(result => result.success !== false);
       
       if (allSuccess) {
-        // Clear cart from localStorage
-        clearCart();
-        window.dispatchEvent(new Event('cartUpdated'));
+        // Store order IDs for receipt upload
+        const ids = results.map(r => r.orderId).filter(id => id !== undefined);
+        setOrderIds(ids);
         
-        // Show success toast
-        showToast('success', 'შეკვეთა წარმატებით გაიგზავნა!', 5000);
-        
-        // Redirect to home after a short delay
-        setTimeout(() => {
-          router.push('/');
-        }, 2000);
+        // If receipt is already uploaded, confirm orders immediately
+        if (receiptImage) {
+          await confirmOrdersWithReceipt(ids, receiptImage);
+        } else {
+          // Show message that receipt upload is needed
+          showToast('info', 'შეკვეთა შექმნილია. გთხოვთ ატვირთოთ ჩეკის სურათი დადასტურებისთვის.', 5000);
+          // Don't clear cart yet - wait for receipt upload
+        }
       } else {
         showToast('error', 'შეცდომა შეკვეთის გაგზავნისას. გთხოვთ სცადოთ თავიდან.', 5000);
       }
@@ -150,6 +155,63 @@ const CheckoutPage = () => {
       showToast('error', 'შეცდომა შეკვეთის გაგზავნისას. გთხოვთ სცადოთ თავიდან.', 5000);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Confirm orders when receipt is uploaded
+  const confirmOrdersWithReceipt = async (orderIds: number[], receiptUrl: string) => {
+    try {
+      const confirmPromises = orderIds.map(async (orderId) => {
+        const response = await fetch('/api/orders/confirm', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderId,
+            receiptImageUrl: receiptUrl
+          }),
+        });
+        return response.json();
+      });
+
+      const results = await Promise.all(confirmPromises);
+      const allConfirmed = results.every(result => result.success !== false);
+
+      if (allConfirmed) {
+        // Clear cart from localStorage
+        clearCart();
+        window.dispatchEvent(new Event('cartUpdated'));
+        
+        // Show success toast
+        showToast('success', 'შეკვეთა დადასტურებულია! ჩვენ მალე დაგიკავშირდებით.', 5000);
+        
+        // Redirect to home after a short delay
+        setTimeout(() => {
+          router.push('/');
+        }, 3000);
+      } else {
+        showToast('error', 'შეცდომა შეკვეთის დადასტურებისას.', 5000);
+      }
+    } catch (error) {
+      console.error('Error confirming orders:', error);
+      showToast('error', 'შეცდომა შეკვეთის დადასტურებისას.', 5000);
+    }
+  };
+
+  // Handle receipt upload
+  const handleReceiptUpload = async (res: { url: string; name: string }[]) => {
+    if (res && res.length > 0) {
+      setIsUploadingReceipt(false);
+      const imageUrl = res[0].url;
+      setReceiptImage(imageUrl);
+      
+      // If orders are already created, confirm them immediately
+      if (orderIds.length > 0) {
+        await confirmOrdersWithReceipt(orderIds, imageUrl);
+      } else {
+        showToast('success', 'ჩეკის სურათი ატვირთულია. შეკვეთის შექმნის შემდეგ დადასტურდება.', 3000);
+      }
     }
   };
 
@@ -286,13 +348,86 @@ const CheckoutPage = () => {
                   />
                 </div>
 
+                {/* Payment Instructions */}
+                <div className="  rounded-xl p-4 md:p-6 space-y-4">
+                  <h3 className="text-[18px] md:text-[20px] font-bold text-black">
+                    გადახდის ინსტრუქცია
+                  </h3>
+                  <p className="text-[14px] md:text-[16px] text-gray-700 leading-relaxed">
+                    გთხოვთ ჩარიცხეთ ნახევარი მოცემულ ანგარიშიდან ერთ ერთზე, გამოგვიგზავნეთ ჩეკი რის შემდეგაც დაგიკავშირდებით.
+                  </p>
+                  
+                  {/* Receipt Upload */}
+                  <div className="space-y-2">
+                    <label className="block text-[16px] font-medium text-black">
+                      ჩეკის სურათის ატვირთვა *
+                    </label>
+                    {!receiptImage ? (
+                      <div className="rounded-lg w-full md:w-1/2 mx-auto p-4 transition-colors">
+                        {isUploadingReceipt ? (
+                          <div className="flex items-center justify-center gap-3 py-4">
+                            <div className="w-6 h-6  border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+                            <span className="text-[14px] text-gray-600">იტვირთება...</span>
+                          </div>
+                        ) : (
+                          <UploadButton
+                            endpoint="imageUploader"
+                            onUploadBegin={() => setIsUploadingReceipt(true)}
+                            onClientUploadComplete={handleReceiptUpload}
+                            onUploadError={(error) => {
+                              setIsUploadingReceipt(false);
+                              showToast('error', `შეცდომა ატვირთვისას: ${error.message}`, 5000);
+                            }}
+                            className="w-full"
+                            content={{
+                              button: (
+                                <div className="flex items-center justify-center gap-2 text-[16px] font-bold text-white">
+                                  <Upload className="w-5 h-5" />
+                                  <span>აირჩიეთ  სურათი</span>
+                                </div>
+                              ),
+                              allowedContent: "ატვირთეთ სურათი (JPG, PNG, GIF)"
+                            }}
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      <div className="relative  rounded-lg p-3 ">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-[18px] text-green-500 font-bold">✓ სურათი ატვირთულია</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setReceiptImage(null);
+                              setOrderIds([]);
+                            }}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                        <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                          <Image
+                            src={receiptImage}
+                            alt="Receipt"
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+<div className="w-full md:w-1/2 mx-auto">
+
                 <button
                   type="submit"
-                  disabled={isSubmitting || cartData.items.length === 0}
-                  className="w-full bg-[#d90b6b] text-white py-3 px-6 rounded-xl font-semibold hover:bg-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-[18px]"
+                  disabled={isSubmitting || cartData.items.length === 0 || !receiptImage}
+                  className="w-full bg-[#d90b6b] w-1/2 mx-auto cursor-pointer text-white py-3 px-6 rounded-xl font-semibold hover:bg-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-[18px]"
                 >
-                  {isSubmitting ? 'იგზავნება...' : 'შეკვეთის დადასტურება'}
+                  {isSubmitting ? 'იგზავნება...' : receiptImage ? 'შეკვეთის დადასტურება' : 'შეკვეთის შექმნა'}
                 </button>
+</div>
               </form>
             </motion.div>
           </div>
