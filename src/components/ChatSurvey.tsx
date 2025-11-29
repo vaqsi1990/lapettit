@@ -33,7 +33,6 @@ interface ChatWidgetProps {
   productId?: number;
   productImage?: string;
   productName?: string;
-  defaultOpen?: boolean;
   isOpen?: boolean;
   onOpenChange?: (isOpen: boolean) => void;
   showFloatingButton?: boolean;
@@ -59,11 +58,26 @@ interface ChatMessage {
   createdAt: string;
 }
 
-const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, isOpen: externalIsOpen, onOpenChange, showFloatingButton = true }: ChatWidgetProps) => {
+// Product details type based on Prisma Cake model
+type ProductDetails = {
+  id: number;
+  name: string;
+  category: string;
+  productType: string;
+  price: number | null;
+  pieces: number | null;
+  fillings: string[];
+  hasMarzipan: boolean;
+  hasCream: boolean;
+  isCustomizable: boolean;
+  [key: string]: unknown;
+};
+
+const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOpen, onOpenChange, showFloatingButton = true }: ChatWidgetProps) => {
   // Initialize with safe defaults for SSR (no window access)
   // Start closed to avoid flash on mobile, will open on desktop in useEffect
   const [internalIsOpen, setInternalIsOpen] = useState(false);
-  const [productDetails, setProductDetails] = useState<any>(null);
+  const [productDetails, setProductDetails] = useState<ProductDetails | null>(null);
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   
   const setIsOpen = (value: boolean) => {
@@ -499,7 +513,6 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
       });
       setSelectedOption(0);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surveyState.question?.id, surveyState.sessionId, answeredQuestions, isLoading]);
 
   // Auto-submit question 15 after selectedOption is set
@@ -575,7 +588,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
     setPendingFirstQuestion(null);
     
     // Fetch product details if productId is provided (for product detail page)
-    let fetchedProductDetails: any = null;
+    let fetchedProductDetails: ProductDetails | null = null;
     if (productId) {
       try {
         const productResponse = await fetch(`/api/chat-survey/products?id=${productId}`);
@@ -678,7 +691,6 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
         }
 
         // Don't add question 15 to messages (it's hidden and auto-handled)
-        const isQuestion15 = data.question.id === 15;
         setPendingFirstQuestion({
           question: {
             ...data.question,
@@ -1305,7 +1317,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
         
         let response = `ვიპოვე ${products.length} პროდუქტი:\n\n`;
         
-        products.forEach((product: any, index: number) => {
+        products.forEach((product: ProductDetails, index: number) => {
           response += `${index + 1}. ${product.name}\n`;
           
           // Category

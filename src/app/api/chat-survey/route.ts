@@ -102,12 +102,47 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const currentQuestion = SURVEY_QUESTIONS[session.currentStep];
+      // Fetch product details if productId exists
+      let productDetails: any = null;
+      if (session.productId) {
+        try {
+          const product = await prisma.cake.findUnique({
+            where: { id: session.productId }
+          });
+          if (product) {
+            productDetails = product;
+          }
+        } catch (error) {
+          console.error('Error fetching product details:', error);
+        }
+      }
+
+      let currentStep = session.currentStep;
+      let currentQuestion: typeof SURVEY_QUESTIONS[number] | undefined = SURVEY_QUESTIONS[currentStep];
+      
+      // Skip questions that don't apply to this product type
+      if (productDetails && productDetails.productType === 'SET') {
+        // Skip question 5 (შიგთავსი), 6 (დაფარვა), 7 (ბისკვიტი) for SET products
+        while (currentStep < SURVEY_QUESTIONS.length) {
+          const question = SURVEY_QUESTIONS[currentStep];
+          if (question && (question.id === 5 || question.id === 6 || question.id === 7)) {
+            currentStep = currentStep + 1;
+            if (currentStep < SURVEY_QUESTIONS.length) {
+              currentQuestion = SURVEY_QUESTIONS[currentStep];
+            } else {
+              currentQuestion = undefined;
+              break;
+            }
+          } else {
+            break;
+          }
+        }
+      }
       
       return NextResponse.json({
         success: true,
         session,
-        question: currentQuestion
+        question: currentQuestion || null
       });
     }
 
@@ -320,10 +355,28 @@ export async function POST(request: NextRequest) {
         isComplete = nextStep >= SURVEY_QUESTIONS.length;
       }
 
+      // Skip questions that don't apply to this product type before updating session
+      let finalNextStep = nextStep;
+      if (productDetails && productDetails.productType === 'SET') {
+        // Skip question 5 (შიგთავსი), 6 (დაფარვა), 7 (ბისკვიტი) for SET products
+        while (finalNextStep < SURVEY_QUESTIONS.length) {
+          const nextQuestion = SURVEY_QUESTIONS[finalNextStep];
+          if (nextQuestion && (nextQuestion.id === 5 || nextQuestion.id === 6 || nextQuestion.id === 7)) {
+            finalNextStep = finalNextStep + 1;
+          } else {
+            break;
+          }
+        }
+        // Update isComplete if we skipped to the end
+        if (finalNextStep >= SURVEY_QUESTIONS.length) {
+          isComplete = true;
+        }
+      }
+      
       const updatedSession = await prisma.chatSession.update({
         where: { sessionId },
         data: {
-          currentStep: nextStep,
+          currentStep: finalNextStep,
           isComplete: isComplete,
           waitingForPrice: waitingForPrice
         }
@@ -368,7 +421,11 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      const nextQuestion = !isComplete && nextStep < SURVEY_QUESTIONS.length ? SURVEY_QUESTIONS[nextStep] : null;
+      // Get next question, skipping questions that don't apply to this product type
+      let nextQuestion = null;
+      if (!isComplete && finalNextStep < SURVEY_QUESTIONS.length) {
+        nextQuestion = SURVEY_QUESTIONS[finalNextStep];
+      }
 
       console.log('=== API: Final response ===', {
         nextStep,
