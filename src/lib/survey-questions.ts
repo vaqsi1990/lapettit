@@ -50,6 +50,31 @@ export const SURVEY_QUESTIONS = [
       "21:00"
     ]
   },
+  {
+    id: 17,
+    text: "როგორ ურჩევნიათ?",
+    type: "multiple_choice",
+    options: [
+      "მიტანის სერვისი",
+      "ადგილზე მისვლით"
+    ]
+  },
+  {
+    id: 18,
+    text: "მიტანის თარიღი?",
+    type: "text"
+  },
+  {
+    id: 19,
+    text: "მიტანის დრო?",
+    type: "multiple_choice",
+    options: [
+      "12:00",
+      "15:00",
+      "18:00",
+      "21:00"
+    ]
+  },
  
 
 

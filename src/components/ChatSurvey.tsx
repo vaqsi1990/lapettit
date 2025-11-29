@@ -63,6 +63,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
   // Initialize with safe defaults for SSR (no window access)
   // Start closed to avoid flash on mobile, will open on desktop in useEffect
   const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const [productDetails, setProductDetails] = useState<any>(null);
   const isOpen = externalIsOpen !== undefined ? externalIsOpen : internalIsOpen;
   
   const setIsOpen = (value: boolean) => {
@@ -149,11 +150,37 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
   const [pendingFirstQuestion, setPendingFirstQuestion] = useState<{ question: NonNullable<SurveyState['question']>; step: number } | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isInitializingRef = useRef(false); // Prevent multiple initializations
+  const hasInitializedRef = useRef(false); // Track if chat has been initialized
+  const lastProductIdRef = useRef<number | undefined>(productId); // Track productId changes
+
+  // Reset initialization when productId changes
+  useEffect(() => {
+    if (productId !== lastProductIdRef.current) {
+      hasInitializedRef.current = false;
+      isInitializingRef.current = false;
+      lastProductIdRef.current = productId;
+      // Clear messages and reset state when product changes
+      setMessages([]);
+      setSurveyState({
+        sessionId: null,
+        currentStep: 0,
+        isComplete: false,
+        question: null
+      });
+      setSelectedOption(null);
+      setTextAnswer('');
+      setUploadedFile(null);
+      setAnsweredQuestions(new Set());
+      setStartDecision('pending');
+      setPendingFirstQuestion(null);
+    }
+  }, [productId]);
 
   // Handle external open state changes
   useEffect(() => {
-    if (externalIsOpen !== undefined && externalIsOpen && messages.length === 0) {
-      // If externally opened and no messages, initialize chat
+    if (externalIsOpen !== undefined && externalIsOpen && messages.length === 0 && !hasInitializedRef.current && !isInitializingRef.current) {
+      // If externally opened and no messages, initialize chat (only once)
       initializeChat();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -161,7 +188,8 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
 
   // Initialize chat
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
+    if (isOpen && messages.length === 0 && !hasInitializedRef.current && !isInitializingRef.current) {
+      // Initialize chat only once
       initializeChat();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -534,10 +562,33 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
   };
 
   const initializeChat = async () => {
+    // Prevent multiple initializations
+    if (isInitializingRef.current || hasInitializedRef.current) {
+      console.log('Chat already initialized or initializing, skipping...');
+      return;
+    }
+    
+    isInitializingRef.current = true;
     console.log('Initializing chat...');
     setIsLoading(true);
     setStartDecision('pending');
     setPendingFirstQuestion(null);
+    
+    // Fetch product details if productId is provided (for product detail page)
+    let fetchedProductDetails: any = null;
+    if (productId) {
+      try {
+        const productResponse = await fetch(`/api/chat-survey/products?id=${productId}`);
+        const productData = await productResponse.json();
+        if (productData.success && productData.data) {
+          fetchedProductDetails = productData.data;
+          setProductDetails(fetchedProductDetails); // Store for later use
+        }
+      } catch (error) {
+        console.error('Error fetching product details:', error);
+      }
+    }
+    
     try {
       const response = await fetch('/api/chat-survey', {
         method: 'POST',
@@ -569,10 +620,47 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
           console.log('Question 15 detected in initializeChat - auto-submit should trigger');
         }
 
-        // Customize welcome message and questions based on product
-        const welcomeText = productId && productName 
-          ? `გამარჯობა! მე ვარ lappetit bot, თქვენი ტორტის ასისტენტი. ვხედავ რომ გაინტერესებთ "${productName}". დავიწყოთ შეკვეთა?`
-          : 'გამარჯობა! მე ვარ lappetit bot, თქვენი ტორტის ასისტენტი დავიწყოთ შეკვეთა?';
+        // Customize welcome message based on product with details (only on product detail page)
+        let welcomeText = '';
+        if (productId && productName && fetchedProductDetails) {
+          // Build product-specific welcome message with details
+          welcomeText = `გამარჯობა! მე ვარ lappetit bot, თქვენი ტორტის ასისტენტი. ვხედავ რომ გაინტერესებთ "${productName}".\n\n`;
+          
+          // Add product details
+          if (fetchedProductDetails.price) {
+            welcomeText += ` ფასი: ${fetchedProductDetails.price}₾`;
+            if (fetchedProductDetails.pieces) {
+              const pricePerSlice = (fetchedProductDetails.price / fetchedProductDetails.pieces).toFixed(2);
+              welcomeText += ` (${pricePerSlice}₾ ნაჭერზე)`;
+            }
+            welcomeText += `\n`;
+          } else if (fetchedProductDetails.isCustomizable) {
+            welcomeText += ` ფასი: ნაჭრების რაოდენობის მიხედვით\n`;
+          }
+          
+          if (fetchedProductDetails.pieces) {
+            welcomeText += ` ნაჭრები: ${fetchedProductDetails.pieces}\n`;
+          }
+          
+          if (fetchedProductDetails.fillings && fetchedProductDetails.fillings.length > 0) {
+            welcomeText += ` შიგთავსი: ${fetchedProductDetails.fillings.join(', ')}\n`;
+          }
+          
+          const categoryMap: Record<string, string> = {
+            'BIRTHDAY': 'დაბადების დღე',
+            'WEDDING': 'ქორწილი',
+            'ANNIVERSARY': 'დღესასწაული',
+            'CUSTOM': 'პერსონალური',
+            'Desserts': 'დესერტები'
+          };
+          welcomeText += ` კატეგორია: ${categoryMap[fetchedProductDetails.category] || fetchedProductDetails.category}\n\n`;
+          
+          welcomeText += `დავიწყოთ "${productName}"-ის შეკვეთა?`;
+        } else if (productId && productName) {
+          welcomeText = `გამარჯობა! მე ვარ lappetit bot, თქვენი ტორტის ასისტენტი. ვხედავ რომ გაინტერესებთ "${productName}". დავიწყოთ შეკვეთა?`;
+        } else {
+          welcomeText = 'გამარჯობა! მე ვარ lappetit bot, თქვენი ტორტის ასისტენტი. დავიწყოთ შეკვეთა?\n\nასევე შემიძლია დაგეხმაროთ პროდუქტების შესახებ ინფორმაციის მიღებაში - უბრალოდ მომწერეთ პროდუქტის სახელი ან კატეგორია (დაბადების დღე, ქორწილი, დღესასწაული, პერსონალური, დესერტები).';
+        }
 
         // Customize first question if product-specific
         let firstQuestionText = data.question.text;
@@ -627,6 +715,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
           console.error('Error saving initial messages:', error);
         }
       }
+      hasInitializedRef.current = true; // Mark as initialized after successful initialization
     } catch (error) {
       console.error('Error initializing chat:', error);
       setMessages([
@@ -638,6 +727,7 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
       ]);
     } finally {
       setIsLoading(false);
+      isInitializingRef.current = false; // Reset initialization flag
     }
   };
 
@@ -988,17 +1078,46 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
             }
           }
         } else if (data.question) {
-          // Customize question text for product-specific context
+          // Customize question text for product-specific context (only on product detail page)
           let questionText = data.question.text;
           if (productId && productName) {
             if (data.question.id === 3) {
               questionText = `ამ "${productName}" ტორტისთვის რამდენი ნაჭრიანი გსურთ?`;
+              // Add product-specific piece information if available
+              if (productDetails && productDetails.pieces) {
+                questionText += `\n\n💡 ${productName} არის ${productDetails.pieces} ნაჭრიანი.`;
+              }
             } else if (data.question.id === 4) {
               questionText = `ატვირთეთ თქვენი ტორტის სურათი ან ინსპირაციის ფოტო "${productName}" ტორტისთვის`;
             } else if (data.question.id === 5) {
               questionText = `"${productName}" ტორტისთვის აირჩიეთ შიგთავსი:`;
+              // Add product-specific filling suggestions if available
+              if (productDetails && productDetails.fillings && productDetails.fillings.length > 0) {
+                questionText += `\n\n💡 ${productName}-ისთვის ხელმისაწვდომია: ${productDetails.fillings.join(', ')}`;
+              }
             } else if (data.question.id === 6) {
               questionText = `"${productName}" ტორტისთვის აირჩიეთ დაფარვა:`;
+              // Add product-specific topping information if available
+              if (productDetails) {
+                const toppings = [];
+                if (productDetails.hasMarzipan) toppings.push('მარცეპანი');
+                if (productDetails.hasCream) toppings.push('კრემი');
+                if (toppings.length > 0) {
+                  questionText += `\n\n💡 ${productName}-ისთვის ხელმისაწვდომია: ${toppings.join(', ')}`;
+                }
+              }
+            } else if (data.question.id === 1) {
+              questionText = `"${productName}"-ის გატანის თარიღი?`;
+            } else if (data.question.id === 2) {
+              questionText = `"${productName}"-ის გატანის დრო?`;
+            } else if (data.question.id === 17) {
+              questionText = `"${productName}"-როგორ გირჩევნიათ მიწოდება?`;
+            } else if (data.question.id === 18) {
+              questionText = `"${productName}"-ის მიტანის თარიღი?`;
+            } else if (data.question.id === 19) {
+              questionText = `"${productName}"-ის მიტანის დრო?`;
+            } else if (data.question.id === 8) {
+              questionText = `"${productName}"-ზე სახელი/ასაკი სურვილებისამებრ (მაგალითად: სახელი: გიორგი, ასაკი: 10 წლის)`;
             }
           }
           
@@ -1145,6 +1264,119 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
     return false;
   };
 
+  // Helper function to search products and generate bot response
+  const searchProductsAndRespond = async (query: string): Promise<string> => {
+    try {
+      const lowerQuery = query.toLowerCase();
+      
+      // Check if query is a category
+      const categoryMap: Record<string, string> = {
+        'დაბადების': 'BIRTHDAY',
+        'დაბადების დღე': 'BIRTHDAY',
+        'birthday': 'BIRTHDAY',
+        'ქორწილი': 'WEDDING',
+        'wedding': 'WEDDING',
+        'დღესასწაული': 'ANNIVERSARY',
+        'anniversary': 'ANNIVERSARY',
+        'პერსონალური': 'CUSTOM',
+        'custom': 'CUSTOM',
+        'დესერტი': 'Desserts',
+        'დესერტები': 'Desserts',
+        'dessert': 'Desserts',
+        'desserts': 'Desserts'
+      };
+      
+      let searchUrl = `/api/chat-survey/products?search=${encodeURIComponent(query)}`;
+      
+      // If query matches a category, search by category
+      for (const [key, value] of Object.entries(categoryMap)) {
+        if (lowerQuery.includes(key.toLowerCase())) {
+          searchUrl = `/api/chat-survey/products?category=${value}`;
+          break;
+        }
+      }
+      
+      // Search for products
+      const searchResponse = await fetch(searchUrl);
+      const searchData = await searchResponse.json();
+
+      if (searchData.success && searchData.data && searchData.data.length > 0) {
+        const products = searchData.data.slice(0, 5); // Limit to 5 products
+        
+        let response = `ვიპოვე ${products.length} პროდუქტი:\n\n`;
+        
+        products.forEach((product: any, index: number) => {
+          response += `${index + 1}. ${product.name}\n`;
+          
+          // Category
+          const categoryNameMap: Record<string, string> = {
+            'BIRTHDAY': 'დაბადების დღე',
+            'WEDDING': 'ქორწილი',
+            'ANNIVERSARY': 'დღესასწაული',
+            'CUSTOM': 'პერსონალური',
+            'Desserts': 'დესერტები'
+          };
+          response += `   კატეგორია: ${categoryNameMap[product.category] || product.category}\n`;
+          
+          // Price
+          if (product.price) {
+            response += `   ფასი: ${product.price}₾`;
+            if (product.pieces) {
+              const pricePerSlice = (product.price / product.pieces).toFixed(2);
+              response += ` (${pricePerSlice}₾ ნაჭერზე)`;
+            }
+            response += `\n`;
+          } else if (product.isCustomizable) {
+            response += `   ფასი: ნაჭრების რაოდენობის მიხედვით\n`;
+          }
+          
+          // Fillings
+          if (product.fillings && product.fillings.length > 0) {
+            response += `   შიგთავსი: ${product.fillings.join(', ')}\n`;
+          }
+          
+          // Pieces
+          if (product.pieces) {
+            response += `   ნაჭრები: ${product.pieces}\n`;
+          }
+          
+          // Product type
+          const typeMap: Record<string, string> = {
+            'FULL_CAKE': 'სრული ტორტი',
+            'SET': 'ნაკრები',
+            'INDIVIDUAL_SLICE': 'ინდივიდუალური ნაჭერი'
+          };
+          if (product.productType) {
+            response += `   ტიპი: ${typeMap[product.productType] || product.productType}\n`;
+          }
+          
+          response += `\n`;
+        });
+        
+        if (searchData.data.length > 5) {
+          response += `\nსულ ვიპოვე ${searchData.data.length} პროდუქტი. ზემოთ ნაჩვენებია პირველი 5.`;
+        }
+        
+        response += `\n\nდეტალური ინფორმაციისთვის გთხოვთ მიუთითოთ პროდუქტის სახელი ან გადადით ჩვენს კატალოგზე.`;
+        
+        return response;
+      } else {
+        // Try to get all products if search didn't find anything
+        const allProductsResponse = await fetch('/api/chat-survey/products');
+        const allProductsData = await allProductsResponse.json();
+        
+        if (allProductsData.success && allProductsData.data && allProductsData.data.length > 0) {
+          return `ვერ ვიპოვე პროდუქტი "${query}"-ის მიხედვით. ჩვენ გვაქვს ${allProductsData.data.length} პროდუქტი ჩვენს კატალოგში. გთხოვთ, მიუთითოთ კონკრეტული პროდუქტის სახელი ან კატეგორია (დაბადების დღე, ქორწილი, დღესასწაული, პერსონალური, დესერტები).`;
+        }
+        
+        return `ვერ ვიპოვე პროდუქტი "${query}"-ის მიხედვით. გთხოვთ, სცადოთ სხვა სახელი ან კატეგორია.`;
+      }
+    } catch (error) {
+      console.error('Error searching products:', error);
+      return 'დაფიქსირდა შეცდომა პროდუქტების ძიებისას. გთხოვთ, სცადოთ მოგვიანებით.';
+    }
+  };
+
   // Send user message after survey completion
   const sendUserMessage = async () => {
     if (!userMessage.trim() || !surveyState.sessionId || isLoading) return;
@@ -1174,6 +1406,64 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
       const data = await response.json();
       if (data.success) {
         setLastMessageId(data.message.id);
+      }
+
+      // Check if message is about products and generate bot response
+      const lowerMessage = messageText.toLowerCase();
+      const productKeywords = [
+        'პროდუქტი', 'ტორტი', 'დაბადების', 'ქორწილი', 'დღესასწაული', 
+        'დესერტი', 'ფასი', 'კატეგორია', 'შიგთავსი', 'ნაჭერი',
+        'product', 'cake', 'price', 'category', 'filling', 'piece'
+      ];
+      
+      const isProductQuery = productKeywords.some(keyword => lowerMessage.includes(keyword));
+      
+      if (isProductQuery || messageText.length > 3) {
+        // Search products and generate response
+        const botResponse = await searchProductsAndRespond(messageText);
+        
+        // Add bot response to UI
+        setMessages(prev => [...prev, {
+          type: 'bot',
+          text: botResponse
+        }]);
+
+        // Save bot response to database
+        try {
+          await fetch('/api/chat-survey/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId: surveyState.sessionId,
+              senderType: 'bot',
+              content: botResponse
+            })
+          });
+        } catch (error) {
+          console.error('Error saving bot response:', error);
+        }
+      } else {
+        // Generic response for non-product queries
+        const genericResponse = 'გმადლობთ თქვენი შეტყობინებისთვის! როგორ შემიძლია დაგეხმაროთ? შემიძლია დაგეხმაროთ პროდუქტების შესახებ ინფორმაციის მიღებაში.';
+        
+        setMessages(prev => [...prev, {
+          type: 'bot',
+          text: genericResponse
+        }]);
+
+        try {
+          await fetch('/api/chat-survey/messages', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId: surveyState.sessionId,
+              senderType: 'bot',
+              content: genericResponse
+            })
+          });
+        } catch (error) {
+          console.error('Error saving bot response:', error);
+        }
       }
     } catch (error) {
       console.error('Error sending message:', error);

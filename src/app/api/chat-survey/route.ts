@@ -2,6 +2,67 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { SURVEY_QUESTIONS } from '@/lib/survey-questions';
 
+// Helper function to get next question based on product type and previous answers
+function getNextQuestionForProduct(
+  currentQuestionId: number,
+  selectedOption: number | null,
+  productDetails: any,
+  responses: any[]
+): number | null {
+  // If no product details, use default flow
+  if (!productDetails) return null;
+
+  const productType = productDetails.productType;
+  const isCustomizable = productDetails.isCustomizable;
+
+  // For SET, INDIVIDUAL_SLICE, or non-customizable products
+  const needsDeliveryQuestion = 
+    productType === 'SET' || 
+    productType === 'INDIVIDUAL_SLICE' || 
+    !isCustomizable;
+
+  // Question 17: როგორ ურჩევნია (მიტანის სერვისი თუ ადგილზე მისვლით)
+  if (currentQuestionId === 17) {
+    if (selectedOption === 0) {
+      // მიტანის სერვისი - next: თარიღი (18), then დრო (19)
+      return 18;
+    } else if (selectedOption === 1) {
+      // ადგილზე მისვლით - next: გატანის დრო (2)
+      return 2;
+    }
+  }
+
+  // Question 18: მიტანის თარიღი
+  if (currentQuestionId === 18) {
+    // Next: მიტანის დრო (19)
+    return 19;
+  }
+
+  // Question 19: მიტანის დრო
+  if (currentQuestionId === 19) {
+    // After delivery time, continue with normal flow
+    return null;
+  }
+
+  // Question 2: გატანის დრო (for pickup)
+  if (currentQuestionId === 2) {
+    // After pickup time, continue with normal flow
+    return null;
+  }
+
+  // Check if we need to insert delivery question
+  // After question 15 (როგორ გსურთ გაგრძელება) if user selected to continue with bot
+  if (currentQuestionId === 15 && selectedOption === 0 && needsDeliveryQuestion) {
+    // Check if delivery question already answered
+    const deliveryResponse = responses.find(r => r.questionId === 17);
+    if (!deliveryResponse) {
+      return 17; // Ask delivery question
+    }
+  }
+
+  return null; // Use default flow
+}
+
 // Get or create session
 export async function POST(request: NextRequest) {
   try {
@@ -90,6 +151,21 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      // Fetch product details if productId exists
+      let productDetails: any = null;
+      if (session.productId) {
+        try {
+          const product = await prisma.cake.findUnique({
+            where: { id: session.productId }
+          });
+          if (product) {
+            productDetails = product;
+          }
+        } catch (error) {
+          console.error('Error fetching product details:', error);
+        }
+      }
+
       // Find current question by ID (not by step index) because question 16 is special
       // If questionId is provided, use it to find the question (this is more reliable)
       let currentQuestion;
@@ -164,6 +240,22 @@ export async function POST(request: NextRequest) {
       let nextStep = session.currentStep + 1;
       let waitingForPrice = false;
       
+      // Check if we need to insert product-specific questions
+      const nextQuestionId = getNextQuestionForProduct(
+        currentQuestion.id,
+        selectedOption,
+        productDetails,
+        session.responses
+      );
+      
+      if (nextQuestionId !== null) {
+        // Find the index of the next question by ID
+        const nextQuestionIndex = SURVEY_QUESTIONS.findIndex(q => q.id === nextQuestionId);
+        if (nextQuestionIndex !== -1) {
+          nextStep = nextQuestionIndex;
+        }
+      }
+      
       if (currentQuestion.id === 3) {
         // After question 3 (pieces), pause for price calculation
         waitingForPrice = true;
@@ -196,9 +288,32 @@ export async function POST(request: NextRequest) {
         isComplete = true;
         nextStep = session.currentStep; // Don't move to next question
       } else if (currentQuestion.id === 15 && selectedOption === 0) {
-        // User wants to continue with bot form - continue to next questions
+        // User wants to continue with bot form - check if we need delivery question
         isComplete = false;
-        nextStep = session.currentStep + 1;
+        // Check if product needs delivery question (SET, INDIVIDUAL_SLICE, or non-customizable)
+        const needsDeliveryQuestion = productDetails && (
+          productDetails.productType === 'SET' || 
+          productDetails.productType === 'INDIVIDUAL_SLICE' || 
+          !productDetails.isCustomizable
+        );
+        if (needsDeliveryQuestion) {
+          // Check if delivery question already answered
+          const deliveryResponse = session.responses.find((r: any) => r.questionId === 17);
+          if (!deliveryResponse) {
+            // Insert delivery question (17)
+            const deliveryQuestionIndex = SURVEY_QUESTIONS.findIndex(q => q.id === 17);
+            if (deliveryQuestionIndex !== -1) {
+              nextStep = deliveryQuestionIndex;
+            } else {
+              nextStep = session.currentStep + 1;
+            }
+          } else {
+            // Delivery question already answered, continue with normal flow
+            nextStep = session.currentStep + 1;
+          }
+        } else {
+          nextStep = session.currentStep + 1;
+        }
       } else {
         // Normal flow - move to next question
         nextStep = session.currentStep + 1;

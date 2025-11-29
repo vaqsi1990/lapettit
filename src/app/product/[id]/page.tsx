@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -27,6 +27,7 @@ const ProductPage = () => {
     const [loading, setLoading] = useState(true);
     const [selectedImage] = useState(0);
     const [isChatOpen, setIsChatOpen] = useState(false);
+    const chatOpenedRef = useRef(false); // Prevent multiple chat opens
 
     // Dynamic piece size options based on product data
     const getPieceOptions = () => {
@@ -224,6 +225,12 @@ const ProductPage = () => {
                 if (result.success && result.data) {
                     const mappedProduct = mapCakeToGalleryImage(result.data);
                     setProduct(mappedProduct);
+
+                    // Auto-open chat on product detail page (only once)
+                    if (!isChatOpen && !chatOpenedRef.current) {
+                        setIsChatOpen(true);
+                        chatOpenedRef.current = true;
+                    }
 
                     // Fetch related products
                     const allCakesResult = await getCakes();
