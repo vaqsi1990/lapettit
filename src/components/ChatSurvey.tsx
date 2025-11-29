@@ -633,47 +633,8 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
           console.log('Question 15 detected in initializeChat - auto-submit should trigger');
         }
 
-        // Customize welcome message based on product with details (only on product detail page)
-        let welcomeText = '';
-        if (productId && productName && fetchedProductDetails) {
-          // Build product-specific welcome message with details
-          welcomeText = `გამარჯობა! მე ვარ lappetit bot, თქვენი ტორტის ასისტენტი. ვხედავ რომ გაინტერესებთ "${productName}".\n\n`;
-          
-          // Add product details
-          if (fetchedProductDetails.price) {
-            welcomeText += ` ფასი: ${fetchedProductDetails.price}₾`;
-            if (fetchedProductDetails.pieces) {
-              const pricePerSlice = (fetchedProductDetails.price / fetchedProductDetails.pieces).toFixed(2);
-              welcomeText += ` (${pricePerSlice}₾ ნაჭერზე)`;
-            }
-            welcomeText += `\n`;
-          } else if (fetchedProductDetails.isCustomizable) {
-            welcomeText += ` ფასი: ნაჭრების რაოდენობის მიხედვით\n`;
-          }
-          
-          if (fetchedProductDetails.pieces) {
-            welcomeText += ` ნაჭრები: ${fetchedProductDetails.pieces}\n`;
-          }
-          
-          if (fetchedProductDetails.fillings && fetchedProductDetails.fillings.length > 0) {
-            welcomeText += ` შიგთავსი: ${fetchedProductDetails.fillings.join(', ')}\n`;
-          }
-          
-          const categoryMap: Record<string, string> = {
-            'BIRTHDAY': 'დაბადების დღე',
-            'WEDDING': 'ქორწილი',
-            'ANNIVERSARY': 'დღესასწაული',
-            'CUSTOM': 'პერსონალური',
-            'Desserts': 'დესერტები'
-          };
-          welcomeText += ` კატეგორია: ${categoryMap[fetchedProductDetails.category] || fetchedProductDetails.category}\n\n`;
-          
-          welcomeText += `დავიწყოთ "${productName}"-ის შეკვეთა?`;
-        } else if (productId && productName) {
-          welcomeText = `გამარჯობა! მე ვარ lappetit bot, თქვენი ტორტის ასისტენტი. ვხედავ რომ გაინტერესებთ "${productName}". დავიწყოთ შეკვეთა?`;
-        } else {
-          welcomeText = 'გამარჯობა! მე ვარ lappetit bot, თქვენი ტორტის ასისტენტი. დავიწყოთ შეკვეთა?\n\nასევე შემიძლია დაგეხმაროთ პროდუქტების შესახებ ინფორმაციის მიღებაში - უბრალოდ მომწერეთ პროდუქტის სახელი ან კატეგორია (დაბადების დღე, ქორწილი, დღესასწაული, პერსონალური, დესერტები).';
-        }
+        // Use same welcome message for all pages (main page and product detail page)
+        const welcomeText = 'გამარჯობა! მე ვარ lappetit bot, თქვენი ტორტის ასისტენტი. დავიწყოთ შეკვეთა?';
 
         // Customize first question if product-specific
         let firstQuestionText = data.question.text;
@@ -704,7 +665,7 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
             type: 'bot',
             text: welcomeText,
             options: ['კი', 'არა'],
-            imageUrl: productImage,
+            imageUrl: undefined, // Don't show product image in chat (same as main page)
             isStartPrompt: true
           }
         ]);
@@ -719,7 +680,7 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
               sessionId: data.session.sessionId,
               senderType: 'bot',
               content: welcomeText,
-              imageUrl: productImage || undefined
+              imageUrl: undefined // Don't save product image in database (same as main page)
             })
           });
 
@@ -1378,7 +1339,7 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
         const allProductsData = await allProductsResponse.json();
         
         if (allProductsData.success && allProductsData.data && allProductsData.data.length > 0) {
-          return `ვერ ვიპოვე პროდუქტი "${query}"-ის მიხედვით. ჩვენ გვაქვს ${allProductsData.data.length} პროდუქტი ჩვენს კატალოგში. გთხოვთ, მიუთითოთ კონკრეტული პროდუქტის სახელი ან კატეგორია (დაბადების დღე, ქორწილი, დღესასწაული, პერსონალური, დესერტები).`;
+          return `ვერ ვიპოვე პროდუქტი "${query}"-ის მიხედვით. ჩვენ გვაქვს ${allProductsData.data.length} პროდუქ`;
         }
         
         return `ვერ ვიპოვე პროდუქტი "${query}"-ის მიხედვით. გთხოვთ, სცადოთ სხვა სახელი ან კატეგორია.`;

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { SURVEY_QUESTIONS } from '@/lib/survey-questions';
+import { PRODUCT_DETAIL_Regular_Cakes_SURVEY_QUESTIONS } from '@/lib/product-detail-survey-questions';
 import type { Cake, ChatResponse } from '@prisma/client';
 
 // Helper function to get next question based on product type and previous answers
@@ -53,7 +54,8 @@ function getNextQuestionForProduct(
 
   // Check if we need to insert delivery question
   // After question 15 (როგორ გსურთ გაგრძელება) if user selected to continue with bot
-  if (currentQuestionId === 15 && selectedOption === 0 && needsDeliveryQuestion) {
+  // Only on product detail pages (productDetails must exist)
+  if (currentQuestionId === 15 && selectedOption === 0 && needsDeliveryQuestion && productDetails) {
     // Check if delivery question already answered
     const deliveryResponse = responses.find(r => r.questionId === 17);
     if (!deliveryResponse) {
@@ -121,12 +123,14 @@ export async function POST(request: NextRequest) {
       let currentStep = session.currentStep;
       let currentQuestion: typeof SURVEY_QUESTIONS[number] | undefined = SURVEY_QUESTIONS[currentStep];
       
-      // Skip questions that don't apply to this product type
-      if (productDetails && productDetails.productType === 'SET') {
-        // Skip question 5 (შიგთავსი), 6 (დაფარვა), 7 (ბისკვიტი) for SET products
+      // Skip questions that don't apply to this product type or context
+      // If no productId (main page or /cakes page), skip product-specific questions
+      if (!session.productId) {
+        // Skip product-specific questions: 5 (შიგთავსი), 6 (დაფარვა), 7 (ბისკვიტი), 17 (როგორ ურჩევნიათ), 18 (მიტანის თარიღი), 19 (მიტანის დრო)
         while (currentStep < SURVEY_QUESTIONS.length) {
           const question = SURVEY_QUESTIONS[currentStep];
-          if (question && (question.id === 5 || question.id === 6 || question.id === 7)) {
+          if (question && (question.id === 5 || question.id === 6 || question.id === 7 || 
+              question.id === 17 || question.id === 18 || question.id === 19)) {
             currentStep = currentStep + 1;
             if (currentStep < SURVEY_QUESTIONS.length) {
               currentQuestion = SURVEY_QUESTIONS[currentStep];
@@ -136,6 +140,29 @@ export async function POST(request: NextRequest) {
             }
           } else {
             break;
+          }
+        }
+      } else if (productDetails && (
+        productDetails.productType === 'SET' || 
+        productDetails.productType === 'INDIVIDUAL_SLICE' || 
+        !productDetails.isCustomizable
+      )) {
+        // For SET, INDIVIDUAL_SLICE, or non-customizable products, use product detail questions
+        // Skip question 5 (შიგთავსი), 6 (დაფარვა), 7 (ბისკვიტი) for SET products only
+        if (productDetails.productType === 'SET') {
+          while (currentStep < SURVEY_QUESTIONS.length) {
+            const question = SURVEY_QUESTIONS[currentStep];
+            if (question && (question.id === 5 || question.id === 6 || question.id === 7)) {
+              currentStep = currentStep + 1;
+              if (currentStep < SURVEY_QUESTIONS.length) {
+                currentQuestion = SURVEY_QUESTIONS[currentStep];
+              } else {
+                currentQuestion = undefined;
+                break;
+              }
+            } else {
+              break;
+            }
           }
         }
       }
@@ -324,19 +351,19 @@ export async function POST(request: NextRequest) {
         isComplete = true;
         nextStep = session.currentStep; // Don't move to next question
       } else if (currentQuestion.id === 15 && selectedOption === 0) {
-        // User wants to continue with bot form - check if we need delivery question
+        // User wants to continue with bot form - check if we need product detail questions
         isComplete = false;
-        // Check if product needs delivery question (SET, INDIVIDUAL_SLICE, or non-customizable)
-        const needsDeliveryQuestion = productDetails && (
+        // Check if product needs product detail questions (SET, INDIVIDUAL_SLICE, or non-customizable)
+        const needsProductDetailQuestions = productDetails && (
           productDetails.productType === 'SET' || 
           productDetails.productType === 'INDIVIDUAL_SLICE' || 
           !productDetails.isCustomizable
         );
-        if (needsDeliveryQuestion) {
-          // Check if delivery question already answered
-          const deliveryResponse = session.responses.find((r: ChatResponse) => r.questionId === 17);
-          if (!deliveryResponse) {
-            // Insert delivery question (17)
+        if (needsProductDetailQuestions) {
+          // Check if first product detail question (17) already answered
+          const firstProductDetailResponse = session.responses.find((r: ChatResponse) => r.questionId === 17);
+          if (!firstProductDetailResponse) {
+            // Insert first product detail question (17) from PRODUCT_DETAIL_Regular_Cakes_SURVEY_QUESTIONS
             const deliveryQuestionIndex = SURVEY_QUESTIONS.findIndex(q => q.id === 17);
             if (deliveryQuestionIndex !== -1) {
               nextStep = deliveryQuestionIndex;
@@ -344,7 +371,7 @@ export async function POST(request: NextRequest) {
               nextStep = session.currentStep + 1;
             }
           } else {
-            // Delivery question already answered, continue with normal flow
+            // Product detail questions already started, continue with normal flow
             nextStep = session.currentStep + 1;
           }
         } else {
@@ -356,16 +383,40 @@ export async function POST(request: NextRequest) {
         isComplete = nextStep >= SURVEY_QUESTIONS.length;
       }
 
-      // Skip questions that don't apply to this product type before updating session
+      // Skip questions that don't apply to this product type or context before updating session
       let finalNextStep = nextStep;
-      if (productDetails && productDetails.productType === 'SET') {
-        // Skip question 5 (შიგთავსი), 6 (დაფარვა), 7 (ბისკვიტი) for SET products
+      
+      // If no productId (main page or /cakes page), skip product-specific questions
+      if (!session.productId) {
+        // Skip product-specific questions: 5 (შიგთავსი), 6 (დაფარვა), 7 (ბისკვიტი), 17 (როგორ ურჩევნიათ), 18 (მიტანის თარიღი), 19 (მიტანის დრო)
         while (finalNextStep < SURVEY_QUESTIONS.length) {
           const nextQuestion = SURVEY_QUESTIONS[finalNextStep];
-          if (nextQuestion && (nextQuestion.id === 5 || nextQuestion.id === 6 || nextQuestion.id === 7)) {
+          if (nextQuestion && (nextQuestion.id === 5 || nextQuestion.id === 6 || nextQuestion.id === 7 || 
+              nextQuestion.id === 17 || nextQuestion.id === 18 || nextQuestion.id === 19)) {
             finalNextStep = finalNextStep + 1;
           } else {
             break;
+          }
+        }
+        // Update isComplete if we skipped to the end
+        if (finalNextStep >= SURVEY_QUESTIONS.length) {
+          isComplete = true;
+        }
+      } else if (productDetails && (
+        productDetails.productType === 'SET' || 
+        productDetails.productType === 'INDIVIDUAL_SLICE' || 
+        !productDetails.isCustomizable
+      )) {
+        // For SET, INDIVIDUAL_SLICE, or non-customizable products, use product detail questions
+        // Skip question 5 (შიგთავსი), 6 (დაფარვა), 7 (ბისკვიტი) for SET products only
+        if (productDetails.productType === 'SET') {
+          while (finalNextStep < SURVEY_QUESTIONS.length) {
+            const nextQuestion = SURVEY_QUESTIONS[finalNextStep];
+            if (nextQuestion && (nextQuestion.id === 5 || nextQuestion.id === 6 || nextQuestion.id === 7)) {
+              finalNextStep = finalNextStep + 1;
+            } else {
+              break;
+            }
           }
         }
         // Update isComplete if we skipped to the end
