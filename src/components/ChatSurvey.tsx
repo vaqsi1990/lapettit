@@ -1487,6 +1487,10 @@ const ChatWidget = ({ productId, productImage, productName, defaultOpen = true, 
           <div className="border-t border-gray-200 p-4 bg-white">
             {surveyState.question.type === 'file' && (
               <div className="mb-3">
+                {/* Show question text above upload button */}
+                <div className="mb-3 text-gray-800 text-[16px] font-medium">
+                  {surveyState.question.text}
+                </div>
                 <UploadButton
                   endpoint="chatSurveyUploader"
                   onClientUploadComplete={(res) => {

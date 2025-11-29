@@ -15,6 +15,7 @@ const CakesPage = () => {
   const [loading, setLoading] = useState(true)
   const [minPrice, setMinPrice] = useState<number>(0)
   const [maxPrice, setMaxPrice] = useState<number>(1000)
+  const [sortBy, setSortBy] = useState<string>('default')
   const itemsPerPage = 9
 
   const categories = [
@@ -76,7 +77,7 @@ const CakesPage = () => {
     }
   }, [cakes])
 
-  // Filter cakes based on category, search, and price
+  // Filter and sort cakes based on category, search, price, and sort option
   const filteredCakes = useMemo(() => {
     let filtered = cakes
     
@@ -101,8 +102,41 @@ const CakesPage = () => {
       })
     }
     
-    return filtered
-  }, [selectedCategory, searchQuery, priceRange, maxPrice, cakes])
+    // Sort cakes
+    const sorted = [...filtered]
+    switch (sortBy) {
+      case 'price-low':
+        sorted.sort((a, b) => {
+          const priceA = a.price || 0
+          const priceB = b.price || 0
+          return priceA - priceB
+        })
+        break
+      case 'price-high':
+        sorted.sort((a, b) => {
+          const priceA = a.price || 0
+          const priceB = b.price || 0
+          return priceB - priceA
+        })
+        break
+      case 'popularity':
+        // Sort by likes if available, otherwise by id (newest first)
+        sorted.sort((a, b) => {
+          const likesA = a.likes || 0
+          const likesB = b.likes || 0
+          if (likesA !== likesB) {
+            return likesB - likesA
+          }
+          return (b.id || 0) - (a.id || 0)
+        })
+        break
+      default:
+        // Default: keep original order
+        break
+    }
+    
+    return sorted
+  }, [selectedCategory, searchQuery, priceRange, maxPrice, cakes, sortBy])
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredCakes.length / itemsPerPage)
@@ -153,10 +187,10 @@ const CakesPage = () => {
     return pages
   }
 
-  // Reset to first page when filters change
+  // Reset to first page when filters or sort change
   useEffect(() => {
     setCurrentPage(1)
-  }, [selectedCategory, searchQuery, priceRange])
+  }, [selectedCategory, searchQuery, priceRange, sortBy])
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
@@ -275,16 +309,26 @@ const CakesPage = () => {
             {/* Right Content - Product Grid */}
             <div className="lg:w-3/4">
               {/* Top Bar */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
-                <p className="md:text-[20px] text-[18px] text-black mb-4 sm:mb-0">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 bg-white rounded-lg shadow-sm p-4 sm:p-6">
+                <p className="md:text-[20px] text-[18px] font-semibold text-gray-800 mb-4 sm:mb-0">
                   {filteredCakes.length} პროდუქტი
                 </p>
-                <select className="md:text-[20px] text-[18px] px-4 py-2 border border-black rounded-lg focus:outline-none focus:border-pink-500">
-                  <option>სორტირება: ნაგულისხმევი</option>
-                  <option>ფასი: დაბლიდან მაღლა</option>
-                  <option>ფასი: მაღლიდან დაბლა</option>
-                  <option>პოპულარობა</option>
-                </select>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="sort-select" className="md:text-[18px] text-[16px] text-gray-700 font-medium">
+                    სორტირება:
+                  </label>
+                  <select 
+                    id="sort-select"
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="md:text-[18px] text-[16px] px-4 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-pink-500 bg-white text-gray-800 cursor-pointer transition-colors hover:border-pink-300"
+                  >
+                    <option value="default">ნაგულისხმევი</option>
+                    <option value="price-low">ფასი: დაბლიდან მაღლა</option>
+                    <option value="price-high">ფასი: მაღლიდან დაბლა</option>
+                    <option value="popularity">პოპულარობა</option>
+                  </select>
+                </div>
               </div>
 
               {/* Product Grid */}
