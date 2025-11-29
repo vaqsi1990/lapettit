@@ -1560,36 +1560,35 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
       {!isOpen && showFloatingButton && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 bg-gradient-to-r from-pink-500 to-purple-500 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-50"
+          className="fixed bottom-4 right-4 md:bottom-6 md:right-6 bg-gradient-to-r from-pink-500 to-purple-500 text-white p-3 md:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-50"
           aria-label="Open chat"
         >
-          <MessageCircle size={28} />
+          <MessageCircle size={24} className="md:w-7 md:h-7" />
         </button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
-        <div className="fixed bottom-0 right-0 md:bottom-6 md:right-6 w-full md:w-[400px] h-full md:h-[600px] bg-white rounded-none md:rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50">
+        <div className="fixed bottom-0 right-0 md:bottom-6 md:right-6 w-full md:w-[400px] h-[70vh] md:h-[600px] max-h-[600px] md:max-h-none bg-white rounded-t-2xl md:rounded-2xl shadow-2xl flex flex-col overflow-hidden z-50">
           {/* Header */}
-          <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-4">
-            <div className="flex items-center justify-between mb-3">
+          <div className="bg-gradient-to-r from-pink-600 to-purple-600 text-white p-3 md:p-4">
+            <div className="flex items-center justify-between mb-2 md:mb-3">
               <div>
-              
-                <p className="text-lg text-white">გთხოვთ, უპასუხოთ შეკითხვებს</p>
+                <p className="text-sm md:text-lg text-white">გთხოვთ, უპასუხოთ შეკითხვებს</p>
               </div>
               {/* Close button */}
               <button
                 onClick={() => setIsOpen(false)}
-                className="hover:bg-white/20 rounded-full p-1 transition-colors"
+                className="hover:bg-white/20 rounded-full p-1 transition-colors flex-shrink-0"
                 aria-label="Close chat"
               >
-                <X size={20} />
+                <X size={18} className="md:w-5 md:h-5" />
               </button>
             </div>
             
             {/* Progress Bar - Cake Icons */}
             {!surveyState.isComplete && (
-              <div className="mt-3">
+              <div className="mt-2 md:mt-3">
                 <div className="flex gap-1 md:gap-2 justify-center items-center flex-wrap">
                   {Array.from({ length: totalQuestions }).map((_, index) => {
                     const isCompleted = index < completedQuestions;
@@ -1611,15 +1610,15 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
                         title={`${isCompleted ? '✓' : isCurrent ? '→' : ''} ${index + 1}/${totalQuestions}`}
                       >
                         <Cake 
-                          size={isCurrent ? 28 : isCompleted ? 24 : 18} 
-                          className="transition-all duration-300"
+                          size={isCurrent ? 20 : isCompleted ? 18 : 14} 
+                          className="md:w-7 md:h-7 transition-all duration-300"
                         />
                       </div>
                     );
                   })}
                 </div>
-                <div className="mt-2 text-center">
-                  <p className="text-[16px] opacity-90 font-medium">
+                <div className="mt-1 md:mt-2 text-center">
+                  <p className="text-xs md:text-base opacity-90 font-medium">
                     {completedQuestions} / {totalQuestions} შეკითხვა უპასუხებია
                   </p>
                 </div>
@@ -1628,7 +1627,7 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50">
+          <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-2 md:space-y-3 bg-gray-50">
             {messages.filter((message) => {
               // Hide question 15 and its answer from messages
               const isQuestion15 = message.text === "როგორ გსურთ გაგრძელება? 😊";
@@ -1640,13 +1639,13 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
                 className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[85%] rounded-lg p-3 text-[16px] ${
+                  className={`max-w-[90%] md:max-w-[85%] rounded-lg p-2 md:p-3 text-sm md:text-base ${
                     message.type === 'user'
                       ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
                       : 'bg-white text-gray-800 shadow-sm'
                   }`}
                 >
-                  <p>{message.text}</p>
+                  <p className="break-words">{message.text}</p>
                 
                 {/* Show product image (only if no fileUrl - to avoid duplicate) */}
                 {message.imageUrl && !message.fileUrl && (
@@ -1720,7 +1719,7 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
                             }
                           }}
                           disabled={!!isDisabled}
-                          className={`block w-full text-left p-2 rounded text-[16px] transition-all ${
+                          className={`block w-full text-left p-2 md:p-3 rounded text-sm md:text-base transition-all ${
                               isDisabled
                               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                               : selectedOption === optIndex
@@ -1774,9 +1773,9 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
           }
           return shouldShowInput;
         })() && surveyState.question && (
-          <div className="border-t border-gray-200 p-4 bg-white">
+          <div className="border-t border-gray-200 p-3 md:p-4 bg-white">
             {surveyState.question.type === 'file' && (
-              <div className="mb-3">
+              <div className="mb-2 md:mb-3">
                 {/* Show question text above upload button */}
                 <div className="mb-3 text-gray-800 text-[16px] font-medium">
                   {surveyState.question.text}
@@ -1826,12 +1825,12 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
             )}
 
             {surveyState.question.type === 'text' && (
-              <div className="mb-3">
+              <div className="mb-2 md:mb-3">
                 <textarea
                   value={textAnswer}
                   onChange={(e) => setTextAnswer(e.target.value)}
                   placeholder="ჩაწერეთ თქვენი პასუხი..."
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none text-black bg-white"
+                  className="w-full p-2 md:p-3 text-sm md:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 resize-none text-black bg-white"
                   rows={3}
                   autoFocus
                 />
@@ -1842,7 +1841,7 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
               <button
                 onClick={submitAnswer}
                 disabled={!canSubmit() || isLoading}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                className={`flex items-center gap-1 md:gap-2 px-4 md:px-6 py-2 md:py-3 rounded-lg font-medium transition-all text-sm md:text-base ${
                   canSubmit() && !isLoading
                     ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -1850,13 +1849,13 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="animate-spin" size={20} />
-                    <span className="text-[18px] font-bold">გაგზავნა...</span>
+                    <Loader2 className="animate-spin w-4 h-4 md:w-5 md:h-5" />
+                    <span className="font-bold">გაგზავნა...</span>
                   </>
                 ) : (
                   <>
-                    <span className="text-[18px] font-bold">გაგზავნა</span>
-                    <Send size={20} />
+                    <span className="font-bold">გაგზავნა</span>
+                    <Send size={18} className="md:w-5 md:h-5" />
                   </>
                 )}
               </button>
@@ -1866,13 +1865,13 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
 
         {/* Input Area - Post-survey chat */}
         {surveyState.isComplete && surveyState.sessionId && !isChatEnded && (
-          <div className="border-t border-gray-200 p-4 bg-white">
+          <div className="border-t border-gray-200 p-3 md:p-4 bg-white">
             {/* File Upload */}
-            <div className="mb-3">
+            <div className="mb-2 md:mb-3">
               {isUploading && (
-                <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-3">
-                  <Loader2 className="animate-spin text-blue-600" size={20} />
-                  <span className="text-[16px] text-blue-700 font-medium">ფაილი იტვირთება...</span>
+                <div className="mb-2 md:mb-3 p-2 md:p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center gap-2 md:gap-3">
+                  <Loader2 className="animate-spin text-blue-600 w-4 h-4 md:w-5 md:h-5" />
+                  <span className="text-xs md:text-base text-blue-700 font-medium">ფაილი იტვირთება...</span>
                 </div>
               )}
               <UploadButton
@@ -1893,7 +1892,7 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
                   setIsUploading(false);
                   alert(`შეცდომა! ${error.message}`);
                 }}
-                className=""
+                className="text-sm md:text-base"
                 content={{
                   button: "📎 ფაილის ატვირთვა",
                   allowedContent: "ატვირთეთ ფაილი"
@@ -1903,7 +1902,7 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
             </div>
 
             {/* Message Input */}
-            <div className="flex gap-2">
+            <div className="flex gap-1 md:gap-2">
               <input
                 type="text"
                 value={userMessage}
@@ -1915,33 +1914,33 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
                   }
                 }}
                 placeholder="ჩაწერეთ თქვენი შეტყობინება..."
-                className="flex-1 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
+                className="flex-1 p-2 md:p-3 text-sm md:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 text-black"
                 disabled={isLoading}
               />
               <button
                 onClick={sendUserMessage}
                 disabled={!userMessage.trim() || isLoading}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-medium transition-all ${
+                className={`flex items-center gap-1 md:gap-2 px-3 md:px-6 py-2 md:py-3 rounded-lg font-medium transition-all text-xs md:text-base ${
                   userMessage.trim() && !isLoading
                     ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600'
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
               >
                 {isLoading ? (
-                  <Loader2 className="animate-spin" size={20} />
+                  <Loader2 className="animate-spin w-4 h-4 md:w-5 md:h-5" />
                 ) : (
                   <>
-                    გაგზავნა
-                    <Send size={20} />
+                    <span className="hidden md:inline">გაგზავნა</span>
+                    <Send size={18} className="md:w-5 md:h-5" />
                   </>
                 )}
               </button>
               <button
                 onClick={endChat}
-                className="px-4 py-3 rounded-lg font-medium transition-all bg-gray-200 text-gray-700 hover:bg-gray-300"
+                className="px-2 md:px-4 py-2 md:py-3 rounded-lg font-medium transition-all bg-gray-200 text-gray-700 hover:bg-gray-300 flex-shrink-0"
                 title="საუბრის დასრულება"
               >
-                <X size={20} />
+                <X size={18} className="md:w-5 md:h-5" />
               </button>
             </div>
           </div>
