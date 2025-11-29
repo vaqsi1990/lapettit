@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { SURVEY_QUESTIONS } from '@/lib/survey-questions';
+import type { Cake, ChatResponse } from '@prisma/client';
 
 // Helper function to get next question based on product type and previous answers
 function getNextQuestionForProduct(
   currentQuestionId: number,
   selectedOption: number | null,
-  productDetails: any,
-  responses: any[]
+  productDetails: Cake | null,
+  responses: ChatResponse[]
 ): number | null {
   // If no product details, use default flow
   if (!productDetails) return null;
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Fetch product details if productId exists
-      let productDetails: any = null;
+      let productDetails: Cake | null = null;
       if (session.productId) {
         try {
           const product = await prisma.cake.findUnique({
@@ -187,7 +188,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Fetch product details if productId exists
-      let productDetails: any = null;
+      let productDetails: Cake | null = null;
       if (session.productId) {
         try {
           const product = await prisma.cake.findUnique({
@@ -333,7 +334,7 @@ export async function POST(request: NextRequest) {
         );
         if (needsDeliveryQuestion) {
           // Check if delivery question already answered
-          const deliveryResponse = session.responses.find((r: any) => r.questionId === 17);
+          const deliveryResponse = session.responses.find((r: ChatResponse) => r.questionId === 17);
           if (!deliveryResponse) {
             // Insert delivery question (17)
             const deliveryQuestionIndex = SURVEY_QUESTIONS.findIndex(q => q.id === 17);
