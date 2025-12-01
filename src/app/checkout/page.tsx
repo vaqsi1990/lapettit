@@ -34,6 +34,7 @@ const CheckoutPage = () => {
     notes: ''
   });
   const [receiptImage, setReceiptImage] = useState<string | null>(null);
+  const [receiptFileType, setReceiptFileType] = useState<'image' | 'pdf' | null>(null);
   const [isUploadingReceipt, setIsUploadingReceipt] = useState(false);
   const [orderIds, setOrderIds] = useState<number[]>([]);
 
@@ -144,7 +145,7 @@ const CheckoutPage = () => {
           await confirmOrdersWithReceipt(ids, receiptImage);
         } else {
           // Show message that receipt upload is needed
-          showToast('info', 'შეკვეთა შექმნილია. გთხოვთ ატვირთოთ ჩეკის სურათი დადასტურებისთვის.', 5000);
+          showToast('info', 'შეკვეთა შექმნილია. გთხოვთ ატვირთოთ ჩეკის სურათი ან PDF დადასტურებისთვის.', 5000);
           // Don't clear cart yet - wait for receipt upload
         }
       } else {
@@ -200,17 +201,29 @@ const CheckoutPage = () => {
   };
 
   // Handle receipt upload
-  const handleReceiptUpload = async (res: { url: string; name: string }[]) => {
+  const handleReceiptUpload = async (res: { url: string; name: string; type?: string }[]) => {
     if (res && res.length > 0) {
       setIsUploadingReceipt(false);
-      const imageUrl = res[0].url;
-      setReceiptImage(imageUrl);
+      const fileUrl = res[0].url;
+      const fileName = res[0].name || '';
+      const mimeType = res[0].type || '';
+      
+      // Determine file type: check MIME type, filename extension, or URL extension
+      const isPdf = 
+        mimeType === 'application/pdf' || 
+        fileName.toLowerCase().endsWith('.pdf') ||
+        fileUrl.toLowerCase().includes('.pdf') ||
+        fileUrl.toLowerCase().endsWith('.pdf');
+      
+      setReceiptImage(fileUrl);
+      setReceiptFileType(isPdf ? 'pdf' : 'image');
 
       // If orders are already created, confirm them immediately
       if (orderIds.length > 0) {
-        await confirmOrdersWithReceipt(orderIds, imageUrl);
+        await confirmOrdersWithReceipt(orderIds, fileUrl);
       } else {
-        showToast('success', 'ჩეკის სურათი ატვირთულია. შეკვეთის შექმნის შემდეგ დადასტურდება.', 3000);
+        const fileTypeText = isPdf ? 'PDF' : 'სურათი';
+        showToast('success', `ჩეკის ${fileTypeText} ატვირთულია. შეკვეთის შექმნის შემდეგ დადასტურდება.`, 3000);
       }
     }
   };
@@ -365,7 +378,7 @@ const CheckoutPage = () => {
                   {/* Receipt Upload */}
                   <div className="space-y-2">
                     <label className="block text-[16px] font-medium text-black">
-                      ჩეკის სურათის ატვირთვა *
+                      ჩეკის სურათის ან PDF-ის ატვირთვა *
                     </label>
                     {!receiptImage ? (
                       <div className="rounded-lg w-full md:w-1/2 mx-auto p-4 transition-colors">
@@ -388,10 +401,10 @@ const CheckoutPage = () => {
                               button: (
                                 <div className="flex items-center justify-center gap-2 text-[16px] font-bold text-white">
                                   <Upload className="w-5 h-5" />
-                                  <span>აირჩიეთ  სურათი</span>
+                                  <span>აირჩიეთ სურათი ან PDF</span>
                                 </div>
                               ),
-                              allowedContent: "ატვირთეთ სურათი (JPG, PNG, GIF)"
+                              allowedContent: "ატვირთეთ სურათი (JPG, PNG, GIF) ან PDF"
                             }}
                           />
                         )}
@@ -399,11 +412,14 @@ const CheckoutPage = () => {
                     ) : (
                       <div className="relative  rounded-lg p-3 ">
                         <div className="flex items-center justify-between mb-2">
-                          <span className="text-[18px] text-green-500 font-bold">✓ სურათი ატვირთულია</span>
+                          <span className="text-[18px] text-green-500 font-bold">
+                            ✓ {receiptFileType === 'pdf' ? 'PDF' : 'სურათი'} ატვირთულია
+                          </span>
                           <button
                             type="button"
                             onClick={() => {
                               setReceiptImage(null);
+                              setReceiptFileType(null);
                               setOrderIds([]);
                             }}
                             className="text-red-600 hover:text-red-700"
@@ -411,14 +427,30 @@ const CheckoutPage = () => {
                             <X className="w-4 h-4" />
                           </button>
                         </div>
-                        <div className="relative w-full h-48 rounded-lg overflow-hidden">
-                          <Image
-                            src={receiptImage}
-                            alt="Receipt"
-                            fill
-                            className="object-contain"
-                          />
-                        </div>
+                        {receiptFileType === 'pdf' ? (
+                          <div className="w-full rounded-lg border-2 border-gray-200 p-4 bg-gray-50">
+                            <a
+                              href={receiptImage}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-3 text-pink-600 hover:text-pink-700 font-medium"
+                            >
+                              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                              </svg>
+                              <span className="text-[16px]">გახსენით PDF ფაილი</span>
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="relative w-full h-48 rounded-lg overflow-hidden">
+                            <Image
+                              src={receiptImage}
+                              alt="Receipt"
+                              fill
+                              className="object-contain"
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -430,7 +462,7 @@ const CheckoutPage = () => {
                     disabled={isSubmitting || cartData.items.length === 0 || !receiptImage}
                     className="w-full bg-[#d90b6b] w-1/2 mx-auto cursor-pointer text-white py-3 px-6 rounded-xl font-semibold hover:bg-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-[18px]"
                   >
-                    {isSubmitting ? 'იგზავნება...' : receiptImage ? 'შეკვეთის დადასტურება' : 'შეკვეთის შექმნა'}
+                    {isSubmitting ? 'იგზავნება...' : receiptImage ? 'შეკვეთის გაკეთება' : 'შეკვეთის გაკეთება'}
                   </button>
                 </div>
               </form>
