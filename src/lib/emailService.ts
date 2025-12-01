@@ -106,6 +106,7 @@ export const emailTemplates = {
     totalPrice: number;
     orderDate: string;
     receiptImageUrl?: string;
+    notes?: string;
     cakePersonalization?: {
       name?: string;
       age?: string;
@@ -171,6 +172,13 @@ export const emailTemplates = {
               <p><strong>ტელეფონი:</strong> ${orderData.customerPhone}</p>
               <p><strong>მისამართი:</strong> ${orderData.address}</p>
             </div>
+            
+            ${orderData.notes ? `
+              <div class="order-details" style="background: #fff9e6; border-left: 4px solid #f59e0b;">
+                <h3>დამატებითი შენიშვნები</h3>
+                <p style="white-space: pre-wrap; margin: 0;">${orderData.notes}</p>
+              </div>
+            ` : ''}
             
             <div class="total">
               ჯამი: ₾${orderData.totalPrice.toFixed(2)}
@@ -303,6 +311,7 @@ type RegularOrderData = {
   totalPrice: number;
   orderDate: string;
   receiptImageUrl?: string;
+  notes?: string;
   cakePersonalization?: {
     name?: string;
     age?: string;
