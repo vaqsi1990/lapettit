@@ -105,6 +105,7 @@ export const emailTemplates = {
     quantity: number;
     totalPrice: number;
     orderDate: string;
+    receiptImageUrl?: string;
     cakePersonalization?: {
       name?: string;
       age?: string;
@@ -174,6 +175,28 @@ export const emailTemplates = {
             <div class="total">
               ჯამი: ₾${orderData.totalPrice.toFixed(2)}
             </div>
+            
+            ${orderData.receiptImageUrl ? `
+              <div class="order-details" style="margin-top: 20px;">
+                <h3>ჩეკის სურათი/PDF</h3>
+                ${orderData.receiptImageUrl.toLowerCase().includes('.pdf') || orderData.receiptImageUrl.toLowerCase().endsWith('.pdf') ? `
+                  <p><strong>PDF ფაილი:</strong></p>
+                  <p>
+                    <a href="${orderData.receiptImageUrl}" target="_blank" download style="color: #d90b6b; text-decoration: underline; font-weight: bold; margin-right: 15px;">გახსენით PDF ფაილი</a>
+                    <a href="${orderData.receiptImageUrl}" download style="color: #d90b6b; text-decoration: underline; font-weight: bold;">გადმოწერეთ PDF ფაილი</a>
+                  </p>
+                ` : `
+                  <p><strong>ჩეკის სურათი:</strong></p>
+                  <div style="margin-top: 15px; text-align: center;">
+                    <img src="${orderData.receiptImageUrl}" alt="Receipt" style="max-width: 100%; height: auto; border-radius: 8px; border: 2px solid #ffd6e7;" />
+                  </div>
+                  <p style="margin-top: 10px;">
+                    <a href="${orderData.receiptImageUrl}" target="_blank" style="color: #d90b6b; font-weight: bold; font-size: 18px; text-decoration: underline; margin-right: 15px;">გახსენი სურათი ან პდფ ფაილი</a>
+                    <a href="${orderData.receiptImageUrl}" download style="color: #d90b6b; font-weight: bold; font-size: 18px; text-decoration: underline;">გადმოწერე სურათი ან პდფ ფაილი</a>
+                  </p>
+                `}
+              </div>
+            ` : ''}
           </div>
           
           <div class="footer">
@@ -279,6 +302,7 @@ type RegularOrderData = {
   quantity: number;
   totalPrice: number;
   orderDate: string;
+  receiptImageUrl?: string;
   cakePersonalization?: {
     name?: string;
     age?: string;

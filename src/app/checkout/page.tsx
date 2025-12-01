@@ -366,14 +366,14 @@ const CheckoutPage = () => {
                   <h3 className="text-[18px] md:text-[20px] font-bold text-black">
                     გადახდის ინსტრუქცია
                   </h3>
-                  <p className="text-[14px] md:text-[16px] text-gray-700 leading-relaxed">
+                  <div className="text-[14px] md:text-[16px] text-gray-700 leading-relaxed">
                     გთხოვთ ჩარიცხეთ ნახევარი მოცემულ ანგარიშიდან ერთ ერთზე, გამოგვიგზავნეთ ჩეკი რის შემდეგაც დაგიკავშირდებით - <span className='font-bold'>
                     ნათია კვირკველია მიმღები საბანკო ანგარიში: </span> 
                     <ul>
                       <li className='text-[18px] font-bold'>GE16BG0000000499237891</li>
                       <li className='text-[18px] font-bold'>GE02TB7731145064300018</li>
                     </ul>
-                  </p>
+                  </div>
 
                   {/* Receipt Upload */}
                   <div className="space-y-2">

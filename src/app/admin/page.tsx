@@ -127,7 +127,7 @@ const AdminPage = () => {
   const [isSendingMessage, setIsSendingMessage] = useState(false);
   const [liveChatSessions, setLiveChatSessions] = useState<SurveySession[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('PENDING'); // Default to PENDING to show pending orders first
+  const [filterStatus, setFilterStatus] = useState('all'); // Default to 'all' to show all orders
   const [editingCake, setEditingCake] = useState<Cake | null>(null);
   const [expandedSessions, setExpandedSessions] = useState<Set<number>>(new Set());
   const [productImages, setProductImages] = useState<Map<number, string>>(new Map());
@@ -548,6 +548,31 @@ const AdminPage = () => {
     }
   };
 
+  // Extract receipt URL from address field
+  const extractReceiptUrl = (address: string): { cleanAddress: string; receiptUrl: string | null } => {
+    if (!address) return { cleanAddress: address || '', receiptUrl: null };
+    
+    try {
+      // Pattern: "address | ReceiptImage: url" or "address ReceiptImage: url"
+      const receiptMatch = address.match(/ReceiptImage:\s*(.+?)(?:\s*\|)?\s*$/);
+      if (receiptMatch && receiptMatch[1]) {
+        const receiptUrl = receiptMatch[1].trim();
+        // Remove the receipt part from address
+        const cleanAddress = address.replace(/\s*\|\s*ReceiptImage:.*$/, '').replace(/ReceiptImage:.*$/, '').trim();
+        return { cleanAddress, receiptUrl };
+      }
+      return { cleanAddress: address, receiptUrl: null };
+    } catch (error) {
+      console.error('Error extracting receipt URL:', error);
+      return { cleanAddress: address, receiptUrl: null };
+    }
+  };
+
+  // Check if URL is PDF
+  const isPdfUrl = (url: string): boolean => {
+    return url.toLowerCase().includes('.pdf') || url.toLowerCase().endsWith('.pdf');
+  };
+
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.customerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          order.customerPhone.includes(searchTerm);
@@ -840,7 +865,7 @@ const AdminPage = () => {
                             </span>
                             <span className="flex items-center">
                               <MapPin className="w-4 h-4 mr-2" />
-                              {order.address}
+                              {extractReceiptUrl(order.address).cleanAddress}
                             </span>
                           </div>
                         </div>
@@ -876,6 +901,57 @@ const AdminPage = () => {
 
                   {/* Order Details */}
                   <div className="p-6">
+                    {/* Receipt Image/PDF */}
+                    {(() => {
+                      const { receiptUrl } = extractReceiptUrl(order.address);
+                      if (receiptUrl) {
+                        const isPdf = isPdfUrl(receiptUrl);
+                        return (
+                          <div className="mb-6 p-4 bg-blue-50 rounded-xl border-2 border-blue-200">
+                            <h4 className="text-lg font-semibold text-gray-800 mb-3 flex items-center">
+                              <span className="mr-2">📎</span>
+                              ჩეკის {isPdf ? 'PDF' : 'სურათი'}
+                            </h4>
+                            {isPdf ? (
+                              <div className="flex items-center gap-3">
+                                <a
+                                  href={receiptUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium underline"
+                                >
+                                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+                                  </svg>
+                                  <span>გახსენით PDF ფაილი</span>
+                                </a>
+                              </div>
+                            ) : (
+                              <div className="space-y-3">
+                                <div className="relative w-full max-w-md h-64 rounded-lg overflow-hidden border-2 border-gray-200">
+                                  <Image
+                                    src={receiptUrl}
+                                    alt="Receipt"
+                                    fill
+                                    className="object-contain"
+                                  />
+                                </div>
+                                <a
+                                  href={receiptUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium underline text-sm"
+                                >
+                                  <span>გახსენით სრული ზომით</span>
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
+                    
                     {/* Regular Cake Items */}
                     {order.items && order.items.length > 0 && (
                       <div className="mb-6">

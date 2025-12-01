@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
+import { sendAdminNotification } from '@/lib/emailService';
 
 const prisma = new PrismaClient();
 
@@ -49,6 +50,40 @@ export async function POST(request: NextRequest) {
         address: updatedAddress
       }
     });
+
+    // Send admin notification email with receipt
+    try {
+      const cake = order.items[0]?.cake;
+      if (cake) {
+        const adminEmailData = {
+          orderId: order.id,
+          customerName: order.customerName,
+          customerEmail: order.customerEmail || '',
+          customerPhone: order.customerPhone,
+          address: order.address.split(' | ReceiptImage:')[0].trim(), // Remove receipt note from address for email
+          cakeName: cake.name,
+          quantity: order.items[0].quantity,
+          totalPrice: order.total,
+          orderDate: order.createdAt.toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          }),
+          receiptImageUrl: receiptImageUrl,
+          cakePersonalization: cake.isCustomizable && order.items[0] ? {
+            name: order.items[0].cakeName || undefined,
+            age: order.items[0].age || undefined,
+            position: order.items[0].position || undefined
+          } : undefined
+        };
+
+        await sendAdminNotification(adminEmailData);
+      }
+    } catch (adminEmailError) {
+      console.error('Error sending admin notification email with receipt:', adminEmailError);
+      // Don't fail the confirmation if admin email fails
+    }
 
     return NextResponse.json({
       success: true,

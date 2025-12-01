@@ -286,7 +286,7 @@ const Gallery = () => {
 
         {/* Additional Cakes Link - Centered */}
         <div className="flex pb-4 justify-center mt-8 md:mt-12">
-          <Link href="/cakes" className="cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-8 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">დაათვალიერეთ ჩვენი კოლექცია</Link>
+          <Link href="/cakes" className="cursor-pointer md:text-[20px] text-[18px] bg-[#d90b6b] hover:from-pink-600 hover:to-rose-600 text-white py-3 px-8 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">ჩვენი ტორტები</Link>
         </div>
       </div>
 
