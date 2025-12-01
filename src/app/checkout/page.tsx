@@ -23,7 +23,7 @@ const CheckoutPage = () => {
   const [cartData, setCartData] = useState<CartData>({ items: [], total: 0, count: 0 });
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const [orderForm, setOrderForm] = useState({
     customerName: '',
     lastName: '',
@@ -43,7 +43,7 @@ const CheckoutPage = () => {
       try {
         setLoading(true);
         const cartItems = getCart();
-        
+
         if (cartItems.length === 0) {
           router.push('/cart');
           return;
@@ -55,7 +55,7 @@ const CheckoutPage = () => {
           method: 'GET',
           credentials: 'include'
         });
-        
+
         if (response.ok) {
           const result = await response.json();
           if (result.success) {
@@ -93,7 +93,7 @@ const CheckoutPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (cartData.items.length === 0) {
       showToast('error', 'კალათა ცარიელია', 3000);
       return;
@@ -130,15 +130,15 @@ const CheckoutPage = () => {
       });
 
       const results = await Promise.all(orderPromises);
-      
+
       // Check if all orders were successful
       const allSuccess = results.every(result => result.success !== false);
-      
+
       if (allSuccess) {
         // Store order IDs for receipt upload
         const ids = results.map(r => r.orderId).filter(id => id !== undefined);
         setOrderIds(ids);
-        
+
         // If receipt is already uploaded, confirm orders immediately
         if (receiptImage) {
           await confirmOrdersWithReceipt(ids, receiptImage);
@@ -182,10 +182,10 @@ const CheckoutPage = () => {
         // Clear cart from localStorage
         clearCart();
         window.dispatchEvent(new Event('cartUpdated'));
-        
+
         // Show success toast
         showToast('success', 'შეკვეთა დადასტურებულია! ჩვენ მალე დაგიკავშირდებით.', 5000);
-        
+
         // Redirect to home after a short delay
         setTimeout(() => {
           router.push('/');
@@ -205,7 +205,7 @@ const CheckoutPage = () => {
       setIsUploadingReceipt(false);
       const imageUrl = res[0].url;
       setReceiptImage(imageUrl);
-      
+
       // If orders are already created, confirm them immediately
       if (orderIds.length > 0) {
         await confirmOrdersWithReceipt(orderIds, imageUrl);
@@ -250,7 +250,7 @@ const CheckoutPage = () => {
               className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6"
             >
               <h2 className="text-[24px] font-bold text-black mb-6">კონტაქტის ინფორმაცია</h2>
-              
+
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
@@ -266,7 +266,7 @@ const CheckoutPage = () => {
                       placeholder="სახელი"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-[16px] font-medium text-black mb-2">
                       გვარი
@@ -356,7 +356,7 @@ const CheckoutPage = () => {
                   <p className="text-[14px] md:text-[16px] text-gray-700 leading-relaxed">
                     გთხოვთ ჩარიცხეთ ნახევარი მოცემულ ანგარიშიდან ერთ ერთზე, გამოგვიგზავნეთ ჩეკი რის შემდეგაც დაგიკავშირდებით.
                   </p>
-                  
+
                   {/* Receipt Upload */}
                   <div className="space-y-2">
                     <label className="block text-[16px] font-medium text-black">
@@ -418,16 +418,16 @@ const CheckoutPage = () => {
                     )}
                   </div>
                 </div>
-<div className="w-full md:w-1/2 mx-auto">
+                <div className="w-full md:w-1/2 mx-auto">
 
-                <button
-                  type="submit"
-                  disabled={isSubmitting || cartData.items.length === 0 || !receiptImage}
-                  className="w-full bg-[#d90b6b] w-1/2 mx-auto cursor-pointer text-white py-3 px-6 rounded-xl font-semibold hover:bg-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-[18px]"
-                >
-                  {isSubmitting ? 'იგზავნება...' : receiptImage ? 'შეკვეთის დადასტურება' : 'შეკვეთის შექმნა'}
-                </button>
-</div>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || cartData.items.length === 0 || !receiptImage}
+                    className="w-full bg-[#d90b6b] w-1/2 mx-auto cursor-pointer text-white py-3 px-6 rounded-xl font-semibold hover:bg-pink-600 transition-all duration-300 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-[18px]"
+                  >
+                    {isSubmitting ? 'იგზავნება...' : receiptImage ? 'შეკვეთის დადასტურება' : 'შეკვეთის შექმნა'}
+                  </button>
+                </div>
               </form>
             </motion.div>
           </div>
@@ -440,7 +440,7 @@ const CheckoutPage = () => {
               className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-6 sticky top-24"
             >
               <h2 className="text-[24px] font-bold text-black mb-6">შეკვეთის შინაარსი</h2>
-              
+
               <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto">
                 {cartData.items.map((item) => (
                   <div key={item.id} className="flex gap-3 pb-4 border-b border-gray-200 last:border-0">
@@ -467,25 +467,34 @@ const CheckoutPage = () => {
                 ))}
               </div>
 
+             
+
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="space-y-2 text-[14px] text-gray-600">
+                  <h3 className="text-[20px] font-bold text-black mb-3">ინფორმაცია მიწოდებაზე </h3>
+                  <ul>
+                    <li className='text-[18px] font-bold'>ბათუმი - ქალაქის ცენტრის  - 10 ლარი</li>
+                    <li className='text-[18px] font-bold'>ბათუმი - ბენზე - 15 ლარი</li>
+                    <li className='text-[18px] font-bold'>მახინჯაური - 15 ლარი</li>
+                    <li className='text-[18px] font-bold'>ხელვაჩაური - 15 ლარი</li>
+                  </ul>
+
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <div className="flex text-[18px] font-bold items-center gap-2">
+                    <span className="text-green-600">✓</span>
+                    <span>მაღალი ხარისხის ინგრედიენტები</span>
+                  </div>
+                </div>
+              </div>
+
               <div className="border-t border-gray-200 pt-4">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-[18px] font-bold text-black">ჯამი:</span>
                   <span className="text-[24px] font-bold text-pink-600">
                     {formatPrice(cartData.total)}
                   </span>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <div className="space-y-2 text-[14px] text-gray-600">
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-600">✓</span>
-                    <span>უფასო მიწოდება ბათუმში</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-green-600">✓</span>
-                    <span>მაღალი ხარისხის ინგრედიენტები</span>
-                  </div>
                 </div>
               </div>
             </motion.div>

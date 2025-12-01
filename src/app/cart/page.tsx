@@ -325,11 +325,18 @@ const CartPage = () => {
                 {/* Features */}
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <div className="space-y-2 text-[14px] text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <span className="text-green-600">✓</span>
-                      <span>უფასო მიწოდება ბათუმში</span>
-                    </div>
-                    <div className="flex items-center gap-2">
+                   <h3 className="text-[20px] font-bold text-black mb-3">ინფორმაცია მიწოდებაზე </h3>
+                    <ul>
+                      <li className='text-[18px] font-bold'>ბათუმი - ქალაქის ცენტრის  - 10 ლარი</li>
+                      <li className='text-[18px] font-bold'>ბათუმი - ბენზე - 15 ლარი</li>
+                      <li className='text-[18px] font-bold'>მახინჯაური - 15 ლარი</li>
+                      <li className='text-[18px] font-bold'>ხელვაჩაური - 15 ლარი</li>
+                    </ul>
+                    
+                  </div>
+
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <div className="flex text-[18px] font-bold items-center gap-2">
                       <span className="text-green-600">✓</span>
                       <span>მაღალი ხარისხის ინგრედიენტები</span>
                     </div>

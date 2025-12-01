@@ -53,15 +53,15 @@ const ProductPage = () => {
         // Function to calculate price based on piece count
         const calculatePriceForPieces = (pieces: number) => {
             const productPieces = product?.pieces || 8;
-            
+
             // If selected pieces equals product pieces, use base price (no addition)
             if (pieces === productPieces) {
                 return basePrice;
             }
-            
+
             // Calculate additional price based on difference from product pieces
             const difference = pieces - productPieces;
-            
+
             if (difference <= 0) {
                 return basePrice; // Smaller or equal to product pieces
             } else if (difference <= 8) {
@@ -212,10 +212,10 @@ const ProductPage = () => {
             if (response.ok) {
                 const result = await response.json();
                 const customizationId = result.customizationId;
-                
+
                 // Also store in localStorage as backup
                 localStorage.setItem(`customization_${customizationId}`, JSON.stringify(customizationData));
-                
+
                 return customizationId;
             }
         } catch (error) {
@@ -234,7 +234,7 @@ const ProductPage = () => {
 
         try {
             setAddingToCart(true);
-            
+
             // Validate product exists via API
             const validateResponse = await fetch('/api/cart', {
                 method: 'POST',
@@ -273,7 +273,7 @@ const ProductPage = () => {
             };
 
             addToCartLocalStorage(cartItem);
-            
+
             setCartMessage({ type: 'success', text: 'პროდუქტი დაემატა კალათაში!' });
             setTimeout(() => setCartMessage(null), 3000);
         } catch (error) {
@@ -422,8 +422,8 @@ const ProductPage = () => {
                                 {product.titleGeorgian}
                             </h1>
                             {/* Product Type Badge */}
-                         
-                            
+
+
                             {product.productType === 'FULL_CAKE' && product.pieces && (
                                 <div className="text-[18px] text-gray-600 mb-4">
                                     {product.pieces} ნაჭერი
@@ -432,29 +432,29 @@ const ProductPage = () => {
                         </div>
 
                         {/* Set Information - Only for SET type */}
-                        {product.productType === 'SET' && 
-                         ((product.setItems && product.setItems.length > 0) || product.setDescription) && (
-                            <div className=" rounded-xl p-4 space-y-3">
-                                {product.setItems && product.setItems.length > 0 && (
-                                    <>
-                                        <h3 className="text-[18px] md:text-[24px] font-semibold text-black">ნაკრების შემადგენლობა:</h3>
-                                        <ul className="space-y-2">
-                                            {product.setItems.map((item, index) => (
-                                                <li key={index} className="flex md:text-[20px] text-[18px] items-start">
-                                                    <span className="text-black mr-2">✓</span>
-                                                    <span className="text-black md:text-[20px] text-[18px]">{item}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </>
-                                )}
-                                {product.setDescription && (
-                                    <div className={product.setItems && product.setItems.length > 0 ? "mt-3" : ""}>
-                                        <p className="text-black text-[16px]">{product.setDescription}</p>
-                                    </div>
-                                )}
-                            </div>
-                        )}
+                        {product.productType === 'SET' &&
+                            ((product.setItems && product.setItems.length > 0) || product.setDescription) && (
+                                <div className=" rounded-xl p-4 space-y-3">
+                                    {product.setItems && product.setItems.length > 0 && (
+                                        <>
+                                            <h3 className="text-[18px] md:text-[24px] font-semibold text-black">ნაკრების შემადგენლობა:</h3>
+                                            <ul className="space-y-2">
+                                                {product.setItems.map((item, index) => (
+                                                    <li key={index} className="flex md:text-[20px] text-[18px] items-start">
+                                                        <span className="text-black mr-2">✓</span>
+                                                        <span className="text-black md:text-[20px] text-[18px]">{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </>
+                                    )}
+                                    {product.setDescription && (
+                                        <div className={product.setItems && product.setItems.length > 0 ? "mt-3" : ""}>
+                                            <p className="text-black text-[16px]">{product.setDescription}</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                         {/* Individual Slice Information - Only for INDIVIDUAL_SLICE type */}
                         {product.productType === 'INDIVIDUAL_SLICE' && (product.sliceWeight || product.sliceDescription) && (
@@ -485,8 +485,8 @@ const ProductPage = () => {
                                         <button
                                             onClick={() => setSelectedTopping('marzipan')}
                                             className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${selectedTopping === 'marzipan'
-                                                    ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                    : 'border-gray-200 bg-white text-black hover:border-pink-300'
+                                                ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                : 'border-gray-200 bg-white text-black hover:border-pink-300'
                                                 }`}
                                         >
                                             <div className="text-[18px] font-medium">მარცეპანი</div>
@@ -498,8 +498,8 @@ const ProductPage = () => {
                                         <button
                                             onClick={() => setSelectedTopping('cream')}
                                             className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${selectedTopping === 'cream'
-                                                    ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                    : 'border-gray-200 text-black bg-white hover:border-pink-300'
+                                                ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                : 'border-gray-200 text-black bg-white hover:border-pink-300'
                                                 }`}
                                         >
                                             <div className="text-[18px] font-medium">კრემი</div>
@@ -516,8 +516,8 @@ const ProductPage = () => {
                         {!product.isCustomizable && product.price && (
                             <div className="">
                                 <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4">სტანდარტული ფასი: {formatPrice(product.price)}</h3>
-                            
-                               
+
+
                             </div>
                         )}
 
@@ -536,8 +536,8 @@ const ProductPage = () => {
                                                     key={option.pieces}
                                                     onClick={() => setSelectedPieces(option.pieces)}
                                                     className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${selectedPieces === option.pieces
-                                                            ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                            : 'border-gray-200 text-black bg-white hover:border-pink-300'
+                                                        ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                        : 'border-gray-200 text-black bg-white hover:border-pink-300'
                                                         }`}
                                                 >
                                                     <div className="text-[18px] font-medium">{option.label}</div>
@@ -564,8 +564,8 @@ const ProductPage = () => {
                                                 key={filling.id}
                                                 onClick={() => setSelectedFilling(selectedFilling === filling.id ? '' : filling.id)}
                                                 className={`p-3 rounded-lg text-black border-2 transition-all duration-200 text-left ${selectedFilling === filling.id
-                                                        ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                        : 'border-gray-200 text-black bg-white hover:border-pink-300'
+                                                    ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                    : 'border-gray-200 text-black bg-white hover:border-pink-300'
                                                     }`}
                                             >
                                                 <div className="text-[18px] font-medium mb-1">{filling.name}</div>
@@ -581,7 +581,7 @@ const ProductPage = () => {
                         {product.productType === 'FULL_CAKE' && product.isCustomizable && (
                             <div className="">
                                 <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-4">ტორტის პერსონალიზაცია</h3>
-                                
+
                                 {/* Name Input */}
                                 <div className="space-y-2">
                                     <label className="text-[18px] font-medium text-black">სახელი ტორტზე:</label>
@@ -615,8 +615,8 @@ const ProductPage = () => {
                                         <button
                                             onClick={() => setPosition('bottom')}
                                             className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${position === 'bottom'
-                                                    ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                    : 'border-gray-200 text-black bg-white hover:border-pink-300'
+                                                ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                : 'border-gray-200 text-black bg-white hover:border-pink-300'
                                                 }`}
                                         >
                                             <div className="text-[16px] text-black font-medium">ქვევით</div>
@@ -624,8 +624,8 @@ const ProductPage = () => {
                                         <button
                                             onClick={() => setPosition('center')}
                                             className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${position === 'center'
-                                                    ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                    : 'border-gray-200 bg-white text-black hover:border-pink-300'
+                                                ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                : 'border-gray-200 bg-white text-black hover:border-pink-300'
                                                 }`}
                                         >
                                             <div className="text-[16px] text-black font-medium">ცენტრში</div>
@@ -633,8 +633,8 @@ const ProductPage = () => {
                                         <button
                                             onClick={() => setPosition('top')}
                                             className={`p-3 rounded-lg text-black border-2 transition-all duration-200 ${position === 'top'
-                                                    ? 'border-pink-500 bg-pink-100 text-pink-700'
-                                                    : 'border-gray-200 bg-white text-black hover:border-pink-300'
+                                                ? 'border-pink-500 bg-pink-100 text-pink-700'
+                                                : 'border-gray-200 bg-white text-black hover:border-pink-300'
                                                 }`}
                                         >
                                             <div className="text-[16px] text-black font-medium">ზევით</div>
@@ -646,16 +646,29 @@ const ProductPage = () => {
 
                         {/* Product Features */}
                         <div className="bg-white p-4 rounded-xl">
-                            <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-3">პროდუქტის მახასიათებლები</h3>
-                            <div className="grid text-black grid-cols-1 md:grid-cols-2 gap-3 text-[14px] md:text-[16px]">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-black">✓</span>
-                                    <span>მაღალი ხარისხის ინგრედიენტები</span>
-                                </div>
 
-                                <div className="flex items-center gap-2">
-                                    <span className="text-black">✓</span>
-                                    <span>უფასო მიწოდება ბათუმში</span>
+                            <div className="grid text-black grid-cols-1 md:grid-cols-1 gap-3 text-[14px] md:text-[16px]">
+
+
+                                <div className="mt-6 pt-6 border-t border-gray-200">
+                                    <div className="space-y-2 text-[14px] text-gray-600">
+                                        <h3 className="text-[20px] font-bold text-black mb-3">ინფორმაცია მიწოდებაზე </h3>
+                                        <ul>
+                                            <li className='text-[18px] font-bold'>ბათუმი - ქალაქის ცენტრის - 10 ლარი</li>
+                                            <li className='text-[18px] font-bold'>ბათუმი - ბენზე - 15 ლარი</li>
+                                            <li className='text-[18px] font-bold'>მახინჯაური - 15 ლარი</li>
+                                            <li className='text-[18px] font-bold'>ხელვაჩაური - 15 ლარი</li>
+                                        </ul>
+
+                                    </div>
+
+                                    <div className="mt-6 pt-6 border-t border-gray-200">
+                                        <h3 className="text-[18px] md:text-[20px] font-semibold text-black mb-3">პროდუქტის მახასიათებლები</h3>
+                                        <div className="flex text-[18px] font-bold items-center gap-2">
+                                            <span className="text-green-600">✓</span>
+                                            <span>მაღალი ხარისხის ინგრედიენტები</span>
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>
@@ -663,53 +676,52 @@ const ProductPage = () => {
 
                         {/* Quantity Selector */}
                         <div className="space-y-4">
-                           
+
 
                             {/* Total Price Display - Only show if totalPrice > 0 */}
                             {totalPrice > 0 && (
-                            <div className=" p-4 ">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-[18px] font-semibold text-black">ჯამი:</span>
-                                    <span className="text-[24px] font-bold text-pink-600">{formatPrice(totalPrice)}</span>
+                                <div className=" p-4 ">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-[18px] font-semibold text-black">ჯამი:</span>
+                                        <span className="text-[24px] font-bold text-pink-600">{formatPrice(totalPrice)}</span>
+                                    </div>
+                                    {/* Only show details for FULL_CAKE type */}
+                                    {product.productType === 'FULL_CAKE' && (
+                                        <>
+                                            <div className="text-[16px] text-black mt-1">
+                                                {product.isCustomizable ? (
+                                                    <>
+                                                        {getPieceOptions().find(option => option.pieces === selectedPieces)?.label} ({getPieceOptions().find(option => option.pieces === selectedPieces)?.coverage}) × {quantity}
+                                                    </>
+                                                ) : (
+                                                    <span>რაოდენობა: {quantity}</span>
+                                                )}
+                                            </div>
+                                            <div className="text-[15px] text-black mt-1">
+                                                {product.isCustomizable ? (
+                                                    <>
+                                                        {selectedTopping === 'marzipan' ? 'მარცეპანით' : selectedTopping === 'cream' ? 'კრემით' : ''}
+                                                        {selectedFilling && ` • ${fillingOptions.find(f => f.id === selectedFilling)?.name}`}
+                                                        {cakeName && ` • სახელი: ${cakeName}`}
+                                                        {age && ` • ასაკი: ${age}`}
+                                                        {position && ` • პოზიცია: ${position === 'bottom' ? 'ქვევით' : position === 'center' ? 'ცენტრში' : 'ზევით'}`}
+                                                    </>
+                                                ) : (
+                                                    <span>სტანდარტული ტორტი</span>
+                                                )}
+                                            </div>
+                                        </>
+                                    )}
                                 </div>
-                                {/* Only show details for FULL_CAKE type */}
-                                {product.productType === 'FULL_CAKE' && (
-                                    <>
-                                        <div className="text-[16px] text-black mt-1">
-                                            {product.isCustomizable ? (
-                                                <>
-                                                    {getPieceOptions().find(option => option.pieces === selectedPieces)?.label} ({getPieceOptions().find(option => option.pieces === selectedPieces)?.coverage}) × {quantity}
-                                                </>
-                                            ) : (
-                                                <span>რაოდენობა: {quantity}</span>
-                                            )}
-                                        </div>
-                                        <div className="text-[15px] text-black mt-1">
-                                            {product.isCustomizable ? (
-                                                <>
-                                                    {selectedTopping === 'marzipan' ? 'მარცეპანით' : selectedTopping === 'cream' ? 'კრემით' : ''}
-                                                    {selectedFilling && ` • ${fillingOptions.find(f => f.id === selectedFilling)?.name}`}
-                                                    {cakeName && ` • სახელი: ${cakeName}`}
-                                                    {age && ` • ასაკი: ${age}`}
-                                                    {position && ` • პოზიცია: ${position === 'bottom' ? 'ქვევით' : position === 'center' ? 'ცენტრში' : 'ზევით'}`}
-                                                </>
-                                            ) : (
-                                                <span>სტანდარტული ტორტი</span>
-                                            )}
-                                        </div>
-                                    </>
-                                )}
-                            </div>
                             )}
 
 
                             {/* Cart Message */}
                             {cartMessage && (
-                                <div className={`p-4 rounded-lg ${
-                                    cartMessage.type === 'success' 
-                                        ? 'bg-green-100 text-green-800 border border-green-300' 
-                                        : 'bg-red-100 text-red-800 border border-red-300'
-                                }`}>
+                                <div className={`p-4 rounded-lg ${cartMessage.type === 'success'
+                                    ? 'bg-green-100 text-green-800 border border-green-300'
+                                    : 'bg-red-100 text-red-800 border border-red-300'
+                                    }`}>
                                     <p className="text-[16px] font-medium">{cartMessage.text}</p>
                                 </div>
                             )}
