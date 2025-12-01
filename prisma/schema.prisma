@@ -75,6 +75,7 @@ model Order {
   customerPhone String
   customerEmail String?
   address       String
+  notes         String?      // დამატებითი შენიშვნები
 
   items         OrderItem[]
   total         Float
@@ -103,6 +104,7 @@ model OrderItem {
   cakeName String?  // Name to be written on the cake
   age      String?  // Age to be written on the cake (e.g., "2 წლის", "18 წლის")
   position String?  // Position on cake: "bottom", "center", "top"
+  filling  String?  // Selected filling (e.g., "fruit", "chocolate", "pistachio", "black")
 }
 
 model ChatSession {

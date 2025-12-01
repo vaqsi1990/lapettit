@@ -22,6 +22,18 @@ export const emailTemplates = {
     quantity: number;
     totalPrice: number;
     orderDate: string;
+    cakePersonalization?: {
+      name?: string;
+      age?: string;
+      position?: string;
+      productType?: string;
+      pieces?: number | null;
+      fillings?: string[];
+      hasMarzipan?: boolean;
+      marzipanPrice?: number | null;
+      hasCream?: boolean;
+      creamPrice?: number | null;
+    };
   }) => ({
     subject: `Order Confirmation #${orderData.orderId} - Your Cake Order`,
     html: `
@@ -65,6 +77,27 @@ export const emailTemplates = {
               <h3> პროდუქტის დეტალები</h3>
               <p><strong>პროდუქტის სახელი:</strong> ${orderData.cakeName}</p>
               <p><strong>რაოდენობა:</strong> ${orderData.quantity}</p>
+              ${orderData.cakePersonalization ? `
+                <div style="background: #f0f0ff; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #8b5cf6;">
+                  <h4 style="color: #8b5cf6; margin: 0 0 10px 0;">ტორტის პერსონალიზაცია</h4>
+                  ${orderData.cakePersonalization.productType ? `<p><strong>ტორტის ტიპი:</strong> ${orderData.cakePersonalization.productType === 'FULL_CAKE' ? 'სრული ტორტი' : orderData.cakePersonalization.productType === 'SET' ? 'ნაკრები' : orderData.cakePersonalization.productType === 'INDIVIDUAL_SLICE' ? 'ინდივიდუალური ნაჭერი' : orderData.cakePersonalization.productType}</p>` : ''}
+                  ${orderData.cakePersonalization.pieces ? `<p><strong>ზომა:</strong> ${orderData.cakePersonalization.pieces} ნაჭერი</p>` : ''}
+                  ${orderData.cakePersonalization.fillings && orderData.cakePersonalization.fillings.length > 0 ? `<p><strong>შიგთავსი:</strong> ${orderData.cakePersonalization.fillings.map(f => {
+                    const fillingMap: { [key: string]: string } = {
+                      'fruit': 'ხილის ტორტი',
+                      'chocolate': 'შოკოლადის ტორტი',
+                      'pistachio': 'ფისტის საფირმო ტორტი',
+                      'black': 'შავი საფირმო ტორტი'
+                    };
+                    return fillingMap[f] || f;
+                  }).join(', ')}</p>` : ''}
+                  ${orderData.cakePersonalization.hasMarzipan ? `<p><strong>მარცეპანი:</strong> დიახ</p>` : ''}
+                  ${orderData.cakePersonalization.hasCream ? `<p><strong>კრემი:</strong> დიახ</p>` : ''}
+                  ${orderData.cakePersonalization.name ? `<p><strong>სახელი ტორტზე:</strong> ${orderData.cakePersonalization.name}</p>` : ''}
+                  ${orderData.cakePersonalization.age ? `<p><strong>ასაკი ტორტზე:</strong> ${orderData.cakePersonalization.age}</p>` : ''}
+                  ${orderData.cakePersonalization.position ? `<p><strong>პოზიცია:</strong> ${orderData.cakePersonalization.position === 'bottom' ? 'ქვევით' : orderData.cakePersonalization.position === 'center' ? 'ცენტრში' : 'ზევით'}</p>` : ''}
+                </div>
+              ` : ''}
             </div>
             
             <div class="order-details">
@@ -111,6 +144,13 @@ export const emailTemplates = {
       name?: string;
       age?: string;
       position?: string;
+      productType?: string;
+      pieces?: number | null;
+      fillings?: string[];
+      hasMarzipan?: boolean;
+      marzipanPrice?: number | null;
+      hasCream?: boolean;
+      creamPrice?: number | null;
     };
   }) => ({
     subject: `New Order #${orderData.orderId} - ${orderData.cakeName}`,
@@ -155,9 +195,22 @@ export const emailTemplates = {
               <h3> პროდუქტის დეტალები</h3>
               <p><strong>პროდუქტის სახელი:</strong> ${orderData.cakeName}</p>
               <p><strong>რაოდენობა:</strong> ${orderData.quantity}</p>
-              ${orderData.cakePersonalization && (orderData.cakePersonalization.name || orderData.cakePersonalization.age) ? `
+              ${orderData.cakePersonalization ? `
                 <div style="background: #f0f0ff; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #8b5cf6;">
                   <h4 style="color: #8b5cf6; margin: 0 0 10px 0;">ტორტის პერსონალიზაცია</h4>
+                  ${orderData.cakePersonalization.productType ? `<p><strong>ტორტის ტიპი:</strong> ${orderData.cakePersonalization.productType === 'FULL_CAKE' ? 'სრული ტორტი' : orderData.cakePersonalization.productType === 'SET' ? 'ნაკრები' : orderData.cakePersonalization.productType === 'INDIVIDUAL_SLICE' ? 'ინდივიდუალური ნაჭერი' : orderData.cakePersonalization.productType}</p>` : ''}
+                  ${orderData.cakePersonalization.pieces ? `<p><strong>ზომა:</strong> ${orderData.cakePersonalization.pieces} ნაჭერი</p>` : ''}
+                  ${orderData.cakePersonalization.fillings && orderData.cakePersonalization.fillings.length > 0 ? `<p><strong>შიგთავსი:</strong> ${orderData.cakePersonalization.fillings.map(f => {
+                    const fillingMap: { [key: string]: string } = {
+                      'fruit': 'ხილის ტორტი',
+                      'chocolate': 'შოკოლადის ტორტი',
+                      'pistachio': 'ფისტის საფირმო ტორტი',
+                      'black': 'შავი საფირმო ტორტი'
+                    };
+                    return fillingMap[f] || f;
+                  }).join(', ')}</p>` : ''}
+                  ${orderData.cakePersonalization.hasMarzipan ? `<p><strong>მარცეპანი:</strong> დიახ</p>` : ''}
+                  ${orderData.cakePersonalization.hasCream ? `<p><strong>კრემი:</strong> დიახ</p>` : ''}
                   ${orderData.cakePersonalization.name ? `<p><strong>სახელი ტორტზე:</strong> ${orderData.cakePersonalization.name}</p>` : ''}
                   ${orderData.cakePersonalization.age ? `<p><strong>ასაკი ტორტზე:</strong> ${orderData.cakePersonalization.age}</p>` : ''}
                   ${orderData.cakePersonalization.position ? `<p><strong>პოზიცია:</strong> ${orderData.cakePersonalization.position === 'bottom' ? 'ქვევით' : orderData.cakePersonalization.position === 'center' ? 'ცენტრში' : 'ზევით'}</p>` : ''}
@@ -316,6 +369,13 @@ type RegularOrderData = {
     name?: string;
     age?: string;
     position?: string;
+    productType?: string;
+    pieces?: number | null;
+    fillings?: string[];
+    hasMarzipan?: boolean;
+    marzipanPrice?: number | null;
+    hasCream?: boolean;
+    creamPrice?: number | null;
   };
 };
 

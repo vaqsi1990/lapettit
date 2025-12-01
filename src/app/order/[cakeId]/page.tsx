@@ -250,7 +250,8 @@ const OrderPage = () => {
           totalPrice: totalPrice,
           cakeName: cake.isCustomizable ? cakeName : undefined,
           age: cake.isCustomizable ? age : undefined,
-          position: cake.isCustomizable ? position : undefined
+          position: cake.isCustomizable ? position : undefined,
+          filling: selectedFilling || undefined
         };
 
         const orderResult = await submitOrder(orderData);

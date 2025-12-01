@@ -16,6 +16,7 @@ export interface OrderFormData {
   cakeName?: string;  // Name to be written on the cake
   age?: string;       // Age to be written on the cake (e.g., "2 წლის", "18 წლის")
   position?: string;  // Position on cake: "bottom", "center", "top"
+  filling?: string;   // Selected filling (e.g., "fruit", "chocolate", "pistachio", "black")
 }
 
 export async function submitOrder(formData: OrderFormData) {

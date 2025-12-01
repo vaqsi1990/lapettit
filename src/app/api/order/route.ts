@@ -20,7 +20,8 @@ export async function POST(request: NextRequest) {
       totalPrice,
       cakeName,
       age,
-      position
+      position,
+      filling
     } = body;
 
     // Validate required fields
@@ -52,6 +53,7 @@ export async function POST(request: NextRequest) {
         customerPhone,
         customerEmail: customerEmail || null,
         address: `${address}, ${city || ''}`.trim().replace(/^,\s*/, ''),
+        notes: notes || null,
         total: finalTotal,
         status: 'PENDING'
       }
@@ -65,7 +67,8 @@ export async function POST(request: NextRequest) {
         quantity: quantity,
         cakeName: cake.isCustomizable ? (cakeName || null) : null,
         age: cake.isCustomizable ? (age || null) : null,
-        position: cake.isCustomizable ? (position || null) : null
+        position: cake.isCustomizable ? (position || null) : null,
+        filling: filling || null
       }
     });
 
@@ -88,7 +91,21 @@ export async function POST(request: NextRequest) {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
-          })
+          }),
+          cakePersonalization: {
+            productType: cake.productType ? String(cake.productType) : undefined,
+            pieces: cake.pieces || undefined,
+            fillings: filling ? [filling] : (cake.fillings && cake.fillings.length > 0 ? cake.fillings : undefined),
+            hasMarzipan: cake.hasMarzipan || undefined,
+            marzipanPrice: cake.marzipanPrice || undefined,
+            hasCream: cake.hasCream || undefined,
+            creamPrice: cake.creamPrice || undefined,
+            ...(cake.isCustomizable ? {
+              name: cakeName || undefined,
+              age: age || undefined,
+              position: position || undefined
+            } : {})
+          }
         };
 
         await sendOrderConfirmation(customerEmailData);
