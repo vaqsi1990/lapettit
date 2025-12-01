@@ -144,8 +144,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="text-[18px] text-black md:text-[20px] font-semibold  mb-2">მისამართი</h3>
-                    <p className=" text-[18px] text-black md:text-[20px]">67 ლერმონტოვის ქუჩა, ბათუმი</p>
-                    <p className=" text-[18px] text-black md:text-[20px]">თბილისი, საქართველო</p>
+                    <p className=" text-[18px] text-black md:text-[20px]">65 ლერმონტოვის ქუჩა</p>
+                    <p className=" text-[18px] text-black md:text-[20px]">ბათუმი, საქართველო</p>
                   </div>
                 </div>
 
@@ -198,7 +198,7 @@ const Contact = () => {
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                  <label className="block text-[18px] font-medium text-black mb-2">
                     სახელი და გვარი *
                   </label>
                   <input
@@ -213,7 +213,7 @@ const Contact = () => {
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                  <label className="block text-[18px] font-medium text-black mb-2">
                     ელ-ფოსტა *
                   </label>
                   <input
@@ -228,7 +228,7 @@ const Contact = () => {
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                  <label className="block text-[18px] font-medium text-black mb-2">
                     ტელეფონის ნომერი
                   </label>
                   <input
@@ -242,7 +242,7 @@ const Contact = () => {
 
                 {/* Subject */}
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                  <label className="block text-[18px] font-medium text-black mb-2">
                     თემა *
                   </label>
                   <select
@@ -262,7 +262,7 @@ const Contact = () => {
 
                 {/* Message */}
                 <div>
-                  <label className="block text-sm font-medium text-black mb-2">
+                    <label className="block text-[18px] font-medium text-black mb-2">
                     შეტყობინება *
                   </label>
                   <textarea

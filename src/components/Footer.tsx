@@ -101,7 +101,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center gap-3">
                 <MapPin size={18} className="text-[#c23b6d]" />
-                <span>67 ლერმონტოვის ქუჩა, ბათუმი</span>
+                <span>65 ლერმონტოვის ქუჩა, ბათუმი</span>
               </li>
             </ul>
           </div>

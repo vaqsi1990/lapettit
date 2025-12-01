@@ -44,14 +44,14 @@ export const emailTemplates = {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Order Confirmation</title>
         <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          body { font-family: Arial, sans-serif; font-size: 18px; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
           .header { background: linear-gradient(135deg, #d90b6b, #ff6b9d); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
           .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
           .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #d90b6b; }
           .cake-info { background: #fff5f7; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #ffd6e7; }
           .total { font-size: 24px; font-weight: bold; color: #d90b6b; text-align: center; margin: 20px 0; }
-          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 18px; }
           .highlight { color: #d90b6b; font-weight: bold; }
         </style>
       </head>
@@ -162,14 +162,14 @@ export const emailTemplates = {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>New Order Notification</title>
         <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          body { font-family: Arial, sans-serif; font-size: 18px; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
           .header { background: linear-gradient(135deg, #d90b6b, #ff6b9d); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
           .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
           .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #d90b6b; }
           .cake-info { background: #fff5f7; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #ffd6e7; }
           .total { font-size: 24px; font-weight: bold; color: #d90b6b; text-align: center; margin: 20px 0; }
-          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 18px; }
           .highlight { color: #d90b6b; font-weight: bold; }
         </style>
       </head>
@@ -287,13 +287,13 @@ export const emailTemplates = {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Contact Form Submission</title>
         <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          body { font-family: Arial, sans-serif; font-size: 18px; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
           .header { background: linear-gradient(135deg, #d90b6b, #ff6b9d); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
           .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
           .contact-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #d90b6b; }
           .message { background: #fff5f7; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #ffd6e7; }
-          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 18px; }
           .highlight { color: #d90b6b; font-weight: bold; }
         </style>
       </head>
@@ -418,13 +418,13 @@ export async function sendOrderRejection(orderData: RegularOrderData) {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <title>Order Rejection</title>
           <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            body { font-family: Arial, sans-serif; font-size: 18px; line-height: 1.6; color: #333; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
             .header { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
             .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
             .order-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc2626; }
             .cake-info { background: #fef2f2; padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid #fecaca; }
-            .footer { text-align: center; margin-top: 30px; color: #666; font-size: 14px; }
+            .footer { text-align: center; margin-top: 30px; color: #666; font-size: 18px; }
             .highlight { color: #dc2626; font-weight: bold; }
           </style>
         </head>
@@ -493,7 +493,7 @@ export async function sendOrderRejection(orderData: RegularOrderData) {
 // Send admin notification email
 export async function sendAdminNotification(orderData: RegularOrderData | ContactFormData) {
   try {
-    const adminEmails = ['vaqsii23@gmail.com'];
+    const adminEmails = ['Lappetit2019@gmail.com'];
     
     let emailContent;
     

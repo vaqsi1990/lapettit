@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
           cakePersonalization: {
             productType: cake.productType ? String(cake.productType) : undefined,
             pieces: cake.pieces || undefined,
-            fillings: order.items[0].filling ? [order.items[0].filling] : (cake.fillings && cake.fillings.length > 0 ? cake.fillings : undefined),
+            fillings: (order.items[0]?.filling ? [order.items[0].filling] : undefined) || (cake.fillings && cake.fillings.length > 0 ? cake.fillings : undefined),
             hasMarzipan: cake.hasMarzipan || undefined,
             marzipanPrice: cake.marzipanPrice || undefined,
             hasCream: cake.hasCream || undefined,

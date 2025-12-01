@@ -116,7 +116,8 @@ const CheckoutPage = () => {
           totalPrice: item.price * item.quantity,
           cakeName: item.cakeName,
           age: item.age,
-          position: item.position
+          position: item.position,
+          filling: item.filling || undefined
         };
 
         const response = await fetch('/api/order', {
@@ -479,29 +480,95 @@ const CheckoutPage = () => {
               <h2 className="text-[24px] font-bold text-black mb-6">შეკვეთის შინაარსი</h2>
 
               <div className="space-y-4 mb-6 max-h-[400px] overflow-y-auto">
-                {cartData.items.map((item) => (
-                  <div key={item.id} className="flex gap-3 pb-4 border-b border-gray-200 last:border-0">
-                    <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                      <Image
-                        src={item.productImage || '/catalog/1.jpg'}
-                        alt={item.productName || 'Product'}
-                        fill
-                        className="object-cover"
-                      />
+                {cartData.items.map((item) => {
+                  const fillingMap: { [key: string]: string } = {
+                    'fruit': 'ხილის ტორტი',
+                    'chocolate': 'შოკოლადის ტორტი',
+                    'pistachio': 'ფისტის საფირმო ტორტი',
+                    'black': 'შავი საფირმო ტორტი'
+                  };
+                  
+                  const getFillingName = (fillingId?: string) => {
+                    if (!fillingId) return null;
+                    return fillingMap[fillingId] || fillingId;
+                  };
+
+                  const getProductTypeName = (type?: string) => {
+                    if (!type) return null;
+                    if (type === 'FULL_CAKE') return 'სრული ტორტი';
+                    if (type === 'SET') return 'ნაკრები';
+                    if (type === 'INDIVIDUAL_SLICE') return 'ინდივიდუალური ნაჭერი';
+                    return type;
+                  };
+
+                  const getPositionName = (pos?: string) => {
+                    if (!pos) return null;
+                    if (pos === 'bottom') return 'ქვევით';
+                    if (pos === 'center') return 'ცენტრში';
+                    if (pos === 'top') return 'ზევით';
+                    return pos;
+                  };
+
+                  const hasPersonalization = item.productType || item.pieces || item.filling || item.topping || item.cakeName || item.age || item.position;
+
+                  return (
+                    <div key={item.id} className="pb-4 border-b border-gray-200 last:border-0">
+                      <div className="flex gap-3 mb-3">
+                        <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+                          <Image
+                            src={item.productImage || '/catalog/1.jpg'}
+                            alt={item.productName || 'Product'}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[16px] font-medium text-black truncate">
+                            {item.productName}
+                          </p>
+                          <p className="text-[16px] text-black">
+                            რაოდენობა: {item.quantity}
+                          </p>
+                          <p className="text-[16px] font-bold text-pink-600">
+                            {formatPrice(item.price * item.quantity)}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {hasPersonalization && (
+                        <div className=" rounded-lg p-3 mt-3">
+                          <h4 className="text-[18px] font-bold text-black mb-2">ტორტის პერსონალიზაცია</h4>
+                          <div className="space-y-1 text-[16px] text-black">
+                            {getProductTypeName(item.productType) && (
+                              <p><strong className='text-[16px] text-black'>ტორტის ტიპი:</strong> {getProductTypeName(item.productType)}</p>
+                            )}
+                            {item.pieces && (
+                              <p><strong className='text-[16px] text-black'>ზომა:</strong> {item.pieces} ნაჭერი</p>
+                            )}
+                            {getFillingName(item.filling) && (
+                              <p><strong className='text-[16px] text-black'>შიგთავსი:</strong> {getFillingName(item.filling)}</p>
+                            )}
+                            {item.topping === 'marzipan' && (
+                              <p><strong className='text-[16px] text-black'>მარცეპანი:</strong> დიახ</p>
+                            )}
+                            {item.topping === 'cream' && (
+                              <p><strong className='text-[16px] text-black'>კრემი:</strong> დიახ</p>
+                            )}
+                            {item.cakeName && (
+                              <p><strong className='text-[16px] text-black'>სახელი ტორტზე:</strong> {item.cakeName}</p>
+                            )}
+                            {item.age && (
+                              <p><strong className='text-[16px] text-black'>ასაკი ტორტზე:</strong> {item.age}</p>
+                            )}
+                            {getPositionName(item.position) && (
+                              <p><strong className='text-[16px] text-black'>პოზიცია:</strong> {getPositionName(item.position)}</p>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[14px] font-medium text-black truncate">
-                        {item.productName}
-                      </p>
-                      <p className="text-[12px] text-gray-600">
-                        რაოდენობა: {item.quantity}
-                      </p>
-                      <p className="text-[14px] font-bold text-pink-600">
-                        {formatPrice(item.price * item.quantity)}
-                      </p>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
              
