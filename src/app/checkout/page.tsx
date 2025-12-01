@@ -354,7 +354,12 @@ const CheckoutPage = () => {
                     გადახდის ინსტრუქცია
                   </h3>
                   <p className="text-[14px] md:text-[16px] text-gray-700 leading-relaxed">
-                    გთხოვთ ჩარიცხეთ ნახევარი მოცემულ ანგარიშიდან ერთ ერთზე, გამოგვიგზავნეთ ჩეკი რის შემდეგაც დაგიკავშირდებით.
+                    გთხოვთ ჩარიცხეთ ნახევარი მოცემულ ანგარიშიდან ერთ ერთზე, გამოგვიგზავნეთ ჩეკი რის შემდეგაც დაგიკავშირდებით - <span className='font-bold'>
+                    ნათია კვირკველია მიმღები საბანკო ანგარიში: </span> 
+                    <ul>
+                      <li className='text-[18px] font-bold'>GE16BG0000000499237891</li>
+                      <li className='text-[18px] font-bold'>GE02TB7731145064300018</li>
+                    </ul>
                   </p>
 
                   {/* Receipt Upload */}
