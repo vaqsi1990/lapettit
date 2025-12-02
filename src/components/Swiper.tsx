@@ -70,7 +70,7 @@ const Swiper = () => {
         <div className="w-full mt-20 mb-20">
             <div className="container mx-auto px-4">
                 {/* Instagram-like Grid Gallery */}
-                <motion.h2 className="text-[20px] md:text-[30px] text-center mb-10 font-bold text-[#d90b6b] mb-4">გალერია</motion.h2>
+                <motion.h2 className="text-[22px] md:text-[30px] text-center mb-10 font-bold text-[#d90b6b] mb-4">გალერია</motion.h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
                     {images.map((image, index) => (
                         <motion.div

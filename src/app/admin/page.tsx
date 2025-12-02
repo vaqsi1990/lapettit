@@ -1503,11 +1503,11 @@ const AdminPage = () => {
                             }
                           }
                         }}
-                        className="px-3 py-1.5 text-sm bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                        className="px-3 py-1.5 text-sm   text-white rounded-lg transition-colors flex items-center gap-2"
                         title="ყველა ჩათის წაშლა"
                       >
-                        <Trash2 className="w-4 h-4" />
-                        <span className="hidden sm:inline">ყველას წაშლა</span>
+                        <Trash2 className="w-7 h-7 cursor-pointer text-[#d90b6b]" />
+                       
                       </button>
                     )}
                   </div>

@@ -18,7 +18,7 @@ const About = () => {
                     {/* <p className="tracking-widest text-sm text-rose-400/80 mb-4">
                 EMBRACING EXCELLENCE
             </p> */}
-                    <h2 className="font-[Cormorant_Garamond] font-bold text-[20px] md:text-[30px] leading-tight text-[#d90b6b] mb-6">
+                    <h2 className="font-[Cormorant_Garamond] font-bold text-[22px] md:text-[30px] leading-tight text-[#d90b6b] mb-6">
                         მოგზაურობა ჩვენს ხედვაში,
                         <br /> ღირებულებებსა და
                         <br /> ტკბილ ერთგულებაში

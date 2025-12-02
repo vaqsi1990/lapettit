@@ -29,7 +29,7 @@ const Services = () => {
             whileInView={{ opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
-            className="font-[Cormorant_Garamond] text-[20px] md:text-[30px] font-bold text-white mb-4 relative z-30"
+            className="font-[Cormorant_Garamond] text-[22px] md:text-[30px] font-bold text-white mb-4 relative z-30"
             style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}
           >
             რატომ ჩვენ?
