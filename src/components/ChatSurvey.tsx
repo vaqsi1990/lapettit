@@ -451,12 +451,19 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
           }
           
           // Check for new messages from admin/user (separate from continue question logic)
-          const messagesResponse = await fetch(`/api/chat-survey/messages/${surveyState.sessionId}?t=${Date.now()}`, {
-            cache: 'no-store'
-          });
-          const messagesData = await messagesResponse.json();
+          // Skip message fetching if we have an active question that hasn't been answered yet
+          // This prevents overwriting questions that are currently displayed
+          const hasActiveUnansweredQuestion = surveyState.question && 
+            !answeredQuestions.has(surveyState.question.id) && 
+            !surveyState.isComplete;
           
-          if (messagesData.success && messagesData.messages) {
+          if (!hasActiveUnansweredQuestion) {
+            const messagesResponse = await fetch(`/api/chat-survey/messages/${surveyState.sessionId}?t=${Date.now()}`, {
+              cache: 'no-store'
+            });
+            const messagesData = await messagesResponse.json();
+            
+            if (messagesData.success && messagesData.messages) {
             // Convert database messages to Message format
             const dbMessages: Message[] = messagesData.messages.map((msg: ChatMessage) => ({
               type: msg.senderType === 'admin' ? 'bot' : msg.senderType as 'bot' | 'user',
@@ -486,30 +493,35 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
                 setLastMessageId(messagesData.messages[messagesData.messages.length - 1]?.id || null);
               }
             } else {
-              // First load - only set messages if survey is complete or we don't have active question
-              // This prevents overwriting bot questions that haven't been saved to database yet
-              if (surveyState.isComplete || !surveyState.question) {
-                setMessages(dbMessages);
-                if (messagesData.messages.length > 0) {
-                  setLastMessageId(messagesData.messages[messagesData.messages.length - 1].id);
-                }
-              } else {
-                // Survey is active - merge database messages with existing messages
-                // Don't overwrite, just add missing ones
-                setMessages(prev => {
+              // First load - always merge database messages with existing messages
+              // Never overwrite completely to preserve questions that haven't been saved yet
+              setMessages(prev => {
+                // If we have existing messages, merge with database messages
+                if (prev.length > 0) {
                   const existingTexts = new Set(prev.map(m => m.text));
                   const toAdd = dbMessages.filter(msg => !existingTexts.has(msg.text));
                   if (toAdd.length > 0) {
                     return [...prev, ...toAdd];
                   }
-                  return prev;
-                });
-                if (messagesData.messages.length > 0) {
-                  setLastMessageId(messagesData.messages[messagesData.messages.length - 1].id);
+                  return prev; // Keep existing messages if no new ones from DB
+                } else {
+                  // Only set from database if we have no existing messages
+                  // This handles the case when chat is first opened
+                  if (surveyState.isComplete || !surveyState.question) {
+                    return dbMessages;
+                  } else {
+                    // If we have an active question but no messages yet, keep empty
+                    // The question will be shown by the normal flow
+                    return prev;
+                  }
                 }
+              });
+              if (messagesData.messages.length > 0) {
+                setLastMessageId(messagesData.messages[messagesData.messages.length - 1].id);
               }
             }
           }
+          } // End of hasActiveUnansweredQuestion check
         } catch (error) {
           console.error('Error polling for messages:', error);
         }
@@ -527,7 +539,7 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
         pollingIntervalRef.current = null;
       }
     }
-  }, [surveyState.sessionId, isOpen, lastMessageId, isChatEnded]);
+  }, [surveyState.sessionId, isOpen, lastMessageId, isChatEnded, surveyState.question, surveyState.isComplete, answeredQuestions]);
 
   // Auto-select and submit for question 15 (hidden question - always select bot form option 0)
   useEffect(() => {
