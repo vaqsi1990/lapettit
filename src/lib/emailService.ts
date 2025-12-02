@@ -383,7 +383,7 @@ export const emailTemplates = {
               <p><strong>Username:</strong> lappetit</p>
               <p><strong>Password:</strong> 12345678</p>
               <p style="margin-top: 20px;">
-                <a href="https://www.lappetit.ge/admin" class="button">გადასვლა ადმინის გვერდზე</a>
+                <a href="https://www.lappetit.ge/admin" class="button" style="color: white !important; font-weight: bold !important; font-size: 18px !important;">გადასვლა ადმინის გვერდზე</a>
               </p>
             </div>
             
@@ -632,7 +632,8 @@ export async function sendAdminNotification(orderData: RegularOrderData | Contac
 // Send notification when user starts filling form
 export async function sendUserStartingFormNotification(sessionId: string) {
   try {
-    const adminEmails = ['Lappetit2019@gmail.com', 'Lappetit2019@gmail.com'];
+    // Two different admin emails - emails will be sent in parallel
+    const adminEmails = ['Lappetit2019@gmail.com', 'vaqsii23@gmail.com']; // TODO: Change second email to different admin email
     
     const sessionData = {
       sessionId: sessionId,
