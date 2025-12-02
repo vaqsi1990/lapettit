@@ -330,6 +330,82 @@ export const emailTemplates = {
       </body>
       </html>
     `
+  }),
+
+  // User starting form fill notification
+  userStartingFormNotification: (sessionData: {
+    sessionId: string;
+    startDate: string;
+  }) => ({
+    subject: 'მომხმარებელი იწყებს შეკვეთის ფორმის შევსებას',
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>User Starting Form Fill</title>
+        <style>
+          body { font-family: Arial, sans-serif; font-size: 18px; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: linear-gradient(135deg, #d90b6b, #ff6b9d); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+          .urgent { background: #fff3cd; border: 2px solid #ffeaa7; padding: 20px; border-radius: 8px; margin: 20px 0; }
+          .admin-info { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #d90b6b; }
+          .footer { text-align: center; margin-top: 30px; color: #666; font-size: 18px; }
+          .highlight { color: #d90b6b; font-weight: bold; }
+          .button { display: inline-block; background: linear-gradient(135deg, #d90b6b, #ff6b9d); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; margin: 10px 0; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>მომხმარებელი იწყებს შევსებას</h1>
+            <p>User Starting Form Fill</p>
+          </div>
+          
+          <div class="content">
+            <div class="urgent">
+              <h2 style="margin-top: 0; color: #856404;">⚠️ ყურადღება საჭიროა</h2>
+              <p><strong>მომხმარებელი დაიწყო შეკვეთის ფორმის შევსება!</strong></p>
+              <p>გთხოვთ შედით ადმინის გვერდზე და გახსენით Live Chat, რათა ნახოთ ინფორმაცია რეალურ დროში.</p>
+            </div>
+            
+            <div class="admin-info">
+              <h3>სესიის ინფორმაცია</h3>
+              <p><strong>სესიის ID:</strong> ${sessionData.sessionId}</p>
+              <p><strong>დაწყების დრო:</strong> ${sessionData.startDate}</p>
+            </div>
+            
+            <div class="admin-info">
+              <h3>ადმინის გვერდზე შესვლა</h3>
+              <p><strong>URL:</strong> <a href="https://www.lappetit.ge/admin" style="color: #d90b6b; font-weight: bold;">https://www.lappetit.ge/admin</a></p>
+              <p><strong>Username:</strong> lappetit</p>
+              <p><strong>Password:</strong> 12345678</p>
+              <p style="margin-top: 20px;">
+                <a href="https://www.lappetit.ge/admin" class="button">გადასვლა ადმინის გვერდზე</a>
+              </p>
+            </div>
+            
+            <div class="admin-info" style="background: #e7f3ff; border-left: 4px solid #2196F3;">
+              <h3 style="color: #1976D2;">ინსტრუქცია</h3>
+              <ol style="padding-left: 20px;">
+                <li>შედით ადმინის გვერდზე (https://www.lappetit.ge/admin)</li>
+                <li>გაიარეთ ავტორიზაცია (username: lappetit, password: 12345678)</li>
+                <li>გადადით "Live Chat" ტაბზე</li>
+                <li>ნახეთ მომხმარებლის ინფორმაცია და შეტყობინებები რეალურ დროში</li>
+              </ol>
+            </div>
+          </div>
+          
+          <div class="footer">
+            <p>ეს არის ავტომატური შეტყობინება</p>
+            <p>Lappetit - ყველაზე კარგი ტორტები თქვენთვის</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `
   })
 };
 
@@ -549,6 +625,45 @@ export async function sendAdminNotification(orderData: RegularOrderData | Contac
     }
   } catch (error) {
     console.error('Error sending admin notification email:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+}
+
+// Send notification when user starts filling form
+export async function sendUserStartingFormNotification(sessionId: string) {
+  try {
+    const adminEmails = ['Lappetit2019@gmail.com', 'Lappetit2019@gmail.com'];
+    
+    const sessionData = {
+      sessionId: sessionId,
+      startDate: new Date().toLocaleString('ka-GE', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric', 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      })
+    };
+    
+    const emailContent = emailTemplates.userStartingFormNotification(sessionData);
+
+    // Send to all admin emails
+    const results = await Promise.all(
+      adminEmails.map(adminEmail => 
+        sendEmail(adminEmail, emailContent.subject, emailContent.html)
+      )
+    );
+
+    // Check if all emails were sent successfully
+    const allSuccessful = results.every(result => result.success);
+    
+    if (allSuccessful) {
+      return { success: true, message: 'All admin notifications sent successfully' };
+    } else {
+      return { success: false, error: 'Some admin notifications failed to send' };
+    }
+  } catch (error) {
+    console.error('Error sending user starting form notification:', error);
     return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }

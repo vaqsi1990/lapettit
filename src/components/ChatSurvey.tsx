@@ -1164,6 +1164,20 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
     }
 
     if (decision === 'accepted') {
+      // Send notification to admin that user is starting to fill the form
+      try {
+        await fetch('/api/chat-survey/notify-start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId: surveyState.sessionId
+          })
+        });
+      } catch (error) {
+        console.error('Error sending start notification:', error);
+        // Don't block the flow if notification fails
+      }
+
       if (pendingFirstQuestion) {
         const { question, step } = pendingFirstQuestion;
         setSurveyState(prev => ({
