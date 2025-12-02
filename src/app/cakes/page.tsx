@@ -25,6 +25,7 @@ const CakesPage = () => {
     { id: 'anniversary', name: 'დღესასწაული' },
     { id: 'custom', name: 'პერსონალური' },
     { id: 'desserts', name: 'დესერტები' },
+    { id: 'sets', name: 'ნაკრები' },
   ]
 
   // Fetch cakes from database
@@ -82,7 +83,13 @@ const CakesPage = () => {
     let filtered = cakes
     
     if (selectedCategory !== 'all') {
-      filtered = filtered.filter(cake => cake.category === selectedCategory)
+      if (selectedCategory === 'sets') {
+        // Filter by productType for sets
+        filtered = filtered.filter(cake => cake.productType === 'SET')
+      } else {
+        // Filter by category for other categories
+        filtered = filtered.filter(cake => cake.category === selectedCategory)
+      }
     }
     
     if (searchQuery) {
