@@ -1466,17 +1466,17 @@ const AdminPage = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white h-screen rounded-2xl shadow-lg overflow-hidden"
-            style={{ height: 'calc(100vh - 180px)' }}
+            className="bg-white rounded-2xl shadow-lg overflow-hidden"
+            style={{ height: 'calc(100vh - 180px)', minHeight: '500px' }}
           >
-            <div className="flex h-full">
+            <div className="flex flex-col md:flex-row h-full">
               {/* Left Sidebar - Sessions List */}
-              <div className="w-1/3 border-r border-gray-200 flex flex-col">
-                <div className="p-4 border-b border-gray-200 bg-gray-50">
+              <div className="w-full md:w-1/3 border-b md:border-b-0 md:border-r border-gray-200 flex flex-col h-64 md:h-full">
+                <div className="p-3 md:p-4 border-b border-gray-200 bg-gray-50 flex-shrink-0">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h2 className="text-xl font-bold text-black">Live Chat</h2>
-                      <p className="text-sm text-gray-600 mt-1">{liveChatSessions.length} აქტიური ჩატი</p>
+                      <h2 className="text-lg md:text-xl font-bold text-black">Live Chat</h2>
+                      <p className="text-xs md:text-sm text-gray-600 mt-1">{liveChatSessions.length} აქტიური ჩატი</p>
                     </div>
                     {liveChatSessions.length > 0 && (
                       <button
@@ -1529,7 +1529,7 @@ const AdminPage = () => {
                         return (
                           <div
                             key={session.id}
-                            className={`p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
+                            className={`p-3 md:p-4 cursor-pointer hover:bg-gray-50 transition-colors ${
                               isSelected ? 'bg-pink-50 border-l-4 border-pink-500' : ''
                             }`}
                             onClick={async () => {
@@ -1558,18 +1558,18 @@ const AdminPage = () => {
                               }
                             }}
                           >
-                            <div className="flex items-center space-x-3">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                            <div className="flex items-center space-x-2 md:space-x-3">
+                              <div className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
                                 isSelected 
                                   ? 'bg-pink-500' 
                                   : 'bg-gradient-to-r from-pink-500 to-purple-500'
                               }`}>
-                                <span className="text-white font-semibold text-sm">
+                                <span className="text-white font-semibold text-xs md:text-sm">
                                   {userName.charAt(0).toUpperCase()}
                                 </span>
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className={`font-semibold truncate ${
+                                <p className={`text-sm md:text-base font-semibold truncate ${
                                   isSelected ? 'text-pink-600' : 'text-black'
                                 }`}>
                                   {userName}
@@ -1593,7 +1593,7 @@ const AdminPage = () => {
               </div>
 
               {/* Right Side - Chat Window */}
-              <div className="flex-1 flex flex-col overflow-hidden h-full">
+              <div className="w-full md:flex-1 flex flex-col overflow-hidden h-[calc(100vh-444px)] md:h-full">
                 {selectedChatSession ? (
                   <>
                     {/* Chat Header */}
@@ -1601,10 +1601,10 @@ const AdminPage = () => {
 
                     {/* Survey Info Panel - Uploaded Images, Slices, and Price */}
                     <div
-                      className="p-4 border-b h-screen border-gray-200 bg-white flex-shrink-0 overflow-y-auto"
-                      style={{ maxHeight: 'calc(100vh - 240px)' }}
+                      className="p-3 md:p-4 border-b border-gray-200 bg-white flex-shrink-0 overflow-y-auto"
+                      style={{ maxHeight: 'calc(100vh - 400px)' }}
                     >
-                      <h3 className="font-semibold text-gray-800 mb-3"> შეკვეთის ინფორმაცია</h3>
+                      <h3 className="text-sm md:text-base font-semibold text-gray-800 mb-3"> შეკვეთის ინფორმაცია</h3>
                       
                       {/* Uploaded Images */}
                       {(() => {
@@ -1612,8 +1612,8 @@ const AdminPage = () => {
                         if (imageResponses.length > 0) {
                           return (
                             <div className="mb-4">
-                              <p className="text-sm font-medium text-gray-700 mb-2"> ატვირთული სურათები:</p>
-                              <div className="grid grid-cols-2 gap-2">
+                              <p className="text-xs md:text-sm font-medium text-gray-700 mb-2"> ატვირთული სურათები:</p>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                                 {imageResponses.map((response) => {
                                   if (!response.fileUrl) return null;
                                   return (
@@ -1655,8 +1655,8 @@ const AdminPage = () => {
                           const slicesText = slicesResponse.selectedOption !== null ? slicesOptions[slicesResponse.selectedOption] : 'არ არის მითითებული';
                           return (
                             <div className="mb-4">
-                              <p className="text-sm font-medium text-gray-700 mb-1"> ნაჭრების რაოდენობა:</p>
-                              <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">{slicesText}</p>
+                              <p className="text-xs md:text-sm font-medium text-gray-700 mb-1"> ნაჭრების რაოდენობა:</p>
+                              <p className="text-xs md:text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">{slicesText}</p>
                             </div>
                           );
                         }
@@ -1665,13 +1665,13 @@ const AdminPage = () => {
 
                       {/* Price Display/Input */}
                       <div className="mb-2">
-                        <p className="text-sm font-medium text-gray-700 mb-2"> ფასი:</p>
+                        <p className="text-xs md:text-sm font-medium text-gray-700 mb-2"> ფასი:</p>
                         {selectedChatSession.calculatedPrice ? (
-                          <p className="text-sm text-green-600 font-semibold bg-green-50 p-2 rounded-lg">
+                          <p className="text-xs md:text-sm text-green-600 font-semibold bg-green-50 p-2 rounded-lg">
                             {selectedChatSession.calculatedPrice.toFixed(2)} ₾
                           </p>
                         ) : (
-                          <p className="text-sm text-gray-500 bg-gray-50 p-2 rounded-lg">ფასი არ არის გამოთვლილი</p>
+                          <p className="text-xs md:text-sm text-gray-500 bg-gray-50 p-2 rounded-lg">ფასი არ არის გამოთვლილი</p>
                         )}
                       </div>
                     </div>
@@ -1679,22 +1679,22 @@ const AdminPage = () => {
                 
 
                     {/* Price Calculation Area - Separate section - Always visible when session is selected - Moved above bot questions */}
-                    <div className={`border-t  flex-shrink-0 bg-white shadow-lg sticky bottom-0 z-30 ${selectedChatSession.waitingForPrice ? 'border-yellow-300 bg-yellow-50' : 'border-gray-300 bg-gray-50'}`}>
+                    <div className={`border-t flex-shrink-0 bg-white shadow-lg sticky bottom-0 z-30 ${selectedChatSession.waitingForPrice ? 'border-yellow-300 bg-yellow-50' : 'border-gray-300 bg-gray-50'}`}>
                        
-                        <div className="p-2">
+                        <div className="p-2 md:p-3">
                           {/* Calculate Price Button - Only show if waiting for price and not calculated yet */}
                          
                           
                           {/* Price Input and Send - Always visible */}
                           <div className="space-y-2">
                            
-                            <div className="flex gap-2">
+                            <div className="flex flex-col sm:flex-row gap-2">
                               <input
                                 type="number"
                                 value={priceInput || selectedChatSession.calculatedPrice?.toFixed(2) || ''}
                                 onChange={(e) => setPriceInput(e.target.value)}
                                 placeholder="შეიყვანეთ ფასი (₾)"
-                                className="flex-1 p-2 border border-black rounded-lg  text-black"
+                                className="flex-1 p-2 md:p-3 text-sm md:text-base border border-black rounded-lg text-black"
                                 step="0.01"
                                 min="0"
                               />
@@ -1780,7 +1780,7 @@ const AdminPage = () => {
                                   }
                                 }}
                                 disabled={(!priceInput && !selectedChatSession.calculatedPrice) || isSendingPrice}
-                                className="px-4 py-2 bg-black  text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed text-[18px] font-bold"
+                                className="px-3 md:px-4 py-2 bg-black text-white rounded-lg transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed text-sm md:text-base md:text-[18px] font-bold whitespace-nowrap"
                               >
                                 {isSendingPrice ? 'გაგზავნა...' : 'გაგზავნა'}
                               </button>
@@ -1794,9 +1794,9 @@ const AdminPage = () => {
                   </>
                 ) : (
                   <div className="flex-1 flex items-center justify-center bg-gray-50">
-                    <div className="text-center text-gray-500">
-                      <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                      <p className="text-lg">აირჩიეთ სესია ჩათის დასაწყებად</p>
+                    <div className="text-center text-gray-500 px-4">
+                      <MessageCircle className="w-12 h-12 md:w-16 md:h-16 mx-auto mb-4 text-gray-300" />
+                      <p className="text-sm md:text-lg">აირჩიეთ სესია ჩათის დასაწყებად</p>
                     </div>
                   </div>
                 )}

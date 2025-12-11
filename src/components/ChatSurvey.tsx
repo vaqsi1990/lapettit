@@ -153,8 +153,10 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
           // Open on desktop if not manually closed
           setInternalIsOpen(true);
         } else if (!desktop) {
-          // Close on mobile
-          setInternalIsOpen(false);
+          // On mobile, keep it open if user manually opened it
+          if (!manuallyOpened) {
+            setInternalIsOpen(false);
+          }
         }
         // If desktop and manuallyClosed, don't change state (stay closed)
       } else if (externalIsOpen !== undefined && onOpenChange) {
@@ -170,7 +172,7 @@ const ChatWidget = ({ productId, productImage, productName, isOpen: externalIsOp
     // Listen for resize events
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [externalIsOpen, manuallyClosed, isDesktop, onOpenChange]);
+  }, [externalIsOpen, manuallyClosed, manuallyOpened, isDesktop, onOpenChange]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [surveyState, setSurveyState] = useState<SurveyState>({
     sessionId: null,
